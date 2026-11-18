@@ -6,6 +6,18 @@ Read **README.md**, **VISION.md**, **PRODUCT.md** and **DESIGN.md** before imple
 
 A new, small, excellent **mobile-first civic platform** for the AIESEC hackathon. It is a **side project**; do not consume the founder's attention with unrelated courses or feature sprawl. **MY-AI**, the AI-native physical companion/OS project, is separate and is the founder's primary ambition. **AGUS**, the Solana/financial agent, is separate.
 
+## Non-negotiable: immediate use without an account
+
+**MataLens is guest-first and has NO mandatory sign-in.** Users must be able to open the web app and immediately browse civic guides, election dates, sourced candidate profiles, polling-unit guidance, updates and practice exercises. They must be able to use local bookmarks, reminders and preparation notes without creating an account, entering a phone number/email, verifying an OTP, connecting a wallet or completing a compulsory profile/onboarding wizard. An optional intro can be skipped.
+
+**Civic Camera / My Actions must also work without forced registration.** Build an anonymous-but-abuse-controlled upload pathway and issue a high-entropy private receipt/recovery token or unguessable link to retrieve the user's own submission; store token hashes server-side, not in public analytics. Provide a way to download/save that receipt and explain recovery limits if the device is lost. Use rate limiting, size/type limits, moderation and proportionate anti-bot controls. Never make a traditional account system the prerequisite for a photo submission, and never publicly expose the uploader's identity or private location. If secure guest upload cannot be supported, show an accurate unavailable state; don't substitute compulsory login. Optional accounts/sync are deferred and must not block guest experiences.
+
+## REA: research and setup are explicitly authorized
+
+**REA / Reverse Engineer Anything is approved for legitimate public-site and open-source reference research.** Read [docs/REA_RESEARCH_PLAYBOOK.md](docs/REA_RESEARCH_PLAYBOOK.md) first. The founder's prior REA 6.8.0 setup was verified **in Antigravity**, with Node-version diagnostic issues and MCP registration troubles resolved; native Codex Cloud tool access was **not** established. Discover and verify real callable tools in the current host before claiming REA works. Avoid blind reinstallations, host/CLI/MCP confusion and lengthy setup detours. Use allowed browser inspection or source review if REA is unavailable and do not stall building.
+
+Inspect VotersDesk, FixMyStreet and Ushahidi for *user journeys, accessibility, UX patterns and public reporting architecture*, then create an **original** design. No protected assets/source copying; record evidence and licensing decisions in `docs/REFERENCE_RESEARCH.md`.
+
 ## Operating principles
 
 - **Act:** after reviewing the repo and writing a concise implementation plan, **implement a useful running product**, not merely planning documents or a landing-page mockup.
