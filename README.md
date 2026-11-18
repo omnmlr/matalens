@@ -13,6 +13,12 @@ MataLens is a premium, mobile-first civic utility for understanding public life,
 - **My Actions:** Follow personal preparation progress, saved receipts and the real status of reports. Government submission/routing must not be claimed until technically established.
 - **After elections:** Expand to a safe, independently verifiable public-issue reporting network (roads, drainage, public facilities, safety issues, etc.) without becoming solely an elections app.
 
+## Immediate access
+
+MataLens is **guest-first**: no account, login, email, phone number or OTP required for learning, election preparation, practice or civic reports. Personalized voting preparations stay locally on the user's device. Guest uploads should produce securely retrievable case receipts.
+
+REA research is authorized and documented in [docs/REA_RESEARCH_PLAYBOOK.md](docs/REA_RESEARCH_PLAYBOOK.md). Its earlier working setup was specifically confirmed in Antigravity; current Codex access must be probed rather than assumed.
+
 ## Product principles
 
 1. **Extremely easy to understand and use.** Each screen should make the next action obvious.
