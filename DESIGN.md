@@ -73,3 +73,18 @@ Do not consider a screen finished just because it renders or a browser test pass
 - No 'AI magic' visuals or dark sci-fi glowing orb motif.
 
 **Premium means frictionless comprehension plus excellent craft.**
+
+## 18 November 2026 — Explicit visual rejection and required correction
+
+**The initial Codex implementation in PR #1 is VISUALLY REJECTED.** The sample home screenshot uses an irrelevant AI-generated editorial person in a rounded split hero above three generic icon cards. That is precisely the generic templated direction the founder does **not** want. Preserve genuinely working implementation/tests; **redesign the presentation and information architecture from first principles**.
+
+- **No synthetic decorative photography anywhere in the home UI.** Every image must communicate real content. Prefer genuine licensed candidate portraits, legitimate official party symbols when permitted, and actual submitted civic photographic evidence. Where genuine imagery is unavailable, rely on compelling original typography and useful data, not AI-generated people or invented photos. Remove unused AI-image assets.
+- **No generic marketing landing-page composition.** The homepage must look like a **real functioning civic application**. Its visible first screen should help someone choose their voting area/ballot, find verified election information, browse actual sourced candidates (within truthful current coverage), or start reporting a community issue. The mission statement is secondary to immediate user value.
+- **Use VotersDesk (https://votersdesk.ng/) as a high design/usability benchmark**—especially information-first hierarchy, actual candidates, races, ballot discovery and election utility—but surpass its polish with an unmistakably original layout/brand. Research the actual visuals with approved tools when accessible. Never claim to have visually inspected a source when you only have text snippets. No copying assets or distinctive protected page layouts.
+- **Stop the repeated rounded-card/pill pattern.** Seek structured editorial grids, purposeful alignment, typography, selective separation rules, functional sections, compact source metadata and distinctly differentiated interactions. Curves should be chosen for a reason, not sprayed uniformly across panels.
+- **The required colors remain green and white.** Prefer crisp ivory/white, confident forest-green typography, thoughtful dark-forest night mode, accessible contrasts, very limited accents. Glossy means expert surface polish and tactility, not translucency/glow everywhere. Never look like generic AI art or a standard startup SaaS template.
+- **Mobile-first composition** should be designed in its own right, with meaningful immediate content at 360px width, not merely desktop cards stacked into a long list.
+- **Review deliverables:** screenshots at desktop/mobile × light/dark, key election/candidate and Civic Camera screens, explicit comparison with the rejected sample, and a written self-critique tied to real usability. Functional tests, accessibility checks and absence of layout overflow are necessary but insufficient to approve visual quality.
+- Do not merge visually rejected PR #1. Resolve the design feedback on the active implementation branch and request founder review of the updated screenshots.
+
+This visual rejection supersedes earlier generic references to 'premium', 'rounded' or 'glossy' wherever those instructions encouraged template-like output.
