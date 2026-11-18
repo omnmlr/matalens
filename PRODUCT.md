@@ -66,7 +66,7 @@ AI can help turn colloquial input into neutral, editable text and suggest catego
 - Official sources are **linked explicitly**; no fabricated candidates, dates, results or polling-unit coordinates.
 - Election preparation can be saved locally and reopened; nothing sends private political selections to backend/analytics.
 - A simple exercise works end-to-end and is understandable without explanation.
-- Civic Camera can genuinely upload a safe test photo, create a record, return a stable ID/receipt and show it in My Actions on refresh/sign-in as designed. If production storage is not configured, block public upload and show a truthful setup/disabled state.
+- Civic Camera can genuinely upload a safe test photo, create a record, return a stable ID/receipt and show it in My Actions after refresh using the guest receipt/recovery mechanism, with no sign-in. If production storage is not configured, block public upload and show a truthful setup/disabled state.
 - A user can remove/withdraw their own report where supported, subject to documented public-evidence retention rules; privacy policy is explicit.
 - Honest handling of invalid files, duplicate taps, network loss, failed uploads and browser refresh.
 - Source code, environment setup, migrations and runnable tests are documented.
