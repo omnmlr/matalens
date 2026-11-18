@@ -4,6 +4,16 @@
 
 **Build for a person who has never used an election website.** They should immediately understand what the page means and what to do next. No developer language, long forms, confusing labels, or decorative workflows with no function.
 
+## No-login product requirement
+
+**No sign-in, account creation, email, phone number, OTP, password, wallet, or mandatory multi-screen onboarding is permitted to access core features.** Visiting the site should immediately open a useful, understandable experience. Let visitors skip introductions and explore before selecting a location. Make localized personalization optional, incremental and clearly explained.
+
+Reading civic information, candidate exploration, practice exercises, saved candidate-preparation choices, locally saved reminders and official polling-unit guidance must all work as a guest. Store private preferences only on-device, not on MataLens servers.
+
+**Photograph submission and case receipts must also support guests.** Design a secure anonymous submission flow with a high-entropy receipt/recovery link or code and an appropriate private retrieval mechanism. Explain that a person who loses an unbacked-up receipt may not be able to recover the case. Do not put guessable public IDs in place of authorization. Protect uploads with rate limits, moderation, conservative file handling, privacy controls and safety checks. A user may supply contact information optionally when needed for a particular external workflow, but that must never silently become mandatory registration.
+
+Any later optional accounts or cross-device sync are strictly an enhancement, not a prerequisite. Testing must start in a fresh private/incognito browser and demonstrate full working first-use without authentication.
+
 ## Information architecture
 
 - **Home** — personal greeting, election/civic preparation progress, next useful action, relevant updates.
