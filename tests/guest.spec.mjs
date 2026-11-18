@@ -1,0 +1,173 @@
+import { expect, test, devices } from '@playwright/test'
+import AxeBuilder from '@axe-core/playwright'
+import { mkdir, readFile } from 'node:fs/promises'
+import sharp from 'sharp'
+
+const screenshotDir = 'test-results/screenshots'
+const photo = await sharp({ create: { width: 650, height: 400, channels: 3, background: '#5a7565' } }).png().toBuffer()
+const fixture = { name: 'synthetic-qa-image.png', mimeType: 'image/png', buffer: photo }
+const noHorizontalOverflow = page => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)
+const selectNav = (page, label) => page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: label, exact: true })
+const screenshot = async (page, filename, fullPage = false) => {
+  await mkdir(screenshotDir, { recursive: true })
+  await page.screenshot({ path: `${screenshotDir}/${filename}.jpg`, quality: 88, fullPage, animations: 'disabled' })
+}
+
+test('fresh guest can prepare, save a candidate, rehearse and reopen the plan offline', async ({ page, context }) => {
+  const errors = []
+  const preparationRequests = []
+  page.on('pageerror', error => errors.push(error.message))
+  page.on('request', request => {
+    if (!['GET', 'HEAD'].includes(request.method())) preparationRequests.push(request.url())
+  })
+
+  await page.goto('/')
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(/See what matters/)
+  await expect(page.getByRole('link', { name: 'Explore my election' })).toBeVisible()
+  await expect(page.getByRole('link', { name: /sign in|create account/i })).toHaveCount(0)
+  await expect.poll(() => page.evaluate(() => document.images[0]?.naturalWidth ?? 0)).toBeGreaterThan(500)
+  await screenshot(page, 'home-desktop-light', true)
+  expect(await noHorizontalOverflow(page)).toBe(true)
+  expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([])
+
+  await page.getByRole('link', { name: 'Explore my election' }).click()
+  await expect(page.getByRole('link', { name: /Open INEC polling-unit finder/ })).toHaveAttribute('href', 'https://cvr.inecnigeria.org/pu')
+  await expect(page.getByRole('heading', { name: 'Surulere I' })).toBeVisible()
+  await page.getByRole('checkbox', { name: 'Check my voter registration' }).check()
+  await page.getByRole('combobox', { name: 'State', exact: true }).selectOption('Lagos')
+  await page.getByLabel('Local government area').fill('Surulere')
+  await page.getByLabel('Polling-unit name or code').fill('Test polling-unit note')
+  await page.getByLabel('Preparation notes').fill('Leave enough time for the walk.')
+  await page.getByLabel('Personal reminder date').fill('2027-01-15')
+  await page.getByRole('button', { name: 'Save my plan' }).click()
+  await expect(page.getByRole('status')).toHaveText('Your plan is updated on this device.')
+  const reminderDownload = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Export reminder' }).click()
+  const calendar = await readFile(await (await reminderDownload).path(), 'utf8')
+  expect(calendar).toContain('DTSTART;VALUE=DATE:20270115')
+  expect(calendar).not.toContain('Test polling-unit note')
+  await page.getByLabel('Search by name or party').fill('Adefolaseye')
+  await page.getByText('Candidate details', { exact: true }).click()
+  await expect(page.getByText('Nigeria Democratic Congress', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: /Save Adebayo Adefolaseye Adebomi/ }).click()
+  await expect(page.getByRole('button', { name: /Remove Adebayo Adefolaseye Adebomi/ })).toHaveAttribute('aria-pressed', 'true')
+  await screenshot(page, 'election-desktop-light', true)
+
+  await selectNav(page, 'Practice').click()
+  await page.getByRole('button', { name: /Election day/ }).click()
+  const choices = ['Check my assigned polling unit with INEC', 'A photo of my PVC', 'In the private voting cubicle', 'Fold it inward and place it in the designated ballot box']
+  for (const [index, choice] of choices.entries()) {
+    await page.getByRole('radio', { name: choice }).check()
+    await page.getByRole('button', { name: 'Check answer' }).click()
+    await expect(page.getByRole('status')).toContainText(index === 1 ? 'Here’s the correct answer.' : 'That’s right.')
+    await page.getByRole('button', { name: index === 3 ? 'See my score' : 'Next question' }).click()
+  }
+  await expect(page.getByRole('heading', { name: 'You got 3 of 4 right.' })).toBeVisible()
+  await page.getByRole('button', { name: 'All exercises' }).click()
+  await page.getByRole('button', { name: /Read a candidate list/ }).click()
+  await expect(page.getByRole('heading', { name: /Which party abbreviation is listed for Adebayo Adefolaseye Adebomi/ })).toBeVisible()
+  await page.getByRole('radio', { name: 'NDC', exact: true }).check()
+  await page.getByRole('button', { name: 'Check answer' }).click()
+  await expect(page.getByRole('status')).toContainText('That’s right.')
+
+  await selectNav(page, 'My Actions').click()
+  await expect(page.getByText('1 of 4 checklist steps done · Rehearsal completed')).toBeVisible()
+  await expect(page.getByText('Adebayo Adefolaseye Adebomi · NDC')).toBeVisible()
+  await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller))
+  await context.setOffline(true)
+  await page.reload()
+  await expect(page.getByText('You’re offline. Saved guides and plans still work.')).toBeVisible()
+  await expect(page.getByText('Leave enough time for the walk.')).toBeVisible()
+  await selectNav(page, 'Civic Camera').click()
+  await expect(page.getByRole('button', { name: 'Submit to MataLens' })).toBeDisabled()
+  await expect(page.getByText('You’re offline. Reconnect to submit this photo.')).toBeVisible()
+  expect(errors).toEqual([])
+  expect(preparationRequests).toEqual([])
+})
+
+test('phone guest can recover an interrupted report, save its receipt and withdraw it from a new session', async ({ browser }) => {
+  const context = await browser.newContext({ ...devices['Pixel 7'], colorScheme: 'light' })
+  const page = await context.newPage()
+  await page.goto('/camera')
+  const submit = page.getByRole('button', { name: 'Submit to MataLens' })
+  await expect(submit).toBeEnabled()
+  await page.getByLabel('Choose a photo').setInputFiles({ name: 'invalid.txt', mimeType: 'text/plain', buffer: Buffer.from('invalid') })
+  await expect(page.getByRole('alert')).toContainText('Choose a JPG, PNG or WebP photo up to 8 MB.')
+  await page.getByLabel('Choose a photo').setInputFiles(fixture)
+  await expect(page.getByRole('img', { name: 'Preview of your uploaded photo' })).toBeVisible()
+  await page.getByRole('combobox', { name: 'Category', exact: true }).selectOption('Drainage or flooding')
+  await page.getByLabel('What did you see?').fill('Synthetic browser test. No incident is being reported.')
+  await page.getByLabel('Public location (optional)').fill('Synthetic test location')
+  await page.getByRole('checkbox', { name: /This photo is safe to share/ }).check()
+  expect(await noHorizontalOverflow(page)).toBe(true)
+
+  let calls = 0
+  await page.route('**/api/reports', async route => {
+    calls++
+    const response = await route.fetch()
+    await new Promise(resolve => setTimeout(resolve, 340))
+    if (calls === 1) await route.abort('connectionreset')
+    else await route.fulfill({ response })
+  })
+  await submit.click()
+  await expect(page.getByRole('button', { name: 'Uploading photo…' })).toBeDisabled()
+  await expect(page.getByRole('alert')).toContainText('You can retry here with the same receipt.')
+  await submit.click()
+  await expect(page.getByRole('heading', { name: 'Submitted to MataLens' })).toBeVisible()
+  expect(calls).toBe(2)
+  await expect(page.getByText('Awaiting review', { exact: true })).toBeVisible()
+  await screenshot(page, 'receipt-mobile-light', true)
+  const receiptDownload = page.waitForEvent('download')
+  await page.getByRole('button', { name: 'Download receipt' }).click()
+  const file = await readFile(await (await receiptDownload).path(), 'utf8')
+  const url = file.match(/Open this link: (.+)/)?.[1]
+  expect(url).toMatch(/#receipt=[a-f0-9]{64}$/)
+
+  await selectNav(page, 'My Actions').click()
+  await page.reload()
+  await page.getByRole('button', { name: /^Drainage or flooding/ }).click()
+  await expect(page.getByRole('heading', { name: 'MataLens report receipt' })).toBeVisible()
+  await context.close()
+
+  const freshContext = await browser.newContext({ ...devices['Pixel 7'] })
+  const fresh = await freshContext.newPage()
+  await fresh.goto(url)
+  await expect(fresh.getByRole('heading', { name: 'MataLens report receipt' })).toBeVisible()
+  expect(new URL(fresh.url()).hash).toBe('')
+  await fresh.getByRole('button', { name: 'View photo' }).click()
+  await expect(fresh.getByRole('img', { name: 'Private report photo preview' })).toBeVisible()
+  await fresh.getByRole('button', { name: 'Withdraw this report' }).click()
+  await fresh.getByRole('button', { name: 'Confirm withdrawal' }).click()
+  await expect(fresh.getByRole('heading', { name: 'Report withdrawn' })).toBeVisible()
+  await expect(fresh.getByRole('img', { name: 'Private report photo preview' })).toHaveCount(0)
+  await freshContext.close()
+})
+
+test('320 px mobile, keyboard, dark persistence and both report types', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 780 })
+  await page.goto('/')
+  await page.keyboard.press('Tab')
+  await expect(page.getByRole('link', { name: 'Skip to content' })).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(page.getByRole('main')).toBeFocused()
+  expect(await noHorizontalOverflow(page)).toBe(true)
+
+  await page.getByRole('button', { name: 'Switch to dark mode' }).click()
+  await page.reload()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+  await screenshot(page, 'home-mobile-dark')
+  expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([])
+  await selectNav(page, 'Civic Camera').click()
+  await page.getByRole('radio', { name: /Public result sheet/ }).check()
+  await expect(page.getByLabel('Polling-unit name or code')).toBeVisible()
+  await expect(page.getByText(/Only photograph a publicly posted result sheet/)).toBeVisible()
+  expect(await noHorizontalOverflow(page)).toBe(true)
+  expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([])
+  await screenshot(page, 'camera-mobile-dark', true)
+  await page.getByLabel('Choose a photo').setInputFiles(fixture)
+  await page.getByLabel('Polling-unit name or code').fill('QA fixture only')
+  await page.getByRole('checkbox', { name: /This shows a publicly posted result sheet/ }).check()
+  await page.getByRole('button', { name: 'Submit to MataLens' }).click()
+  await expect(page.getByRole('heading', { name: 'Submitted to MataLens' })).toBeVisible()
+  await expect(page.getByText('Public result sheet', { exact: true })).toBeVisible()
+})
