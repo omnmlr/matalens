@@ -34,6 +34,14 @@ These are launch tokens, **not a fixed final palette**. Test actual contrast and
 - PWA installability and good offline behavior are preferable to an empty 'download app' button.
 - Create proper navigation, back, footer/about, privacy and sources; no dead-end screens.
 
+## Open-and-use experience (required)
+
+The homepage must be useful immediately, without a sign-in gate, registration prompt, splash maze, compulsory profile wizard or modal asking for a name, PVC, email, phone number or account creation. Users may optionally choose an electoral area when they want relevant information; browsing must not require this upfront.
+
+Prefer progressive disclosure: **Explore elections**, **Learn your rights**, **Practice**, and **Report an issue** should be understandable entry points. Candidate preparation choices are private and local. For guest photo submissions, provide a beautifully clear upload-success screen with an unguessable receipt/recovery link and instructions for saving it; never label it as government-confirmed.
+
+Do not build sign-in/signup screens, profile completion percentage, onboarding gating, a user dashboard that redirects to login, or decorative buttons masquerading as actions.
+
 ## Interaction philosophy
 
 At every step, show:
