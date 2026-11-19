@@ -26,6 +26,10 @@ export type Plan = {
 export const emptyPlan: Plan = {
   checklist: [], candidates: [], state: '', lga: '', pollingUnit: '', notes: '', reminder: '', practiced: false,
 }
+export function hasSavedPlan(plan: Plan) {
+  return Boolean(plan.checklist.length || plan.candidates.length || plan.state || plan.lga || plan.pollingUnit || plan.notes || plan.reminder || plan.practiced)
+}
+
 const prefix = 'matalens:v1:'
 
 export function readLocal<T>(key: string, fallback: T): T {
@@ -98,6 +102,10 @@ export function newReceiptCode() {
   return Array.from(crypto.getRandomValues(new Uint8Array(32)), (byte) => byte.toString(16).padStart(2, '0')).join('')
 }
 
+export class ReceiptRequestError extends Error {
+  constructor(message: string, readonly status: number) { super(message) }
+}
+
 export async function receiptRequest(path: string, code: string, options: RequestInit = {}) {
   let response: Response
   try {
@@ -110,7 +118,7 @@ export async function receiptRequest(path: string, code: string, options: Reques
   }
   if (!response.ok) {
     const data = await response.json().catch(() => null)
-    throw new Error(data?.error ?? 'MataLens could not complete this action. Please try again.')
+    throw new ReceiptRequestError(data?.error ?? 'MataLens could not complete this action. Please try again.', response.status)
   }
   return response
 }

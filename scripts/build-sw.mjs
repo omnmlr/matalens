@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { join } from 'node:path'
 
-const paths = ['/', '/hero.webp', '/mark.svg', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png',
+const paths = ['/', '/mark.svg', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png',
   ...readdirSync('dist/assets').map(name => `/assets/${name}`)]
 const hash = createHash('sha256')
 for (const path of paths) hash.update(readFileSync(join('dist', path === '/' ? 'index.html' : path)))

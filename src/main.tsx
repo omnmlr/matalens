@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client'
 import { useEffect, useLayoutEffect, useState } from 'react'
-import { Camera, ChevronRight, ClipboardList, Home, Moon, ScanLine, ShieldCheck, Sun, Vote, WifiOff } from 'lucide-react'
+import { Camera, ChevronRight, ClipboardList, Home, Moon, ShieldCheck, Sun, Vote, WifiOff } from 'lucide-react'
 import '@fontsource-variable/manrope'
 import '@fontsource-variable/newsreader'
 import '@fontsource-variable/newsreader/wght-italic.css'
@@ -14,11 +14,10 @@ import { emptyPlan, readLocal, useLocal, writeLocal, type Plan, type ReceiptEntr
 const nav = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/election', label: 'My Election', icon: Vote },
-  { href: '/practice', label: 'Practice', icon: ScanLine },
   { href: '/camera', label: 'Civic Camera', icon: Camera },
   { href: '/actions', label: 'My Actions', icon: ClipboardList },
 ]
-const paths = new Set([...nav.map(item => item.href), '/sources', '/privacy'])
+const paths = new Set([...nav.map(item => item.href), '/practice', '/sources', '/privacy'])
 const noReceipts: ReceiptEntry[] = []
 
 function App() {
@@ -48,7 +47,14 @@ function App() {
       requestAnimationFrame(() => {
         const target = url.hash ? document.getElementById(url.hash.slice(1)) : document.querySelector<HTMLElement>('main h1')
         if (target) {
-          if (url.hash) target.scrollIntoView()
+          if (url.hash) {
+            const heading = target.matches('h1, h2, h3') ? target : target.querySelector('h2, h3, summary')
+            if (heading instanceof HTMLElement) {
+              if (heading.tagName !== 'SUMMARY') heading.tabIndex = -1
+              heading.focus({ preventScroll: true })
+            }
+            target.scrollIntoView()
+          }
           else {
             target.setAttribute('tabindex', '-1')
             target.focus({ preventScroll: true })
@@ -71,7 +77,7 @@ function App() {
   }, [])
 
   useEffect(() => {
-    const name = nav.find(item => item.href === location)?.label ?? (location === '/privacy' ? 'Privacy' : location === '/sources' ? 'Sources & updates' : 'Page unavailable')
+    const name = nav.find(item => item.href === location)?.label ?? ({ '/privacy': 'Privacy', '/sources': 'Sources & updates', '/practice': 'Practice' }[location] ?? 'Page unavailable')
     document.title = location === '/' ? 'MataLens · Your civic companion' : `${name} · MataLens`
     if (window.location.hash && !window.location.hash.startsWith('#receipt=')) {
       const target = document.getElementById(window.location.hash.slice(1))
@@ -81,13 +87,15 @@ function App() {
 
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = theme
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#10231b' : '#f7f8f2')
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0c2019' : '#f8faf5')
     writeLocal('theme', theme)
   }, [theme])
 
 
   function updatePlan(next: Partial<Plan>) {
-    if (!setPlan({ ...plan, ...next })) setNotice('This browser couldn’t save your preparation. Your changes are available until you leave the app.')
+    const saved = setPlan({ ...plan, ...next })
+    if (!saved) setNotice('This browser couldn’t save your preparation. Your changes are available until you leave the app.')
+    return saved
   }
 
   function rememberReceipt(entry: ReceiptEntry) {
@@ -110,7 +118,7 @@ function App() {
       <div className="header-inner">
         <Brand />
         <nav className="desktop-nav" aria-label="Main navigation">
-          {nav.map(item => <a key={item.href} href={item.href} aria-current={location === item.href ? 'page' : undefined}>{item.label}</a>)}
+          {nav.map(item => <a key={item.href} href={item.href} aria-current={location === item.href ? 'page' : undefined} data-active={location === '/practice' && item.href === '/election' || undefined}>{item.label}</a>)}
         </nav>
         <div className="header-right">
           <span className="country"><span className="flag" aria-hidden="true" /> Nigeria</span>
@@ -126,7 +134,7 @@ function App() {
       {location === '/' && <HomePage plan={plan} />}
       {location === '/election' && <Election plan={plan} updatePlan={updatePlan} />}
       {location === '/practice' && <Practice complete={() => updatePlan({ practiced: true })} />}
-      {location === '/camera' && <CameraPage online={online} remember={rememberReceipt} />}
+      {location === '/camera' && <CameraPage online={online} remember={rememberReceipt} forget={forgetReceipt} />}
       {location === '/actions' && <MyActions plan={plan} receipts={receipts} remember={rememberReceipt} forget={forgetReceipt} />}
       {location === '/sources' && <Sources />}
       {location === '/privacy' && <Privacy clear={clearLocalData} />}
@@ -139,7 +147,7 @@ function App() {
       </div>
     </footer>
     <nav className="mobile-nav" aria-label="Main navigation">
-      {nav.map(({ href, label, icon: Icon }) => <a key={href} href={href} aria-current={location === href ? 'page' : undefined}><Icon size={20} strokeWidth={1.8} /><span>{label}</span></a>)}
+      {nav.map(({ href, label, icon: Icon }) => <a key={href} href={href} aria-current={location === href ? 'page' : undefined} data-active={location === '/practice' && href === '/election' || undefined}><Icon size={20} strokeWidth={1.8} /><span>{label}</span></a>)}
     </nav>
   </>
 }

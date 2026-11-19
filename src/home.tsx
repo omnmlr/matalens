@@ -1,65 +1,85 @@
-import { ArrowRight, ArrowUpRight, CalendarDays, Camera, ChevronRight, CircleCheck, ClipboardList, ScanLine, ShieldCheck, Vote } from 'lucide-react'
-import { dates, links } from './content'
-import { daysUntilNigeria, nigeriaDate, type Plan } from './state'
+import { ArrowRight, CalendarDays, Camera, ChevronRight, CircleCheck, ClipboardList, Fingerprint, GraduationCap, MapPin } from 'lucide-react'
+import { candidates, dates, links, race, updates } from './content'
+import { daysUntilNigeria, hasSavedPlan, nigeriaDate, type Plan } from './state'
 import { ActionLink, External } from './ui'
 
-const journeys = [
-  { title: 'My Election', icon: Vote, href: '/election', tone: 'mint', summary: 'Find your polling unit, explore the ballot and make a private plan.', label: 'Get prepared' },
-  { title: 'Practice', icon: ScanLine, href: '/practice', tone: 'sand', summary: 'Walk through what happens at the polling unit, one decision at a time.', label: 'Try an exercise' },
-  { title: 'Civic Camera', icon: Camera, href: '/camera', tone: 'sage', summary: 'Document a community issue or public result sheet and get a private receipt.', label: 'Start a report' },
-]
+function ElectionCalendar() {
+  const upcoming = dates.filter(item => daysUntilNigeria(item.date) >= 0)
+  const [next, ...later] = upcoming
+  return <section className="election-calendar" aria-labelledby="home-calendar">
+    <div className="calendar-heading">
+      <h2 id="home-calendar"><CalendarDays size={15} /> Election calendar</h2>
+      <External href={links.calendar}>INEC source</External>
+    </div>
+    {next ? <>
+      <div className="calendar-main">
+        <time dateTime={next.date} className="calendar-date">
+          <strong>{nigeriaDate(next.date, { day: 'numeric' })}</strong>
+          <span>{nigeriaDate(next.date, { month: 'long' })}<br />{nigeriaDate(next.date, { year: 'numeric' })}</span>
+        </time>
+        <div><h3>{next.title}</h3><p>{next.scope.startsWith('Nationwide') ? 'Nationwide' : next.scope}</p></div>
+      </div>
+      {later.map(item => <div key={item.date} className="calendar-next">
+        <time dateTime={item.date}>{nigeriaDate(item.date, { day: 'numeric', month: 'short' })}</time><span>{item.title}</span>
+      </div>)}
+    </> : <p className="calendar-empty">Check INEC for the latest election dates.</p>}
+  </section>
+}
 
 export function HomePage({ plan }: { plan: Plan }) {
-  const next = dates.find(item => daysUntilNigeria(item.date) >= 0)
   return <div className="wrap home-page">
-    <section className="hero" aria-labelledby="home-title">
-      <div className="hero-copy">
-        <p className="eyebrow"><span className="eyebrow-dot" /> YOUR CIVIC COMPANION</p>
-        <h1 id="home-title">See what matters.<br /><em>Know what to<br className="desktop-break" /> do next.</em></h1>
-        <p>Get ready to vote, practise election day and document what needs attention in your community.</p>
-        <div className="hero-actions">
-          <ActionLink href="/election">Explore my election</ActionLink>
-          <a className="quiet-action" href="/camera"><Camera size={17} /> Civic Camera <ArrowUpRight size={16} /></a>
+    <section className="home-intro" aria-labelledby="home-title">
+      <div className="home-lead">
+        <p className="eyebrow election-edition"><span /> Nigeria · 2027 general elections</p>
+        <h1 id="home-title">Get ready <em>to vote.</em></h1>
+        <p>Get to know the candidates, find your polling unit and make a plan for election day.</p>
+        <div className="home-actions">
+          <ActionLink href="/election#candidates">See candidates</ActionLink>
+          <External className="button button-secondary polling-action" href={links.polling}><MapPin size={16} /> Find my polling unit</External>
         </div>
       </div>
-      <div className="hero-visual" aria-hidden="true">
-        <img src="/hero.webp" alt="" width="1200" height="800" fetchPriority="high" />
-        <span className="focus-corner top-left" /><span className="focus-corner top-right" />
-        <span className="focus-corner bottom-left" /><span className="focus-corner bottom-right" />
-        {next && <div className="hero-date">
-          <span className="hero-date-icon"><CalendarDays size={19} /></span>
-          <div><span>{next.shortLabel}</span><strong>{nigeriaDate(next.date, { day: 'numeric', month: 'long', year: 'numeric' })}</strong></div>
-        </div>}
-      </div>
+      <ElectionCalendar />
+      <a className="mobile-camera-link" href="/camera"><Camera size={19} /><span><strong>Civic Camera</strong><small>Document a community issue</small></span><ArrowRight size={17} /></a>
     </section>
 
-    <section className="home-journeys" aria-labelledby="journeys-title">
-      <div className="section-heading">
-        <div><h2 id="journeys-title">Make your next move.</h2><p>Choose what you’d like to do today.</p></div>
-        <a className="text-link section-side" href="/actions"><ClipboardList size={17} /> My Actions <ChevronRight size={15} /></a>
-      </div>
-      <div className="journey-grid">
-        {journeys.map(({ title, icon: Icon, href, tone, summary, label }) => <a href={href} className={`journey-card ${tone}`} key={href}>
-          <span className="card-icon"><Icon size={23} strokeWidth={1.7} /></span>
-          <span className="card-arrow"><ArrowUpRight size={20} /></span>
-          <h3>{title}</h3>
-          <p>{summary}</p>
-          <span className="card-link">{label}<ArrowRight size={15} /></span>
-        </a>)}
-      </div>
-    </section>
+    <div className="home-content">
+      <section className="home-roster" aria-labelledby="home-roster-title">
+        <div className="section-head">
+          <div><p className="eyebrow">Candidate register</p><h2 id="home-roster-title">{race.constituency}</h2></div>
+          <p className="section-location"><MapPin size={15} /> {race.state}</p>
+        </div>
+        <div className="home-roster-meta"><p>{race.office}</p><External href={links.race}>{candidates.length} candidates on the INEC list</External></div>
+        <ul className="home-candidates">
+          {candidates.slice(0, 4).map(candidate => <li key={candidate.id}>
+            <a href={`/election#candidate-${candidate.id}`} aria-label={`${candidate.name}, ${candidate.party} candidate details`}>
+              <span className="party-code">{candidate.party}</span><strong>{candidate.name}</strong><ChevronRight size={17} />
+            </a>
+          </li>)}
+        </ul>
+        <div className="home-roster-footer"><a className="text-link" href="/election#candidates">View all {candidates.length} candidates <ArrowRight size={16} /></a><a className="text-link soft-link" href="/election#coverage">Looking for another area?</a></div>
+      </section>
 
-    <section className="home-notes" aria-label="Preparation and sources">
-      {next && <div className="home-note">
-        <span className="card-icon"><CalendarDays size={21} /></span>
-        <div><h3>{next.title}</h3><p>{nigeriaDate(next.date, { dateStyle: 'long' })} · INEC election calendar</p></div>
-        <External href={links.calendar}>Source</External>
-      </div>}
-      <div className="home-note">
-        <span className="card-icon">{plan.checklist.length ? <CircleCheck size={21} /> : <ShieldCheck size={21} />}</span>
-        <div><h3>{plan.checklist.length ? 'Pick up your preparation' : 'Private by design'}</h3><p>{plan.checklist.length ? `${plan.checklist.length} checklist steps saved here` : 'Your election choices stay on this device.'}</p></div>
-        <a className="text-link" href={plan.checklist.length ? '/actions' : '/privacy'}>{plan.checklist.length ? 'My Actions' : 'Privacy'} <ArrowRight size={15} /></a>
-      </div>
+      <aside className="home-utilities" aria-label="Voter tools">
+        <a className="camera-feature" href="/camera">
+          <div className="camera-feature-head"><span className="utility-icon"><Camera size={21} /></span><ArrowRight size={19} /></div>
+          <h2>Civic Camera</h2>
+          <p>Document a community issue or public result sheet. Get a private receipt.</p>
+          <strong>Start a report</strong>
+        </a>
+        <div className="utility-links">
+          <External className="utility-row" href={links.voterStatus}><Fingerprint size={20} /><span><strong>Check voter registration</strong><small>INEC voter verification</small></span></External>
+          <a className="utility-row" href="/practice"><GraduationCap size={21} /><span><strong>Practise election day</strong><small>Try a short rehearsal</small></span><ChevronRight size={16} /></a>
+          {hasSavedPlan(plan) && <a className="utility-row" href="/election#polling-plan"><ClipboardList size={20} /><span><strong>Continue my plan</strong><small>Saved on this device</small></span><ChevronRight size={16} /></a>}
+        </div>
+      </aside>
+    </div>
+
+    <section className="home-updates" aria-labelledby="home-updates-title">
+      <div className="section-head"><h2 id="home-updates-title">Election updates</h2><a className="text-link" href="/sources">All sources <ArrowRight size={16} /></a></div>
+      <ul>{updates.map(item => <li key={item.href}>
+        <p><CircleCheck size={14} /> INEC · <time dateTime={item.date}>{nigeriaDate(item.date)}</time></p>
+        <External href={item.href}>{item.title}</External>
+      </li>)}</ul>
     </section>
   </div>
 }

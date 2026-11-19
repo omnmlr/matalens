@@ -1,31 +1,38 @@
 import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from 'react'
-import { ArrowRight, Camera, Check, CircleAlert, ClipboardList, Copy, Download, FileCheck2, FileImage, KeyRound, Landmark, LockKeyhole, MapPin, Upload, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Camera, Check, CircleAlert, ClipboardList, Copy, Download, FileCheck2, FileImage, KeyRound, Landmark, LockKeyhole, MapPin, Upload, X } from 'lucide-react'
 import { candidates, steps } from './content'
-import { codeFromInput, downloadFile, downloadReminder, newReceiptCode, nigeriaDate, receiptCodePattern, receiptRequest, type Plan, type ReceiptEntry, type Report } from './state'
+import { codeFromInput, downloadFile, downloadReminder, hasSavedPlan, newReceiptCode, nigeriaDate, receiptCodePattern, receiptRequest, ReceiptRequestError, type Plan, type ReceiptEntry, type Report } from './state'
 import { ActionLink, CheckRow, PageTitle } from './ui'
 
 const categories = ['Road or pavement', 'Drainage or flooding', 'Public facility', 'Waste or sanitation', 'Other community issue']
 const fileTypes = ['image/jpeg', 'image/png', 'image/webp']
 const maxBytes = 8 * 1024 * 1024
+type Review = { category: string; description: string; location: string }
 type ReceiptProps = { remember: (entry: ReceiptEntry) => boolean; forget: (code: string) => void }
 
 function entryFor(report: Report, code: string): ReceiptEntry {
   return { code, id: report.id, category: report.category, createdAt: report.createdAt }
 }
 
-export function CameraPage({ online, remember }: { online: boolean; remember: ReceiptProps['remember'] }) {
+export function CameraPage({ online, remember, forget }: { online: boolean } & ReceiptProps) {
   const [intake, setIntake] = useState<'checking' | 'ready' | 'disabled' | 'unreachable'>('checking')
   const [retry, setRetry] = useState(0)
   const enabled = intake === 'ready'
   const [kind, setKind] = useState<'community' | 'result'>('community')
-  const [file, setFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState('')
+  const [photo, setPhoto] = useState<{ file: File; url: string } | null>(null)
+  const file = photo?.file
+  const preview = photo?.url
+  const [review, setReview] = useState<Review | null>(null)
+  const [previewFailed, setPreviewFailed] = useState(false)
   const [consent, setConsent] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [error, setError] = useState('')
   const [receipt, setReceipt] = useState<{ report: Report; code: string; saved: boolean } | null>(null)
-  const formRef = useRef<HTMLFormElement>(null)
+  const detailsHeading = useRef<HTMLHeadingElement>(null)
+  const reviewHeading = useRef<HTMLHeadingElement>(null)
+  const reviewing = useRef(false)
   const uploadLock = useRef(false)
   const pendingCode = useRef('')
   const resultHeading = useRef<HTMLHeadingElement>(null)
@@ -45,15 +52,7 @@ export function CameraPage({ online, remember }: { online: boolean; remember: Re
     return () => controller.abort()
   }, [online, retry])
 
-  useEffect(() => {
-    if (!file) {
-      setPreview('')
-      return
-    }
-    const url = URL.createObjectURL(file)
-    setPreview(url)
-    return () => URL.revokeObjectURL(url)
-  }, [file])
+  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
   useEffect(() => {
     if (receipt) {
       resultHeading.current?.focus({ preventScroll: true })
@@ -61,6 +60,11 @@ export function CameraPage({ online, remember }: { online: boolean; remember: Re
     }
   }, [receipt])
   useEffect(() => { if (error) errorBox.current?.focus() }, [error])
+  useEffect(() => {
+    if (review) reviewHeading.current?.focus()
+    else if (reviewing.current) detailsHeading.current?.focus()
+    reviewing.current = Boolean(review)
+  }, [review])
 
   function choosePhoto(next?: File) {
     setDragging(false)
@@ -69,7 +73,8 @@ export function CameraPage({ online, remember }: { online: boolean; remember: Re
       setError('Choose a JPG, PNG or WebP photo up to 8 MB.')
       return
     }
-    setFile(next)
+    setPhoto({ file: next, url: URL.createObjectURL(next) })
+    setPreviewFailed(false)
     setConsent(false)
     setError('')
   }
@@ -79,20 +84,32 @@ export function CameraPage({ online, remember }: { online: boolean; remember: Re
       setKind(value)
       setConsent(false)
       setError('')
-      formRef.current?.reset()
     }
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (uploadLock.current) return
-    if (!online || !enabled) return setError('Photo intake is unavailable right now. Your photo has not been sent.')
     if (!file) return setError('Add a photo to continue.')
-    if (!consent) return setError('Confirm the photo is safe to share.')
+    if (previewFailed) return setError('This photo could not be previewed. Choose another photo.')
     const form = new FormData(event.currentTarget)
+    if (!review) {
+      const category = kind === 'result' ? 'Public result sheet' : String(form.get('category') ?? '')
+      const description = String(form.get('description') ?? '').trim()
+      const location = String(form.get('location') ?? '').trim()
+      if (kind === 'community' && description.length < 12) return setError('Describe what you saw in at least 12 characters.')
+      if (kind === 'result' && location.length < 3) return setError('Enter the polling-unit name or code shown on the sheet.')
+      setError('')
+      setReview({ category, description, location })
+      return
+    }
+    if (!online || !enabled) return setError('Photo intake is unavailable right now. Your photo has not been sent.')
+    if (!consent) return setError('Confirm the photo is safe to share.')
     form.delete('reportType')
     form.set('photo', file)
     form.set('kind', kind)
+    form.set('description', review.description)
+    form.set('location', review.location)
     form.set('consent', 'yes')
     const code = pendingCode.current || newReceiptCode()
     pendingCode.current = code
@@ -105,11 +122,21 @@ export function CameraPage({ online, remember }: { online: boolean; remember: Re
       const report = await response.json() as Report
       const saved = remember(entryFor(report, code))
       setReceipt({ report, code, saved })
-      setFile(null)
+      setPhoto(null)
       setConsent(false)
       pendingCode.current = ''
     } catch (error) {
-      setError(`${(error as Error).message} You can retry here with the same receipt.${locallySaved ? ' If you leave, check My Actions for the pending receipt.' : ' Keep this tab open to retry.'}`)
+      if (error instanceof ReceiptRequestError && [400, 413, 415].includes(error.status)) {
+        // Intake checks for an existing receipt before validating the draft.
+        // These responses mean the draft did not make it into storage.
+        pendingCode.current = ''
+        setAwaitingConfirmation(false)
+        forget(code)
+        setError(error.message)
+      } else {
+        setAwaitingConfirmation(true)
+        setError(`${(error as Error).message} You can retry here with the same receipt.${locallySaved ? ' If you leave, check My Actions for the pending receipt.' : ' Keep this tab open to retry.'}`)
+      }
     } finally {
       uploadLock.current = false
       setBusy(false)
@@ -118,82 +145,111 @@ export function CameraPage({ online, remember }: { online: boolean; remember: Re
 
   function reset() {
     setReceipt(null)
+    setAwaitingConfirmation(false)
+    setReview(null)
+    setPreviewFailed(false)
     setKind('community')
-    setFile(null)
+    setPhoto(null)
     setConsent(false)
     setError('')
     pendingCode.current = ''
   }
 
-  if (receipt) return <section className="wrap standard-page narrow">
-    <PageTitle eyebrow="CIVIC CAMERA" title="Your report is in." icon={FileCheck2}>MataLens received your photo and issued a private receipt.</PageTitle>
-    <div className="panel receipt-card">
-      <span className="success-icon"><Check size={27} /></span>
-      <h2 ref={resultHeading} tabIndex={-1}>Submitted to MataLens</h2>
-      <p>{statusLabels[receipt.report.status]}. No authority has received this report through MataLens.</p>
+  if (receipt) return <section className="wrap standard-page receipt-page">
+    <header className="receipt-header">
+      <span className="success-icon"><Check size={25} /></span>
+      <p className="eyebrow">Civic Camera · Private receipt</p>
+      <h1 ref={resultHeading} tabIndex={-1}>Submitted to MataLens</h1>
+      <p>Only MataLens receives this report. Use your private receipt to check its status.</p>
+    </header>
+    <div className="receipt-card panel">
       <ReportDetails report={receipt.report} />
       <ReceiptTools code={receipt.code} report={receipt.report} />
       <p className="field-help">{receipt.saved ? 'Also saved in this browser under My Actions.' : 'This browser couldn’t save the receipt. Download it before leaving.'}</p>
-      <div className="button-row"><ActionLink href="/actions">Open My Actions</ActionLink><button className="button button-secondary" onClick={reset}>Make another report <Camera size={17} /></button></div>
+      <div className="button-row"><ActionLink href="/actions" secondary>Open My Actions</ActionLink><button className="link-button" onClick={reset}>Make another report <ArrowRight size={15} /></button></div>
     </div>
   </section>
 
-  return <section className="wrap standard-page">
-    <PageTitle eyebrow="DOCUMENT WHAT YOU SEE" title="Civic Camera" icon={Camera}>Send a photo and a little context to MataLens. Keep a private receipt to find it again.</PageTitle>
+  return <section className="wrap standard-page camera-page">
+    {review ? <div className="task-heading"><Camera size={19} /><h1>Civic Camera</h1></div> :
+      <PageTitle eyebrow="PRIVATE CIVIC REPORTS" title="Civic Camera" icon={Camera}>Document a community issue or publicly posted result sheet. Receive a private receipt.</PageTitle>}
+    <ol className="camera-progress" aria-label="Report progress">
+      <li data-done={Boolean(review)} aria-current={!review ? 'step' : undefined}><span>{review ? <Check size={14} /> : '1'}</span> Report details</li>
+      <li aria-current={review ? 'step' : undefined}><span>2</span> Review and send</li>
+    </ol>
     <div className="page-grid camera-grid">
-      <form className="panel camera-form" ref={formRef} onSubmit={submit}>
-        <fieldset className="form-fields" disabled={busy}>
-          <legend className="sr-only">Photo report</legend>
-          <div className="form-step"><span>1</span><h2>Choose what to document</h2></div>
-          <fieldset className="type-picker">
-            <legend className="sr-only">Report type</legend>
-            <label className={kind === 'community' ? 'chosen' : ''}><input type="radio" name="reportType" checked={kind === 'community'} onChange={() => chooseKind('community')} /><MapPin size={21} /><span><strong>Community issue</strong><small>Roads, drainage and public facilities</small></span></label>
-            <label className={kind === 'result' ? 'chosen' : ''}><input type="radio" name="reportType" checked={kind === 'result'} onChange={() => chooseKind('result')} /><Landmark size={21} /><span><strong>Public result sheet</strong><small>Posted polling-unit results</small></span></label>
-          </fieldset>
-          {kind === 'result' && <p className="inline-notice"><CircleAlert size={17} />Only photograph a publicly posted result sheet where it’s lawful and safe. Keep marked ballots and private documents out of the frame.</p>}
-          <div className="form-step"><span>2</span><h2>Add one photo</h2></div>
-          {file ? <figure className="photo-preview">
-            {preview && <img src={preview} alt="Preview of your uploaded photo" onError={() => setError('This photo could not be previewed. Choose another photo.')} />}
-            <figcaption><FileImage size={19} /><span>{file.name}</span><button type="button" className="icon-button" onClick={() => { setFile(null); setConsent(false); setError('') }} aria-label="Remove photo"><X size={19} /></button></figcaption>
-          </figure> : <div className={`drop-zone${dragging ? ' dragging' : ''}`} onDragOver={event => { event.preventDefault(); setDragging(true) }} onDragLeave={() => setDragging(false)} onDrop={event => {
-            event.preventDefault()
-            if (event.dataTransfer.files.length > 1) { setDragging(false); return setError('Add one photo at a time.') }
-            choosePhoto(event.dataTransfer.files[0])
-          }}>
-            <label>
-              <input className="sr-only" type="file" accept={fileTypes.join(',')} onChange={event => { choosePhoto(event.currentTarget.files?.[0]); event.currentTarget.value = '' }} />
-              <span className="upload-icon"><Upload size={23} /></span>
-              <strong>Choose a photo</strong>
-              <span>JPG, PNG or WebP · Up to 8 MB</span>
-            </label>
-            <label className="capture-label"><input className="sr-only" type="file" accept="image/*" capture="environment" onChange={event => { choosePhoto(event.currentTarget.files?.[0]); event.currentTarget.value = '' }} /><span><Camera size={16} /> Take a photo</span></label>
-          </div>}
-          <div className="form-step"><span>3</span><h2>Add context</h2></div>
-          <div className="field-stack" key={kind}>
-            {kind === 'community' && <label>Category<select defaultValue="" name="category" required><option value="" disabled>Choose a category</option>{categories.map(category => <option key={category}>{category}</option>)}</select></label>}
-            <label>{kind === 'community' ? 'What did you see?' : 'Extra context (optional)'}<textarea name="description" required={kind === 'community'} minLength={kind === 'community' ? 12 : undefined} maxLength={600} rows={4} placeholder={kind === 'community' ? 'Describe the issue in your own words. Share what you saw and leave out names.' : 'Add any factual context that helps explain the photo.'} /></label>
-            <label>{kind === 'community' ? 'Public location (optional)' : 'Polling-unit name or code'}<input name="location" maxLength={140} minLength={kind === 'result' ? 3 : undefined} required={kind === 'result'} placeholder={kind === 'community' ? 'e.g. Near the market entrance, Surulere' : 'Use the details shown on the sheet'} /></label>
-          </div>
-          <div className="honeypot" aria-hidden="true"><label>Leave this field empty<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
-          <p className="field-help">MataLens keeps the original photo privately for review. Remove camera location metadata before uploading if you want to keep it private.</p>
-          <CheckRow checked={consent} onChange={() => setConsent(!consent)}>{kind === 'result' ? 'This shows a publicly posted result sheet. It contains no marked ballot or personal documents.' : 'This photo is safe to share. I’ve kept out personal information and identifiable people.'}</CheckRow>
-        </fieldset>
+      <form className="camera-form" onSubmit={submit}>
         {(!online || !enabled) && <div className="availability-block">
           <p className="inline-notice availability" role="status"><CircleAlert size={18} />{!online ? 'You’re offline. Reconnect to submit this photo.' : intake === 'disabled' ? 'Photo intake is unavailable on this copy of MataLens.' : intake === 'unreachable' ? 'MataLens couldn’t check photo intake. Try again when your connection returns.' : 'Checking photo intake…'}</p>
           {online && intake === 'unreachable' && <button className="link-button" type="button" onClick={() => setRetry(retry + 1)}>Check again</button>}
         </div>}
+        <div hidden={Boolean(review)}>
+          <section className="form-section">
+            <h2 ref={detailsHeading} tabIndex={-1}>What are you documenting?</h2>
+            <fieldset className="type-picker">
+              <legend className="sr-only">Report type</legend>
+              <label className={kind === 'community' ? 'chosen' : ''}><input type="radio" name="reportType" checked={kind === 'community'} onChange={() => chooseKind('community')} /><MapPin size={20} /><span><strong>Community issue</strong><small>Roads, drainage and public facilities</small></span></label>
+              <label className={kind === 'result' ? 'chosen' : ''}><input type="radio" name="reportType" checked={kind === 'result'} onChange={() => chooseKind('result')} /><Landmark size={20} /><span><strong>Public result sheet</strong><small>Posted polling-unit results</small></span></label>
+            </fieldset>
+          </section>
+          <section className="form-section">
+            <h2>Add one photo</h2>
+            {kind === 'result' ? <p className="inline-notice"><CircleAlert size={17} />Only photograph a publicly posted result sheet where it’s lawful and safe. Keep marked ballots and private documents out of the frame.</p> : <p>Photograph the issue safely. Keep faces, number plates and private details out of the frame.</p>}
+            {file ? <figure className="photo-preview">
+              {preview && !previewFailed && <img src={preview} alt="Preview of your selected photo" onError={() => { setPreviewFailed(true); setError('This photo could not be previewed. Choose another photo.') }} />}
+              <figcaption><FileImage size={18} /><span>{file.name}</span><label className="link-button replace-photo"><input className="sr-only" type="file" accept={fileTypes.join(',')} onChange={event => { choosePhoto(event.currentTarget.files?.[0]); event.currentTarget.value = '' }} />Replace</label><button type="button" className="icon-button" onClick={() => { setPhoto(null); setConsent(false); setPreviewFailed(false); setError('') }} aria-label="Remove photo"><X size={18} /></button></figcaption>
+            </figure> : <div className={`drop-zone${dragging ? ' dragging' : ''}`} onDragOver={event => { event.preventDefault(); setDragging(true) }} onDragLeave={() => setDragging(false)} onDrop={event => {
+              event.preventDefault()
+              if (event.dataTransfer.files.length > 1) { setDragging(false); return setError('Add one photo at a time.') }
+              choosePhoto(event.dataTransfer.files[0])
+            }}>
+              <Upload className="upload-icon" size={24} />
+              <div className="drop-copy"><strong>Add a photo to your report</strong><span>JPG, PNG or WebP · 8 MB and 25 MP max</span></div>
+              <div className="button-row">
+                <label className="button button-secondary"><input aria-label="Choose a photo" className="sr-only" type="file" accept={fileTypes.join(',')} onChange={event => { choosePhoto(event.currentTarget.files?.[0]); event.currentTarget.value = '' }} /><FileImage size={16} /> Choose a photo</label>
+                <label className="button button-secondary"><input aria-label="Take a photo" className="sr-only" type="file" accept="image/*" capture="environment" onChange={event => { choosePhoto(event.currentTarget.files?.[0]); event.currentTarget.value = '' }} /><Camera size={16} /> Take a photo</label>
+              </div>
+            </div>}
+          </section>
+          <section className="form-section">
+            <h2>Add context</h2>
+            <div className="field-stack" key={kind}>
+              {kind === 'community' && <label>Category<select defaultValue="" name="category" required><option value="" disabled>Choose a category</option>{categories.map(category => <option key={category}>{category}</option>)}</select></label>}
+              <label>{kind === 'community' ? 'What did you see?' : 'Extra context (optional)'}<textarea name="description" required={kind === 'community'} minLength={kind === 'community' ? 12 : undefined} maxLength={600} rows={3} placeholder={kind === 'community' ? 'Describe what you saw and where it happened' : 'Add any factual context that helps explain the photo'} /></label>
+              <label>{kind === 'community' ? 'Public location (optional)' : 'Polling-unit name or code'}<input name="location" maxLength={140} minLength={kind === 'result' ? 3 : undefined} required={kind === 'result'} placeholder={kind === 'community' ? 'e.g. Near the market entrance, Surulere' : 'Use the details shown on the sheet'} /></label>
+            </div>
+          </section>
+        </div>
+        <div className="honeypot" aria-hidden="true"><label>Leave this field empty<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
+        {review && <fieldset className="report-review" disabled={busy}>
+          <legend className="sr-only">Review your report</legend>
+          <div className="section-head"><h2 ref={reviewHeading} tabIndex={-1}>Review your report</h2>
+            {!awaitingConfirmation && <button type="button" className="link-button" onClick={() => { setReview(null); setConsent(false); setError('') }}><ArrowLeft size={15} /> Edit details</button>}
+          </div>
+          <figure className="photo-preview"><img src={preview} alt="Photo you’re about to submit" /></figure>
+          <dl className="review-details"><div><dt>Report type</dt><dd>{kind === 'result' ? 'Public result sheet' : 'Community issue'}</dd></div>
+            {kind === 'community' && <div><dt>Category</dt><dd>{review.category}</dd></div>}
+            <div><dt>{kind === 'result' ? 'Polling-unit name or code' : 'Public location'}</dt><dd>{review.location || 'Not provided'}</dd></div>
+            {review.description && <div><dt>Description</dt><dd>{review.description}</dd></div>}
+          </dl>
+          <p className="review-privacy"><LockKeyhole size={17} /> MataLens keeps the original photo, including any camera metadata, in private storage for up to 30 days.</p>
+          <CheckRow checked={consent} onChange={() => setConsent(!consent)}>{kind === 'result' ? 'This shows a publicly posted result sheet. It contains no marked ballot or personal documents.' : 'This photo is safe to share. I’ve kept out personal information and identifiable people.'}</CheckRow>
+        </fieldset>}
         {error && <p className="inline-notice error" tabIndex={-1} ref={errorBox} role="alert"><CircleAlert size={18} />{error}</p>}
-        <div className="button-row"><button className="button" disabled={busy || !enabled || !online} type="submit">{busy ? 'Uploading photo…' : 'Submit to MataLens'} {busy ? <span className="spinner" /> : <ArrowRight size={17} />}</button><a className="text-link" href="/actions">Find a receipt</a></div>
+        <div className="form-actions button-row">
+          {review ? <button className="button" disabled={busy || !enabled || !online} type="submit">{busy ? 'Uploading photo…' : 'Submit to MataLens'} {busy ? <span className="spinner" /> : <ArrowRight size={17} />}</button> : <button className="button" type="submit">Review report <ArrowRight size={17} /></button>}
+          <a className="text-link" href="/actions">Find a receipt</a>
+        </div>
       </form>
-      <aside className="side-column" aria-label="Civic Camera guidance">
-        <section className="panel soft-panel">
-          <div className="panel-heading"><span className="card-icon sage"><LockKeyhole size={21} /></span><div><h2>Keep it safe</h2><p>Private evidence for review</p></div></div>
-          {kind === 'result' ? <p>Follow instructions at the polling unit and avoid confrontation. Keep identifying details out of the frame.</p> : <p>Photograph the issue from a safe place. Leave out faces, number plates, identity documents and private addresses.</p>}
-          <a className="text-link" href="/privacy">Read about photo privacy <ArrowRight size={15} /></a>
+      <aside className="side-column camera-guide" aria-label="Civic Camera guidance">
+        <section className="rail-section privacy-rail">
+          <div className="rail-heading"><LockKeyhole size={19} /><h2>Private by design</h2></div>
+          <p>Your photo goes to MataLens for review. An original may contain location metadata, so remove it before uploading if you want to keep it private.</p>
+          <a className="text-link" href="/privacy">Photo privacy <ArrowRight size={15} /></a>
         </section>
-        <section className="panel">
-          <div className="panel-heading"><span className="card-icon sand"><FileCheck2 size={22} /></span><div><h2>What happens next?</h2></div></div>
-          <p>MataLens stores the report privately for review and gives you a receipt. Keep a copy so you can see the status or withdraw the report for up to 30 days.</p>
+        <section className="rail-section">
+          <div className="rail-heading"><FileCheck2 size={19} /><h2>Your private receipt</h2></div>
+          <p>Keep a copy after you submit. You can use it to check the status or withdraw your report for up to 30 days.</p>
         </section>
       </aside>
     </div>
@@ -226,7 +282,7 @@ function ReceiptTools({ code, report }: { code: string; report: Report }) {
     <h3><KeyRound size={19} /> Keep your receipt private</h3>
     <p>Anyone with the code or link can see or withdraw the report. Download a copy now. MataLens can’t recover a lost receipt.</p>
     <div className="button-row">
-      <button className="button button-secondary" onClick={save}><Download size={17} /> Download receipt</button>
+      <button className="button" onClick={save}><Download size={17} /> Download receipt</button>
       <button className="button button-secondary" onClick={async () => {
         try { await navigator.clipboard.writeText(recoveryLink); setCopied('Private link copied.') }
         catch { setCopied('Clipboard unavailable. Download your receipt for a recovery link.') }
@@ -244,7 +300,7 @@ export function MyActions({ plan, receipts, remember, forget }: { plan: Plan; re
   const lock = useRef(false)
   const panel = useRef<HTMLElement>(null)
   const savedCandidates = candidates.filter(item => plan.candidates.includes(item.id))
-  const hasPlan = plan.checklist.length || savedCandidates.length || plan.state || plan.lga || plan.pollingUnit || plan.notes || plan.reminder || plan.practiced
+  const hasPlan = hasSavedPlan(plan)
 
   async function openReceipt(input: string) {
     if (lock.current) return
@@ -287,7 +343,7 @@ export function MyActions({ plan, receipts, remember, forget }: { plan: Plan; re
   useEffect(() => { if (active) panel.current?.focus() }, [active])
 
   return <section className="wrap standard-page">
-    <PageTitle eyebrow="SAVED ON THIS DEVICE" title="My Actions" icon={ClipboardList}>Pick up your election preparation or open a private Civic Camera receipt.</PageTitle>
+    <PageTitle eyebrow="SAVED ON THIS DEVICE" title="My Actions" icon={ClipboardList}>Open your private Civic Camera receipts or pick up your election preparation.</PageTitle>
     <div className="page-grid">
       <div className="main-column">
         <section className="panel">

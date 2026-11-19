@@ -1,59 +1,58 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { ArrowLeft, ArrowRight, ArrowUpRight, Bookmark, CalendarDays, Check, ChevronDown, CircleCheck, FileText, Fingerprint, Landmark, ListChecks, LockKeyhole, MapPin, ScanLine, Vote } from 'lucide-react'
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react'
+import { ArrowLeft, ArrowRight, ArrowUpRight, Bookmark, CalendarDays, Check, ChevronDown, CircleCheck, FileText, Fingerprint, GraduationCap, Landmark, ListChecks, LockKeyhole, MapPin, ScanLine, Search, Vote } from 'lucide-react'
 import { candidates, dates, links, partyNames, procedures, race, recognition, reviewed, states, steps, updates } from './content'
 import { daysUntilNigeria, downloadReminder, nigeriaDate, type Plan } from './state'
 import { ActionLink, CheckRow, External, PageTitle } from './ui'
 
-type PlanProps = { plan: Plan; updatePlan: (value: Partial<Plan>) => void }
+type PlanProps = { plan: Plan; updatePlan: (value: Partial<Plan>) => boolean }
 
 export function Election({ plan, updatePlan }: PlanProps) {
-  return <div className="wrap standard-page">
-    <PageTitle eyebrow="ELECTION PREPARATION" title="My Election" icon={Vote}>From checking your polling unit to reading your ballot, prepare at your own pace.</PageTitle>
+  return <div className="wrap standard-page election-page">
+    <PageTitle eyebrow="ELECTION PREPARATION" title="My Election" icon={Vote}>Explore your ballot, check where you vote and keep your preparation in one place.</PageTitle>
     <nav className="election-jump" aria-label="On this page">
-      <a href="#polling-plan">Private plan</a>
-      <a href="#candidates">Candidates</a>
-      <a href="#election-dates">Dates & checklist</a>
+      <a href="#candidates"><Landmark size={17} /> Candidates</a>
+      <a href="#polling-unit"><MapPin size={17} /> Polling unit</a>
+      <a href="#polling-plan"><ListChecks size={17} /> My plan</a>
     </nav>
-    <div className="page-grid">
+    <div className="page-grid election-grid">
       <div className="main-column">
-        <section className="panel" aria-labelledby="voter-guide">
-          <div className="panel-heading"><span className="card-icon mint"><Fingerprint size={23} /></span><div><h2 id="voter-guide">Start with the basics</h2><p>What to check before election day.</p></div></div>
+        <CandidateRace plan={plan} updatePlan={updatePlan} />
+        <section className="editorial-section" id="polling-unit">
+          <div className="section-head"><div><p className="eyebrow">Official guidance</p><h2>Find your polling unit</h2></div><MapPin className="section-icon" size={24} /></div>
+          <p>Look up where you’re registered to vote. You can bring the public polling-unit name or code back to your private plan.</p>
+          <External href={links.polling} className="button">Open INEC polling-unit finder</External>
           <div className="guide-steps">
-            <article><h3>Check your registration</h3><p>Use INEC’s voter status service to check that your details appear on the register. You’ll need your physical Permanent Voter Card (PVC) for accreditation.</p><External href={links.voterStatus}>Check voter status with INEC</External></article>
-            <article><h3>Find where you vote</h3><p>Use the official polling-unit finder to look up your assigned location. Save the name or code below so you can find it later.</p><External href={links.polling}>Open INEC polling-unit finder</External></article>
-            <article><h3>Know what happens at the polls</h3><p>At your assigned unit, officials check your registration and accredit you with BVAS before issuing a ballot. Mark your choice in the private cubicle.</p><External href={links.education}>Read INEC voter guidance</External></article>
+            <article><h3>Check your registration</h3><p>Confirm that your details appear on the voter register. Bring your physical Permanent Voter Card (PVC) for accreditation.</p><External href={links.voterStatus}>Check voter status with INEC</External></article>
+            <article><h3>Know what happens at the polls</h3><p>Officials check your registration and accredit you with BVAS before issuing a ballot. Mark your choice in the private cubicle.</p><External href={links.education}>Read INEC voter guidance</External></article>
           </div>
         </section>
         <PollingPlan plan={plan} updatePlan={updatePlan} />
-        <CandidateRace plan={plan} updatePlan={updatePlan} />
       </div>
-      <aside className="side-column" aria-label="Election dates and preparation">
-        <section className="panel" id="election-dates">
-          <div className="panel-heading"><span className="card-icon mint"><CalendarDays size={21} /></span><div><h2>Election dates</h2><p>Published by INEC</p></div></div>
+      <aside className="side-column election-sidebar" aria-label="Election dates and preparation">
+        <section className="rail-section" id="election-dates">
+          <div className="rail-heading"><CalendarDays size={18} /><h2>Election dates</h2></div>
           <div className="date-list">
             {dates.map(item => {
               const days = daysUntilNigeria(item.date)
               return <article className="date-entry" key={item.date}>
-              <span className="date-tile"><strong>{nigeriaDate(item.date, { day: 'numeric' })}</strong><span>{nigeriaDate(item.date, { month: 'short' })}</span></span>
-              <div><h3>{item.title}</h3><p>{item.scope}{days === 0 ? ' · Today' : days > 0 ? ` · ${days} ${days === 1 ? 'day' : 'days'} away` : ''}</p>
-                <button className="link-button" onClick={() => downloadReminder(item.date, item.title, `Check the latest date and local details with INEC. ${links.calendar}`)}>Download calendar event <ArrowUpRight size={14} /></button>
-              </div>
-            </article>
+                <time className="date-tile" dateTime={item.date}><strong>{nigeriaDate(item.date, { day: 'numeric' })}</strong><span>{nigeriaDate(item.date, { month: 'short' })}</span></time>
+                <div><h3>{item.title}</h3><p>{item.scope}</p><p>{days === 0 ? 'Today' : days > 0 ? `${days} days away` : nigeriaDate(item.date, { year: 'numeric' })}</p>
+                  <button className="link-button" onClick={() => downloadReminder(item.date, item.title, `Check the latest date and local details with INEC. ${links.calendar}`)}>Download calendar event <ArrowUpRight size={14} /></button>
+                </div>
+              </article>
             })}
           </div>
-          <External href={links.calendar}>Check the latest INEC calendar</External>
+          <External href={links.calendar}>Check the INEC calendar</External>
         </section>
-        <section className="panel" aria-label="Your checklist">
-          <div className="panel-heading"><span className="card-icon sand"><ListChecks size={22} /></span><div><h2>My checklist</h2><p>{plan.checklist.length} of {steps.length} done · Saved on this device</p></div></div>
+        <section className="rail-section checklist-section" aria-label="Your checklist">
+          <div className="rail-heading"><ListChecks size={18} /><h2>My checklist</h2></div>
+          <p>{plan.checklist.length} of {steps.length} done · Saved on this device</p>
           <progress className="progress" max={steps.length} value={plan.checklist.length} aria-label="Checklist progress" />
           <div className="checklist">
             {steps.map(step => <CheckRow key={step.id} checked={plan.checklist.includes(step.id)} onChange={() => updatePlan({ checklist: plan.checklist.includes(step.id) ? plan.checklist.filter(item => item !== step.id) : [...plan.checklist, step.id] })}>{step.label}</CheckRow>)}
           </div>
         </section>
-        <section className="panel soft-panel">
-          <div className="panel-heading"><span className="card-icon sand"><ScanLine size={22} /></span><div><h2>Rehearse election day</h2><p>Try four quick scenarios.</p></div></div>
-          <ActionLink href="/practice" secondary>Start practice</ActionLink>
-        </section>
+        <a className="utility-row practice-shortcut" href="/practice"><GraduationCap size={23} /><span><strong>Start practice</strong><small>Rehearse election day</small></span><ArrowRight size={17} /></a>
       </aside>
     </div>
   </div>
@@ -64,17 +63,18 @@ function PollingPlan({ plan, updatePlan }: PlanProps) {
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const values = new FormData(event.currentTarget)
-    updatePlan({
+    const saved = updatePlan({
       state: String(values.get('state') ?? ''),
       lga: String(values.get('lga') ?? '').trim(),
       pollingUnit: String(values.get('pollingUnit') ?? '').trim(),
       notes: String(values.get('notes') ?? '').trim(),
       reminder: String(values.get('reminder') ?? ''),
     })
-    setFeedback('Your plan is updated on this device.')
+    setFeedback(saved ? 'Your plan is updated on this device.' : '')
   }
-  return <section className="panel" id="polling-plan">
-    <div className="panel-heading"><span className="card-icon sage"><MapPin size={22} /></span><div><h2>Make a private plan</h2><p>Fill in whatever helps you get there. Every field is optional.</p></div></div>
+  return <section className="editorial-section" id="polling-plan">
+    <div className="section-head"><div><p className="eyebrow">Saved on this device</p><h2>Make a private plan</h2></div><LockKeyhole className="section-icon" size={23} /></div>
+    <p>Fill in whatever helps you get there. Every field is optional.</p>
     <form className="field-stack" onSubmit={save} onChange={() => setFeedback('')}>
       <div className="field-grid">
         <label>State<select name="state" defaultValue={plan.state}><option value="">Choose a state</option>{states.map(state => <option key={state}>{state}</option>)}</select></label>
@@ -92,35 +92,60 @@ function PollingPlan({ plan, updatePlan }: PlanProps) {
 function CandidateRace({ plan, updatePlan }: PlanProps) {
   const [search, setSearch] = useState('')
   const query = search.trim().toLowerCase()
-  const matches = candidates.filter(item => `${item.name} ${item.party}`.toLowerCase().includes(query))
-  return <section className="panel" id="candidates">
-    <div className="panel-heading"><span className="card-icon sand"><Landmark size={23} /></span><div><h2>Explore a local ballot</h2><p>Candidate coverage for one federal constituency.</p></div></div>
-    <div className="race-heading">
-      <span className="eyebrow">LAGOS · FEDERAL CONSTITUENCY</span>
-      <h3>{race.constituency}</h3>
-      <p>{race.office} · {nigeriaDate(dates[0].date)} · {candidates.length} candidates on the INEC list</p>
-      <External href={links.race}>INEC candidate list, rows 171–178</External>
+  const matches = candidates.filter(item => `${item.name} ${item.party} ${partyNames[item.party]}`.toLowerCase().includes(query))
+  const list = useRef<HTMLUListElement>(null)
+  const searchInput = useRef<HTMLInputElement>(null)
+
+  useLayoutEffect(() => {
+    function openLinkedCandidate() {
+      const id = window.location.hash.slice(1)
+      if (!id.startsWith('candidate-')) return
+      const row = document.getElementById(id)
+      const details = row && list.current?.contains(row) ? row.querySelector('details') : null
+      if (details) details.open = true
+    }
+    openLinkedCandidate()
+    window.addEventListener('hashchange', openLinkedCandidate)
+    return () => window.removeEventListener('hashchange', openLinkedCandidate)
+  }, [])
+
+  function clearSearch() {
+    setSearch('')
+    searchInput.current?.focus()
+  }
+
+  return <section className="candidate-section" id="candidates" aria-labelledby="constituency-title">
+    <div className="constituency-head">
+      <div className="constituency-copy"><p className="eyebrow"><MapPin size={14} /> {race.state} · Federal constituency</p><h2 id="constituency-title">{race.constituency}</h2><p>{race.office}</p></div>
+      <div className="constituency-source"><time dateTime={dates[0].date}>{nigeriaDate(dates[0].date, { dateStyle: 'long' })}</time><External href={links.race}>INEC list, rows 171–178</External><small>Source checked {nigeriaDate(reviewed)}</small></div>
     </div>
-    <label className="field search-field">Search by name or party<input value={search} onChange={event => setSearch(event.target.value)} type="search" placeholder="Search Surulere I candidates" /></label>
-    <div className="candidate-list">
+    <div className="roster-toolbar">
+      <div><h3>Candidate register</h3><p>{candidates.length} candidates on the INEC list</p></div>
+      <label className="candidate-search"><span className="sr-only">Search by name or party</span><Search size={18} /><input ref={searchInput} type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Search name or party" /></label>
+    </div>
+    <p className="roster-caption" aria-live="polite">{query ? `${matches.length} of ${candidates.length} candidates` : 'Listed alphabetically'}</p>
+    <ul className="candidate-list" ref={list}>
       {matches.map(candidate => {
         const saved = plan.candidates.includes(candidate.id)
-        return <article className="candidate" key={candidate.id}>
-          <div className="candidate-row">
-            <span className="party-tag">{candidate.party}</span>
-            <h3>{candidate.name}</h3>
-            <button className="icon-button bookmark" aria-pressed={saved} aria-label={`${saved ? 'Remove' : 'Save'} ${candidate.name}${saved ? ' from' : ' to'} my preparation`} onClick={() => updatePlan({ candidates: saved ? plan.candidates.filter(id => id !== candidate.id) : [...plan.candidates, candidate.id] })}><Bookmark size={20} fill={saved ? 'currentColor' : 'none'} /></button>
-          </div>
-          <details><summary>Candidate details <ChevronDown size={15} /></summary>
-            <dl><div><dt>Party</dt><dd>{partyNames[candidate.party]}</dd></div><div><dt>Age on INEC list</dt><dd>{candidate.age}</dd></div><div><dt>Listed qualifications</dt><dd>{candidate.qualification}</dd></div></dl>
-            <External href={links.race}>INEC source · checked {nigeriaDate(reviewed)}</External>
+        const party = partyNames[candidate.party]
+        return <li className="candidate" key={candidate.id} id={`candidate-${candidate.id}`}>
+          <details>
+            <summary aria-label={`Candidate details for ${candidate.name}`}>
+              <span className="party-code">{candidate.party}</span>
+              <span className="candidate-identity"><strong>{candidate.name}</strong><span>{party}</span></span>
+              <span className="candidate-disclosure"><span className="when-closed">View details</span><span className="when-open">Hide details</span><ChevronDown size={17} /></span>
+            </summary>
+            <div className="candidate-facts">
+              <dl><div><dt>Office</dt><dd>{race.office}</dd></div><div><dt>Constituency</dt><dd>{race.constituency}, {race.state}</dd></div><div><dt>Age on INEC list</dt><dd>{candidate.age}</dd></div><div><dt>Listed qualifications</dt><dd>{candidate.qualification}</dd></div></dl>
+              <External href={links.race}>INEC source · row {candidate.id.split('-')[1]}</External>
+            </div>
           </details>
-        </article>
+          <button className="icon-button bookmark" type="button" aria-pressed={saved} aria-label={`${saved ? 'Remove' : 'Save'} ${candidate.name}${saved ? ' from' : ' to'} my preparation`} title={saved ? 'Remove private bookmark' : 'Save privately'} onClick={() => updatePlan({ candidates: saved ? plan.candidates.filter(id => id !== candidate.id) : [...plan.candidates, candidate.id] })}><Bookmark size={19} fill={saved ? 'currentColor' : 'none'} /></button>
+        </li>
       })}
-      {!matches.length && <p className="empty-inline" role="status">No candidates match that search.</p>}
-    </div>
-    <p className="field-help"><LockKeyhole size={15} /> Bookmarks stay in this browser. Check INEC for amendments and for other races.</p>
-    <External href={links.allHouse}>Find other House of Representatives lists</External>
+    </ul>
+    {!matches.length && <div className="empty-inline"><p>No candidates match that search.</p><button className="link-button" type="button" onClick={clearSearch}>Clear search</button></div>}
+    <div className="roster-footer" id="coverage"><p><LockKeyhole size={15} /> Bookmarks stay in this browser.</p><p>MataLens currently covers one constituency. <External href={links.allHouse}>Find other House of Representatives lists</External></p><p><External href={links.parties}>INEC political party register</External></p></div>
   </section>
 }
 
@@ -163,7 +188,8 @@ export function Practice({ complete }: { complete: () => void }) {
   }
 
   return <section className="wrap standard-page practice-page">
-    <PageTitle eyebrow="PRACTICE" title="A little rehearsal goes a long way." icon={ScanLine}>Get familiar with polling-day steps and learn to read a candidate list.</PageTitle>
+    {mode ? <div className="task-heading"><GraduationCap size={20} /><h1>Practice</h1></div> :
+      <PageTitle eyebrow="ELECTION PREPARATION" title="Practise election day" icon={ScanLine}>Get familiar with polling-day steps and learn to read a candidate list.</PageTitle>}
     {!mode && <div className="journey-grid practice-options">
       <button className="journey-card mint" onClick={() => restart('procedures')}><span className="card-icon"><Vote size={23} /></span><span className="card-arrow"><ArrowUpRight size={20} /></span><h2>Election day</h2><p>Four everyday decisions, from finding your unit to casting your ballot.</p><span className="card-link">Start rehearsal <ArrowRight size={16} /></span></button>
       <button className="journey-card sand" onClick={() => restart('recognition')}><span className="card-icon"><Landmark size={23} /></span><span className="card-arrow"><ArrowUpRight size={20} /></span><h2>Read a candidate list</h2><p>Match all eight Surulere I candidates to the abbreviations on the INEC list.</p><span className="card-link">Start recognition <ArrowRight size={16} /></span></button>
