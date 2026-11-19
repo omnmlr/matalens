@@ -22,12 +22,13 @@ export type Plan = {
   notes: string
   reminder: string
   practiced: boolean
+  ballot?: { place: string; stage: 'place' | 'race' }
 }
 export const emptyPlan: Plan = {
   checklist: [], candidates: [], state: '', lga: '', pollingUnit: '', notes: '', reminder: '', practiced: false,
 }
 export function hasSavedPlan(plan: Plan) {
-  return Boolean(plan.checklist.length || plan.candidates.length || plan.state || plan.lga || plan.pollingUnit || plan.notes || plan.reminder || plan.practiced)
+  return Boolean(plan.checklist.length || plan.candidates.length || plan.state || plan.lga || plan.pollingUnit || plan.notes || plan.reminder || plan.practiced || plan.ballot?.place)
 }
 
 const prefix = 'matalens:v1:'

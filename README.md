@@ -2,7 +2,7 @@
 
 **See what matters. Know what to do next.**
 
-MataLens is an independent, mobile-first civic companion for Nigeria and a side project for the AIESEC hackathon. Guests can look up official election guidance, explore a sourced federal constituency, practise election procedures, save a private plan, and document a public issue or result sheet with a photo.
+MataLens is an independent, mobile-first civic companion for Nigeria and a side project for the AIESEC hackathon. Guests can explore sourced election records, look up official guidance, practise election procedures, save a private plan, and document a community issue or public result sheet with a photo.
 
 ## Run locally
 
@@ -26,8 +26,8 @@ Browser tests use the system Chromium if available. Otherwise run `npx playwrigh
 
 ## What works
 
-- **My Election** has INEC voter-status and polling-unit links, dated notices, the published election calendar, and the eight candidates on INEC’s Surulere I House of Representatives list. The app stores bookmarks, checklist, notes, location details and personal reminders in the browser. Open a downloaded calendar event in your calendar app to set an alert.
-- **Practice** covers polling-day procedures and candidate-to-party abbreviations. The built app can reopen guides and plans offline after the service worker has installed. INEC links, new submissions and receipt retrieval use the network.
+- **Elections** has place and name search, the published INEC calendar, and individual profiles for the eight candidates on INEC’s Surulere I House of Representatives list. Guests can compare candidates from this race, read the 2023 presidential declaration and follow official sources for other races. My Ballot, bookmarks, checklists, notes and reminders stay in the browser. Open a downloaded calendar event in your calendar app to set an alert.
+- **Rights and practice** explain ballot secrecy, voting assistance and assigned polling units with official links. Practice covers polling-day procedures and candidate-to-party abbreviations. The built app can reopen guides and plans offline after the service worker has installed. INEC links, new submissions and receipt retrieval use the network.
 - **Civic Camera and My Actions** accept an original image with consent and factual context, preserve it privately, and issue a 256-bit bearer receipt. Download or copy the receipt to reopen the report in another browser. Guests can check status, view a metadata-stripped preview and withdraw the evidence. Reports are received by MataLens for review.
 
 ## Run a hosted pilot

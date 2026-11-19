@@ -1,6 +1,7 @@
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
+import { brotliCompressSync, constants, gzipSync } from 'node:zlib'
 
 const paths = ['/', '/mark.svg', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png',
   ...readdirSync('dist/assets').map(name => `/assets/${name}`)]
@@ -29,3 +30,15 @@ self.addEventListener('fetch', event => {
   }
 })
 `)
+
+// Precompress the versioned text assets once. The service worker uses their normal URLs.
+const encodingDir = 'dist/.encodings'
+mkdirSync(encodingDir, { recursive: true })
+for (const path of paths.filter(path => /\.(js|css)$/.test(path))) {
+  const original = readFileSync(join('dist', path))
+  const name = basename(path)
+  writeFileSync(join(encodingDir, name + '.br'), brotliCompressSync(original, {
+    params: { [constants.BROTLI_PARAM_QUALITY]: 7 },
+  }))
+  writeFileSync(join(encodingDir, name + '.gzip'), gzipSync(original, { level: 9 }))
+}

@@ -1,3 +1,4 @@
+import { candidatePath } from './catalogue'
 import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from 'react'
 import { ArrowLeft, ArrowRight, Camera, Check, CircleAlert, ClipboardList, Copy, Download, FileCheck2, FileImage, KeyRound, Landmark, LockKeyhole, MapPin, Upload, X } from 'lucide-react'
 import { candidates, steps } from './content'
@@ -53,6 +54,25 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
   }, [online, retry])
 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
+  useEffect(() => {
+    if (!file || receipt) return
+    function beforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault()
+      event.returnValue = true
+    }
+    function confirmLeave(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+      const link = (event.target as Element).closest<HTMLAnchorElement>('a[href]')
+      if (!link || link.target || link.hasAttribute('download') || link.pathname === '/camera') return
+      if (!window.confirm('Leave this report? Your selected photo and unsent edits will be cleared.')) event.preventDefault()
+    }
+    window.addEventListener('beforeunload', beforeUnload)
+    document.addEventListener('click', confirmLeave, true)
+    return () => {
+      window.removeEventListener('beforeunload', beforeUnload)
+      document.removeEventListener('click', confirmLeave, true)
+    }
+  }, [file, receipt])
   useEffect(() => {
     if (receipt) {
       resultHeading.current?.focus({ preventScroll: true })
@@ -131,6 +151,8 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
         // These responses mean the draft did not make it into storage.
         pendingCode.current = ''
         setAwaitingConfirmation(false)
+        setReview(null)
+        setConsent(false)
         forget(code)
         setError(error.message)
       } else {
@@ -159,7 +181,7 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
     <header className="receipt-header">
       <span className="success-icon"><Check size={25} /></span>
       <p className="eyebrow">Civic Camera · Private receipt</p>
-      <h1 ref={resultHeading} tabIndex={-1}>Submitted to MataLens</h1>
+      <h1 ref={resultHeading} tabIndex={-1}>Received by MataLens</h1>
       <p>Only MataLens receives this report. Use your private receipt to check its status.</p>
     </header>
     <div className="receipt-card panel">
@@ -229,7 +251,7 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
           <figure className="photo-preview"><img src={preview} alt="Photo you’re about to submit" /></figure>
           <dl className="review-details"><div><dt>Report type</dt><dd>{kind === 'result' ? 'Public result sheet' : 'Community issue'}</dd></div>
             {kind === 'community' && <div><dt>Category</dt><dd>{review.category}</dd></div>}
-            <div><dt>{kind === 'result' ? 'Polling-unit name or code' : 'Public location'}</dt><dd>{review.location || 'Not provided'}</dd></div>
+            <div><dt>{kind === 'result' ? 'Polling-unit name or code' : 'Public location'}</dt><dd>{review.location || 'Location not supplied'}</dd></div>
             {review.description && <div><dt>Description</dt><dd>{review.description}</dd></div>}
           </dl>
           <p className="review-privacy"><LockKeyhole size={17} /> MataLens keeps the original photo, including any camera metadata, in private storage for up to 30 days.</p>
@@ -369,10 +391,10 @@ export function MyActions({ plan, receipts, remember, forget }: { plan: Plan; re
             <p>{plan.checklist.length} of {steps.length} checklist steps done{plan.practiced ? ' · Rehearsal completed' : ''}</p>
             {(plan.state || plan.lga || plan.pollingUnit) && <div><h3>My polling plan</h3><p>{[plan.state, plan.lga, plan.pollingUnit].filter(Boolean).join(' · ')}</p></div>}
             {plan.notes && <div><h3>My notes</h3><p>{plan.notes}</p></div>}
-            {savedCandidates.length > 0 && <div><h3>Candidate bookmarks</h3><ul>{savedCandidates.map(candidate => <li key={candidate.id}>{candidate.name} · {candidate.party}</li>)}</ul></div>}
+            {savedCandidates.length > 0 && <div><h3>Candidate bookmarks</h3><ul>{savedCandidates.map(candidate => <li key={candidate.id}><a className="text-link" href={candidatePath(candidate.id)}>{candidate.name} · {candidate.party}</a></li>)}</ul></div>}
             {plan.reminder && <div><h3>Personal reminder</h3><p>{nigeriaDate(plan.reminder)}</p><button className="link-button" onClick={() => downloadReminder(plan.reminder, 'Election preparation', 'Open MataLens to review your private preparation.')}>Export to calendar <Download size={15} /></button></div>}
           </div> : <p>Save a polling plan, bookmark a candidate or check off a step in My Election to see it here.</p>}
-          <ActionLink href="/election" secondary>Open My Election</ActionLink>
+          <ActionLink href={plan.ballot?.place ? "/my-ballot" : "/election#polling-plan"} secondary>{plan.ballot?.place ? "Continue My Ballot" : hasPlan ? "Continue my plan" : "Make a private plan"}</ActionLink>
         </section>
         <section className="panel soft-panel"><h2>Have something to report?</h2><p>Start with a photo of a community issue or a publicly posted result sheet.</p><ActionLink href="/camera" secondary>Open Civic Camera</ActionLink></section>
       </aside>

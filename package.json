@@ -17,7 +17,6 @@
   },
   "dependencies": {
     "@fontsource-variable/manrope": "^5.2.0",
-    "@fontsource-variable/newsreader": "^5.2.0",
     "busboy": "^1.6.0",
     "express": "^5.1.0",
     "lucide-react": "^0.577.0",
