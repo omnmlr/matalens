@@ -97,7 +97,7 @@
   background: linear-gradient(140deg, #e2eead, #9ab771);
   border-radius: 3px;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 74% 100%, 74% 58%, 0 58%);
-  opacity: .89;
+  opacity: .28;
 }
 .cover-art i:nth-child(4) {
   width: 24%; aspect-ratio: 1.45; right: 12%; bottom: 24%;
@@ -284,3 +284,27 @@
 @media (prefers-reduced-motion: reduce) {
   .cover-kicker svg, .editorial-details > summary svg { transition: none; }
 }
+
+.comparison-note {
+  padding: clamp(16px, 3vw, 24px);
+  background: var(--folio);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.comparison-note + .comparison-note { margin-top: 12px; }
+.evidence-links, .story-timeline { list-style: none; padding: 0; margin: 8px 0 0; }
+.evidence-links .text-link { min-height: 36px; }
+.story-timeline { border-inline-start: 1px solid var(--line-strong); margin-inline-start: 5px; }
+.story-timeline > li { position: relative; padding: 0 0 18px 18px; }
+.story-timeline > li:last-child { padding-bottom: 0; }
+.story-timeline > li::before {
+  position: absolute;
+  content: '';
+  width: 9px;
+  height: 9px;
+  inset: 5px auto auto -5px;
+  border: 2px solid var(--canvas);
+  border-radius: 50%;
+  background: var(--green);
+}
+.story-timeline h3 { margin-block: 2px; }

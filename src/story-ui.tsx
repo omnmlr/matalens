@@ -6,7 +6,7 @@ import { QuickCheck, storyExerciseId, type Progress } from './learning'
 import { nigeriaDate } from './state'
 import { fixtures } from './story-fixtures'
 import { storyPath, storyRepository, usingFixtures } from './stories'
-import type { Story } from './story-contract'
+import type { Story, StoryTimelineEntry } from './story-contract'
 import { External } from './ui'
 
 type LoadStatus = 'loading' | 'ready' | 'error'
@@ -71,6 +71,39 @@ function Evidence({ label, children }: { label: string; children: ReactNode }) {
   return <details className="editorial-details"><summary>{label} <ChevronDown size={18} aria-hidden="true" /></summary><div>{children}</div></details>
 }
 
+const timelineLabels: Record<StoryTimelineEntry['kind'], string> = {
+  reported: 'Reported',
+  published: 'Published',
+  scheduled: 'Scheduled',
+}
+
+function EvidenceLinks({ ids, sources }: { ids: string[]; sources: Story['sources'] }) {
+  return <ul className="evidence-links">{ids.map(id => {
+    const source = sources.find(item => item.id === id)
+    return source && <li key={id}><External href={source.url}>{source.title}</External></li>
+  })}</ul>
+}
+
+function StoryEvidence({ story }: { story: Story }) {
+  return <>
+    {Boolean(story.sourceComparisons?.length) && <section aria-labelledby="source-comparison">
+      <h2 id="source-comparison">Compare sources</h2>
+      {story.sourceComparisons?.map(item => <div className="comparison-note" key={item.sourceIds.join('/')}>
+        <p>{item.summary}</p>
+        <EvidenceLinks ids={item.sourceIds} sources={story.sources} />
+      </div>)}
+    </section>}
+    {Boolean(story.timeline?.length) && <section aria-labelledby="story-timeline">
+      <h2 id="story-timeline">Timeline</h2>
+      <ol className="story-timeline">{story.timeline?.map(item => <li key={item.id}>
+        <p className="story-meta"><span>{timelineLabels[item.kind]}</span><time dateTime={item.date}>{nigeriaDate(item.date)}</time></p>
+        <h3>{item.title}</h3><p>{item.summary}</p>
+        <EvidenceLinks ids={item.sourceIds} sources={story.sources} />
+      </li>)}</ol>
+    </section>}
+  </>
+}
+
 export function StoryPage({ id, feed, progress, saves }: { id: string; feed: StoryFeed; progress: Progress; saves: StorySaves }) {
   const bundled = feed.sample ? feed.stories.find(story => story.id === id) : undefined
   const [detail, setDetail] = useState<{ story?: Story | null; status: LoadStatus }>({ status: 'loading' })
@@ -127,6 +160,7 @@ export function StoryPage({ id, feed, progress, saves }: { id: string; feed: Sto
             </div>
           </li>)}</ol>
         </section>
+        <StoryEvidence story={story} />
         {story.commitments.length > 0 && <section className="story-commitments"><h2>Compare with commitments</h2>
           {story.commitments.map((item, index) => {
             const source = story.sources.find(source => source.id === item.sourceId)
@@ -134,7 +168,9 @@ export function StoryPage({ id, feed, progress, saves }: { id: string; feed: Sto
               <p className="story-meta"><span>{item.kind === 'manifesto' ? 'Manifesto' : 'Attributed campaign statement'}</span>
                 <time dateTime={item.date}>{nigeriaDate(item.date, item.date.length === 7 ? { month: 'long', year: 'numeric' } : undefined)}</time></p>
               {identities[item.personId] && <p><a className="text-link" href={personPath(item.personId)}>{identities[item.personId].name}</a></p>}
-              <p>{item.comparison}</p>{source && <External href={source.url}>{source.title}</External>}
+              <p>{item.comparison}</p>
+              {item.document && <p><External href={item.document.url}>{item.document.section}</External></p>}
+              {source && <External href={source.url}>{source.title}</External>}
             </Evidence>
           })}
         </section>}

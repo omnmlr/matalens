@@ -15,7 +15,7 @@ function entryFor(report: Report, code: string): ReceiptEntry {
 }
 
 export function CameraPage({ online, remember, forget }: { online: boolean } & ReceiptProps) {
-  const [intake, setIntake] = useState<'checking' | 'ready' | 'disabled' | 'unreachable'>('checking')
+  const [intake, setIntake] = useState<'checking' | 'ready' | 'disabled' | 'unreachable' | 'read-only'>('checking')
   const [retry, setRetry] = useState(0)
   const enabled = intake === 'ready'
   const [kind, setKind] = useState<'community' | 'result'>('community')
@@ -47,7 +47,7 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
         if (!response.ok) throw new Error('Intake unavailable')
         return response.json()
       })
-      .then(data => setIntake(data.uploadsEnabled === true ? 'ready' : 'disabled'))
+      .then(data => setIntake(data.uploadsEnabled === true ? 'ready' : data.reason === 'persistent-storage-unavailable' ? 'read-only' : 'disabled'))
       .catch(() => { if (!controller.signal.aborted) setIntake('unreachable') })
     return () => controller.abort()
   }, [online, retry])
@@ -189,6 +189,16 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
       <p className="field-help">{receipt.saved ? 'Also saved in this browser under My Actions.' : 'This browser couldn’t save the receipt. Download it before leaving.'}</p>
       <div className="button-row"><ActionLink href="/actions" secondary>Open My Actions</ActionLink><button className="link-button" onClick={reset}>Make another report <ArrowRight size={15} /></button></div>
     </div>
+  </section>
+
+  if (intake === 'read-only') return <section className="wrap standard-page camera-page">
+    <PageTitle eyebrow="PRIVATE CIVIC REPORTS" title="Civic Camera" icon={Camera}>
+      Photo uploads and private receipt access are unavailable on this deployment.
+    </PageTitle>
+    <section className="panel availability-block" aria-label="Civic Camera availability">
+      <p className="inline-notice availability" role="status"><CircleAlert size={18} />Persistent private storage is required before this site can accept reports.</p>
+      <a className="text-link" href="/desk">Return to My Desk <ArrowRight size={17} aria-hidden="true" /></a>
+    </section>
   </section>
 
   return <section className="wrap standard-page camera-page">

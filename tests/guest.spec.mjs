@@ -22,16 +22,14 @@ test('fresh guest can prepare, save a candidate, rehearse and reopen the plan of
   })
 
   await page.goto('/')
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Be ready to vote.')
-  await expect(page.getByRole('link', { name: 'View all 18 named candidates' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Politics in focus.')
+  await expect(page.getByRole('link', { name: /2027 Presidential election.*18 named tickets/ })).toBeVisible()
   await expect(page.getByRole('link', { name: /sign in|create account/i })).toHaveCount(0)
-  await expect(page.getByRole('link', { name: /Find my polling unit/ })).toHaveAttribute('href', '/election#polling-unit')
-  await expect(page.getByRole('heading', { name: 'Presidential election', exact: true })).toBeVisible()
   await screenshot(page, 'home-desktop-light', true)
   expect(await noHorizontalOverflow(page)).toBe(true)
   expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([])
 
-  await page.getByRole('link', { name: 'Explore presidential candidates' }).click()
+  await page.getByRole('link', { name: /2027 Presidential election.*18 named tickets/ }).click()
   await expect(page.getByRole('heading', { name: '2027 presidential election' })).toBeVisible()
   await page.getByRole('link', { name: 'Prepare for election day' }).click()
   await expect(page.getByRole('link', { name: /Open INEC polling-unit finder/ })).toHaveAttribute('href', 'https://cvr.inecnigeria.org/pu')
@@ -74,7 +72,8 @@ test('fresh guest can prepare, save a candidate, rehearse and reopen the plan of
   await page.getByRole('button', { name: 'Check answer' }).click()
   await expect(page.getByRole('status')).toContainText('That’s right.')
 
-  await selectNav(page, 'My Actions').click()
+  await selectNav(page, 'My Desk').click()
+  await page.getByRole('link', { name: /Open saved receipts|Open or recover receipts/ }).click()
   await expect(page.getByText('1 of 4 checklist steps done · Rehearsal completed')).toBeVisible()
   await expect(page.getByText('Adebayo Adefolaseye Adebomi · NDC')).toBeVisible()
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller))
@@ -82,7 +81,7 @@ test('fresh guest can prepare, save a candidate, rehearse and reopen the plan of
   await page.reload()
   await expect(page.getByText('You’re offline. Saved guides and plans still work.')).toBeVisible()
   await expect(page.getByText('Leave enough time for the walk.')).toBeVisible()
-  await selectNav(page, 'Civic Camera').click()
+  await page.getByRole('navigation', { name: 'Footer' }).getByRole('link', { name: 'Civic Camera' }).click()
   await expect(page.getByRole('button', { name: 'Review report' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Submit to MataLens' })).toHaveCount(0)
   await expect(page.getByText('You’re offline. Reconnect to submit this photo.')).toBeVisible()
@@ -136,7 +135,8 @@ test('phone guest can recover an interrupted report, save its receipt and withdr
   const url = file.match(/Open this link: (.+)/)?.[1]
   expect(url).toMatch(/#receipt=[a-f0-9]{64}$/)
 
-  await selectNav(page, 'My Actions').click()
+  await selectNav(page, 'My Desk').click()
+  await page.getByRole('link', { name: /Open saved receipts|Open or recover receipts/ }).click()
   await page.reload()
   await page.getByRole('button', { name: /^Drainage or flooding/ }).click()
   await expect(page.getByRole('heading', { name: 'MataLens report receipt' })).toBeVisible()
@@ -170,7 +170,7 @@ test('320 px mobile, keyboard, dark persistence and both report types', async ({
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
   await screenshot(page, 'home-mobile-dark')
   expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze()).violations).toEqual([])
-  await selectNav(page, 'Civic Camera').click()
+  await page.getByRole('navigation', { name: 'Footer' }).getByRole('link', { name: 'Civic Camera' }).click()
   await page.getByRole('radio', { name: /Public result sheet/ }).check()
   await expect(page.getByLabel('Polling-unit name or code')).toBeVisible()
   await expect(page.getByText(/Only photograph a publicly posted result sheet/)).toBeVisible()
@@ -188,7 +188,7 @@ test('320 px mobile, keyboard, dark persistence and both report types', async ({
 
 test('finds official presidential and geographic records, compares in place, and preserves the entry on Back', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('link', { name: 'Explore presidential candidates' }).click()
+  await page.getByRole('link', { name: /2027 Presidential election.*18 named tickets/ }).click()
   await expect(page.locator('.registry-disclosure')).toHaveCount(18)
   await page.getByText(/Why the INEC list shows 19 party entries/).click()
   await expect(page.getByText('COURT ORDER', { exact: false })).toBeVisible()
@@ -265,7 +265,7 @@ test('finds official presidential and geographic records, compares in place, and
 
 test('rights reminders rotate, pause and disclose, and both party exercises are usable', async ({ page }) => {
   await page.clock.install()
-  await page.goto('/')
+  await page.goto('/rights')
   const carousel = page.getByRole('group', { name: 'Voting rights reminders' })
   await carousel.scrollIntoViewIfNeeded()
   await expect(carousel.getByRole('heading')).toHaveText('Your ballot is private.')
@@ -281,13 +281,13 @@ test('rights reminders rotate, pause and disclose, and both party exercises are 
   await carousel.getByRole('button', { name: 'What you can do' }).click()
   await expect(carousel.getByText('What you can do.', { exact: true })).toBeVisible()
   await expect(carousel.getByRole('link', { name: /Electoral Act 2026 · Section 56/ })).toHaveAttribute('href', 'https://nass.gov.ng/documents/download/11248')
-  await expect(page).toHaveURL(/\/$/)
+  await expect(page).toHaveURL(/\/rights$/)
   await page.goto('/rights')
   await page.getByLabel('Search rights guides').fill('intimidation')
   await page.locator('summary').filter({ hasText: 'Voter safety' }).click()
   await expect(page.getByText('Move to a safer place. Avoid confrontation.', { exact: false })).toBeVisible()
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.goto('/')
+  await page.goto('/rights')
   await page.clock.fastForward(12000)
   await expect(carousel.getByRole('heading')).toHaveText('Your ballot is private.')
 

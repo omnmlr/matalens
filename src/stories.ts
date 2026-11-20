@@ -50,9 +50,20 @@ function isStory(value: unknown): value is Story {
     !isText(value.context) || !isText(value.significance) || !optional(value.openQuestion, isText) ||
     !Array.isArray(value.commitments) || !value.commitments.every(isCommitment)) return false
   const sources = new Set(value.sources.map(source => source.id))
+  const linked = (ids: unknown, min: number) => strings(ids) && ids.length >= min &&
+    new Set(ids).size === ids.length && ids.every(id => sources.has(id))
   const people = new Set(value.personIds)
+  const comparisons = (entries: unknown) => Array.isArray(entries) && entries.every(entry =>
+    isRecord(entry) && isText(entry.summary) && linked(entry.sourceIds, 2))
+  const timeline = (entries: unknown) => Array.isArray(entries) && entries.every(entry =>
+    isRecord(entry) && isText(entry.id) && isDate(entry.date) && isText(entry.title) && isText(entry.summary) &&
+    ['reported', 'published', 'scheduled'].includes(String(entry.kind)) && linked(entry.sourceIds, 1)) &&
+    new Set(entries.map(entry => entry.id)).size === entries.length
+  const document = (ref: unknown) => isRecord(ref) && webUrl(ref.url) && isText(ref.section)
   return sources.size === value.sources.length &&
-    value.commitments.every(item => sources.has(item.sourceId) && people.has(item.personId)) &&
+    optional(value.sourceComparisons, comparisons) && optional(value.timeline, timeline) &&
+    value.commitments.every(item => sources.has(item.sourceId) && people.has(item.personId) &&
+      optional(item.document, document)) &&
     (value.quiz === undefined || isQuiz(value.quiz) && value.quiz.sourceIds.every(id => sources.has(id)))
 }
 

@@ -24,7 +24,9 @@ export function ProfileLearning({ id, feed }: { id: string; feed: StoryFeed }) {
     <section className="record-section profile-section"><h2>Manifestos</h2>
       {manifestos.length ? <ul className="profile-evidence">{manifestos.map(({ item, source }) => <li key={item.title}>
         <time dateTime={item.date}>{nigeriaDate(item.date, item.date.length === 7 ? { month: 'long', year: 'numeric' } : undefined)}</time>
-        <p>{item.title}</p><p>{item.comparison}</p>{source && <External href={source.url}>{source.title}</External>}
+        <p>{item.title}</p><p>{item.comparison}</p>
+        {item.document && <p><External href={item.document.url}>{item.document.section}</External></p>}
+        {source && <External href={source.url}>{source.title}</External>}
       </li>)}</ul> : feed.status === 'ready' && <p>There is no sourced manifesto excerpt in this profile yet.</p>}
       <FeedNotice feed={feed} />
     </section>
