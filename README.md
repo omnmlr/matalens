@@ -37,7 +37,9 @@ The same app serves a reviewed political briefing at `/api/stories`, with source
 
 ## Run a hosted pilot
 
-`npm start` serves the built client and API from the same origin. New intake stays disabled until all of these variables are supplied. See [.env.example](.env.example).
+See the [production runbook](docs/RELEASE_RUNBOOK.md) for API routing, build and runtime configuration, and the bundled reviewed edition. Use the [integration checklist](docs/INTEGRATION_CHECKLIST.md) for release verification.
+
+`npm start` serves the built client and API from the same origin. New intake requires `MATALENS_ENABLE_UPLOADS=1`, a private `MATALENS_DATA_DIR` and an HTTPS `MATALENS_ORIGIN`. See [.env.example](.env.example).
 
 | Variable | Purpose |
 | --- | --- |

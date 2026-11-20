@@ -1,6 +1,6 @@
 # MataLens story service handoff
 
-The shared frontend and backend contract is [src/story-contract.ts](../src/story-contract.ts). The fixture and HTTP adapters implement the same interface. The news API serves these payloads from the reviewed edition. See the [news desk documentation](NEWS_INTELLIGENCE.md) for collection and review.
+The shared frontend and backend contract is [src/story-contract.ts](../src/story-contract.ts). The fixture and HTTP adapters implement the same interface. The news API serves these payloads from the reviewed edition. See the [news desk documentation](NEWS_INTELLIGENCE.md) for collection and review and the [production runbook](RELEASE_RUNBOOK.md) for build-time API configuration.
 
 | Request | Successful response |
 | --- | --- |
@@ -16,3 +16,7 @@ The shared frontend and backend contract is [src/story-contract.ts](../src/story
 - `timeline` is optional and ordered by day. Each entry cites source IDs in the same story. `reported` and `published` mark a report or publication. `scheduled` is a documented planned date, even when it has passed. The collection and detail responses carry the same evidence fields.
 - A manifesto commitment can include `document` with a direct publisher link and a section locator. The commitment date can retain month precision. Its comparison describes what the source supports and what evidence would be needed to assess implementation.
 - The backend serves only `reviewed` stories. Missing or withdrawn IDs return 404. The list returns 400 for repeated or malformed `personId` parameters and an empty array when a valid ID has no stories. A missing or invalid edition returns 503.
+
+## Frontend verification
+
+Use the recruitment story (`inec-recruitment-deadline-2027`) to exercise `sourceComparisons[].sourceIds`. Resolve those IDs through the same story’s `sources` array. Use `mock-accreditation-2026` to check the dated `timeline[].kind` labels. Use `presidential-roster-2027` to check `commitments[].document.url` and `commitments[].document.section`. These additions are optional. A story with just the original required fields still renders with its original source links, and private following stays on the device.
