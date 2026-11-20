@@ -24,6 +24,21 @@ export type StoryCommitment = {
   personId: string
   sourceId: string
   comparison: string
+  document?: { url: string; section: string }
+}
+
+export type StorySourceComparison = {
+  summary: string
+  sourceIds: [string, string, ...string[]]
+}
+
+export type StoryTimelineEntry = {
+  id: string
+  date: string
+  kind: 'reported' | 'published' | 'scheduled'
+  title: string
+  summary: string
+  sourceIds: string[]
 }
 
 export type Story = {
@@ -41,6 +56,8 @@ export type Story = {
   context: string
   significance: string
   commitments: StoryCommitment[]
+  sourceComparisons?: StorySourceComparison[]
+  timeline?: StoryTimelineEntry[]
   openQuestion?: string
   quiz?: StoryQuiz
 }

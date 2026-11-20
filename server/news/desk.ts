@@ -24,8 +24,12 @@ export const sourceConfigs: SourceConfig[] = [
     publishedAt: '2026-11-19', kind: 'html',
     evidence: {
       portal: {
-        terms: [['inecpres'], ['2nd december', 'december 2'], ['2027 general election']],
-        summary: 'The accompanying statement identifies INECPRES as the recruitment portal for temporary staff for the 2027 general election.',
+        terms: [['inecpres'], ['2027 general election']],
+        summary: 'The republished statement identifies INECPRES as the recruitment portal for temporary staff for the 2027 general election.',
+      },
+      cutoff: {
+        terms: [['3rd december 2026', 'december 3 2026'], ['portal will now close']],
+        summary: 'The statement republished by Press Release Naija gives 3 December 2026 as the new cutoff.',
       },
     },
   },
@@ -49,11 +53,11 @@ export const sourceConfigs: SourceConfig[] = [
     url: 'https://www.inecnigeria.org/elections/calendar', kind: 'html',
     evidence: {
       assembly: {
-        terms: [['house of assembly', 'houses of assembly'], ['2027'], ['6 february', '6th february', 'february 6', '06 february', '6 feb']],
+        terms: [['house of assembly', 'houses of assembly'], ['2027'], ['6 february 2027', '6th february 2027', 'february 6 2027', '06 february 2027', '6 feb 2027']],
         summary: 'The published calendar schedules the state assembly elections alongside governorship elections on 6 February 2027.',
       },
       presidential: {
-        terms: [['presidential'], ['national assembly'], ['16 january', '16th january', 'january 16', '16 jan'], ['2027']],
+        terms: [['presidential'], ['national assembly'], ['16 january 2027', '16th january 2027', 'january 16 2027', '16 jan 2027'], ['2027']],
         summary: 'The calendar schedules the presidential and National Assembly elections for 16 January 2027.',
       },
     },
@@ -140,28 +144,39 @@ export const sourceConfigs: SourceConfig[] = [
     url: 'https://renewedhope02.com/manifesto', kind: 'html',
     evidence: {
       housing: {
-        terms: [['october 2026'], ['housing'], ['mortgaged', 'mortgages'], ['handed over', 'handover']],
-        summary: 'The APC’s October 2026 manifesto proposes expanding social housing and affordable mortgages, and tracking homes handed over and mortgaged.',
+        terms: [['october 2026'], ['housing'], ['mortgaged', 'mortgages'], ['handed over', 'handover'], ['public dashboard']],
+        summary: 'The APC’s October 2026 manifesto proposes expanding social housing and affordable mortgages. It proposes tracking homes handed over and mortgaged.',
       },
     },
   },
 ]
 
 const from = (sourceId: string, fact: string) => ({ sourceId, fact })
+const milestone = (id: string, date: string, kind: 'reported' | 'published' | 'scheduled', title: string, sourceId: string, fact: string) =>
+  ({ id, date, kind, title, evidence: [from(sourceId, fact)] })
 
 export const recipes: Recipe[] = [
   {
     id: 'inec-recruitment-deadline-2027', title: 'INEC extends the election staff application deadline', topic: 'Election administration',
     primary: 'recruitment-notice',
     match: { from: '2026-11-18', through: '2026-11-21', terms: [['ad hoc staff recruitment', 'registration of ad hoc staff'], ['inecpress', 'inecpres'], ['2nd december', 'december 2']] },
+    supporting: ['recruitment-statement'],
     explanation: [from('recruitment-notice', 'deadline')],
     context: [from('recruitment-statement', 'portal')],
     significance: [from('recruitment-notice', 'window')],
-    openQuestion: 'Has INEC published a later change to the application window?',
+    sourceComparisons: [{
+      evidence: [from('recruitment-notice', 'deadline'), from('recruitment-statement', 'cutoff')],
+      summary: 'INEC’s own notice gives 2 December. The version republished by Press Release Naija gives 3 December. If applying, check INEC’s current notice or the official recruitment portal.',
+    }],
+    timeline: [
+      milestone('recruitment-update', '2026-11-19', 'published', 'INEC publishes its deadline update', 'recruitment-notice', 'deadline'),
+      milestone('revised-cutoff', '2026-12-02', 'scheduled', 'Revised cutoff stated in INEC’s own notice', 'recruitment-notice', 'deadline'),
+    ],
+    openQuestion: 'Has INEC clarified the difference between the two published dates?',
     quiz: {
       ...from('recruitment-notice', 'deadline'), id: 'recruitment-window',
-      prompt: 'What deadline did INEC announce for recruitment applications?',
-      answer: '2 December 2026', distractors: ['18 November 2026', '28 November 2026'],
+      prompt: 'Which revised deadline appears in INEC’s own recruitment notice?',
+      answer: '2 December 2026', distractors: ['18 November 2026', '3 December 2026'],
     },
   },
   {
@@ -172,6 +187,14 @@ export const recipes: Recipe[] = [
     explanation: [from('assembly-notice', 'lists')],
     context: [from('assembly-notice', 'navigation')],
     significance: [from('election-calendar', 'assembly')],
+    sourceComparisons: [{
+      evidence: [from('assembly-notice', 'lists'), from('election-calendar', 'assembly')],
+      summary: 'INEC’s state-by-state lists identify the nominees. Its election calendar gives the scheduled voting date.',
+    }],
+    timeline: [
+      milestone('assembly-lists-posted', '2026-11-14', 'published', 'INEC posts updated state assembly lists', 'assembly-notice', 'lists'),
+      milestone('assembly-election-date', '2027-02-06', 'scheduled', 'State assembly elections scheduled', 'election-calendar', 'assembly'),
+    ],
     quiz: {
       ...from('election-calendar', 'assembly'), id: 'state-election-date',
       prompt: 'When did the published INEC calendar schedule state assembly elections?',
@@ -186,6 +209,15 @@ export const recipes: Recipe[] = [
     explanation: [from('mock-notice', 'exercise')],
     context: [from('mock-report', 'announcement'), from('voter-education', 'accreditation')],
     significance: [from('election-calendar', 'presidential')],
+    sourceComparisons: [{
+      evidence: [from('mock-report', 'announcement'), from('mock-notice', 'exercise')],
+      summary: 'Channels Television reported the announcement at Chatham House on 12 November. INEC’s notice the next day recorded the planned date and tests. Both concern the announcement of the same exercise.',
+    }],
+    timeline: [
+      milestone('chatham-house-report', '2026-11-12', 'reported', 'Channels Television reports the announcement', 'mock-report', 'announcement'),
+      milestone('mock-notice-posted', '2026-11-13', 'published', 'INEC publishes its notice', 'mock-notice', 'exercise'),
+      milestone('mock-exercise-date', '2026-11-28', 'scheduled', 'Mock accreditation scheduled', 'mock-notice', 'exercise'),
+    ],
     openQuestion: 'What did INEC find during the exercise? Look for a dated follow-up from the commission.',
     quiz: {
       ...from('mock-notice', 'exercise'), id: 'mock-purpose',
@@ -205,8 +237,20 @@ export const recipes: Recipe[] = [
     commitment: {
       ...from('apc-manifesto', 'housing'), title: 'Expand social housing and affordable mortgages',
       kind: 'manifesto', personId: 'tinubu-bola-ahmed', date: '2026-10',
-      comparison: 'The INEC list records Tinubu’s APC candidacy. The campaign document supplies measures to compare with later public housing records.',
+      comparison: 'The INEC list identifies Tinubu’s APC candidacy. The manifesto proposes a public dashboard counting homes handed over and mortgaged. Published handover and mortgage figures would help assess delivery.',
+      document: {
+        url: 'https://apc.com.ng/apc-2027-manifesto.pdf',
+        section: '2027–2031 commitments · Pillar 2 · Mass social housing, affordable mortgages and secured land titles',
+      },
     },
+    sourceComparisons: [{
+      evidence: [from('presidential-notice', 'list'), from('presidential-pdf', 'tickets')],
+      summary: 'INEC’s notice introduces the roster. Its attached PDF records the 18 named tickets and the separate Accord entry. The notice and PDF are parts of the same publication.',
+    }],
+    timeline: [
+      milestone('presidential-list-posted', '2026-10-31', 'published', 'INEC publishes its presidential list', 'presidential-notice', 'list'),
+      milestone('presidential-election-date', '2027-01-16', 'scheduled', 'Presidential and National Assembly elections scheduled', 'election-calendar', 'presidential'),
+    ],
     openQuestion: 'Has INEC published a revised entry for the Accord ticket?',
     quiz: {
       ...from('presidential-pdf', 'tickets'), id: 'named-tickets',
@@ -227,6 +271,14 @@ export const recipes: Recipe[] = [
       kind: 'public-statement', personId: 'national-adebayo-adewole-ebenezer', date: '2026-08-06',
       comparison: 'The later roster establishes the nomination. Assessing delivery would require a documented action, a timeline and relevant implementation records.',
     },
+    sourceComparisons: [{
+      evidence: [from('sdp-statement', 'security'), from('presidential-pdf', 'sdp')],
+      summary: 'Voice of Nigeria reports Adebayo’s campaign statement. The later INEC roster confirms his SDP nomination. The roster is evidence of candidacy and the report is evidence of the stated priority.',
+    }],
+    timeline: [
+      milestone('security-priority-reported', '2026-08-06', 'reported', 'Voice of Nigeria reports Adebayo’s remarks', 'sdp-statement', 'security'),
+      milestone('sdp-candidacy-listed', '2026-10-31', 'published', 'INEC lists Adebayo as the SDP nominee', 'presidential-pdf', 'sdp'),
+    ],
     openQuestion: 'What actions, funding and timing would put this priority into practice?',
     quiz: {
       ...from('sdp-statement', 'security'), id: 'sdp-security-priority',

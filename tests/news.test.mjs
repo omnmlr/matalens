@@ -6,6 +6,7 @@ import { join } from 'node:path'
 import test from 'node:test'
 import { createApp } from '../server/app.mjs'
 import { sourceConfigs } from '../server/news/desk.ts'
+import { digest } from '../server/news/model.ts'
 import { generateDrafts } from '../server/news/pipeline.ts'
 import { createEditionReader, defaultEdition, recordDecision, saveDraftBatch } from '../server/news/storage.ts'
 
@@ -40,6 +41,18 @@ test('recorded public evidence builds reviewed, source-linked reading and learni
   assert.deepEqual(mock.story.quiz.sourceIds, ['mock-notice'])
   assert.match(mock.story.context, /Chatham House/)
   assert.equal(mock.story.reviewStatus, undefined)
+  assert.deepEqual(mock.story.timeline.map(({ date, kind }) => [date, kind]), [
+    ['2026-11-12', 'reported'], ['2026-11-13', 'published'], ['2026-11-28', 'scheduled'],
+  ])
+  assert.deepEqual(mock.story.sourceComparisons[0].sourceIds, ['mock-report', 'mock-notice'])
+
+  const recruitment = batch.drafts.find(({ story }) => story.id === 'inec-recruitment-deadline-2027').story
+  assert.match(recruitment.sourceComparisons[0].summary, /2 December.*3 December/)
+  assert.deepEqual(recruitment.sourceComparisons[0].sourceIds, ['recruitment-notice', 'recruitment-statement'])
+  assert.equal(recruitment.timeline.at(-1).date, '2026-12-02')
+  assert.match(recruitment.quiz.prompt, /INEC’s own/)
+  assert.equal(recruitment.quiz.options[recruitment.quiz.correct], '2 December 2026')
+  assert.deepEqual(recruitment.quiz.sourceIds, ['recruitment-notice'])
 
   const roster = batch.drafts.find(({ story }) => story.id === 'presidential-roster-2027').story
   assert.equal(roster.personIds.length, 36)
@@ -48,11 +61,15 @@ test('recorded public evidence builds reviewed, source-linked reading and learni
   assert.ok(roster.partyCodes.includes('A'))
   assert.equal(roster.commitments[0].kind, 'manifesto')
   assert.equal(roster.commitments[0].date, '2026-10')
+  assert.equal(roster.commitments[0].document.url, 'https://apc.com.ng/apc-2027-manifesto.pdf')
+  assert.match(roster.commitments[0].document.section, /Pillar 2/)
+  assert.match(roster.commitments[0].comparison, /proposes a public dashboard/)
   assert.ok(roster.sources.some(source => source.id === roster.commitments[0].sourceId))
 
   const bundled = createEditionReader(defaultEdition)()
   assert.deepEqual(bundled.map(story => story.id), batch.drafts.map(draft => draft.story.id))
   assert.ok(bundled.every(story => story.reviewStatus === 'reviewed'))
+  assert.deepEqual(bundled.map(({ reviewStatus, reviewedAt, ...story }) => digest(story)), batch.drafts.map(draft => draft.revision))
 })
 
 test('live collection parses publisher HTML and keeps unrelated or unconfirmed claims out of drafts', async () => {
@@ -63,9 +80,11 @@ test('live collection parses publisher HTML and keeps unrelated or unconfirmed c
     const source = replies.get(url.href)
     if (url.hostname === 'renewedhope02.com') return new Response(null, { status: 302, headers: { Location: 'https://unregistered.example/manifesto' } })
     if (!source) return new Response(null, { status: 404 })
-    const text = url.pathname.includes('nationwide-mock-accreditation-exercise')
-      ? '<p>INEC released a media notice on 28th November 2026.</p><aside>Mock accreditation and electronic result transmission.</aside>'
-      : '<p>' + source.text + '</p>'
+    let text = '<p>' + source.text + '</p>'
+    if (url.pathname.includes('nationwide-mock-accreditation-exercise')) {
+      text = '<p>INEC released a media notice on 28th November 2026.</p><aside>Mock accreditation and electronic result transmission.</aside>'
+    }
+    if (url.hostname === 'pressreleasenaija.com.ng') text = text.replace('3rd December 2026', '2nd December 2026')
     const html = '<html><head><title>' + source.title.replaceAll('&', '&amp;') + '</title></head><body><main><article><h1>' +
       source.title.replaceAll('&', '&amp;') + '</h1>' + text + '</article></main></body></html>'
     return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8' } })
@@ -78,6 +97,9 @@ test('live collection parses publisher HTML and keeps unrelated or unconfirmed c
   assert.ok(!batch.drafts.some(draft => draft.story.id === 'mock-accreditation-2026'))
   const roster = batch.drafts.find(draft => draft.story.id === 'presidential-roster-2027')
   assert.deepEqual(roster.story.commitments, [])
+  const recruitment = batch.drafts.find(draft => draft.story.id === 'inec-recruitment-deadline-2027')
+  assert.equal(recruitment.story.sourceComparisons, undefined)
+  assert.equal(recruitment.story.timeline.length, 2)
   assert.ok(roster.provenance.every(source => source.mode === 'live' || source.mode === 'catalogue'))
 })
 
@@ -109,6 +131,8 @@ test('public HTTP endpoints only expose approved revisions and update on editori
   const published = await detailResponse.json()
   assert.deepEqual(published, { ...draft.story, reviewStatus: 'reviewed', reviewedAt: '2026-11-20' })
   assert.equal(published.reviewer, undefined)
+  assert.deepEqual(published.timeline, draft.story.timeline)
+  assert.deepEqual(published.sourceComparisons, draft.story.sourceComparisons)
   assert.deepEqual(await (await request('/api/stories?personId=tinubu-bola-ahmed')).json(), [published])
   assert.deepEqual(await (await request('/api/stories?personId=unknown-person')).json(), [])
   assert.equal((await request('/api/stories?personId=tinubu-bola-ahmed&personId=another-person')).status, 400)
@@ -133,4 +157,56 @@ test('the shipped edition is available through the normal application entry poin
   assert.ok(stories.every((story, index) => index === 0 || story.publishedAt <= stories[index - 1].publishedAt))
   const relevant = await (await request('/api/stories?personId=national-adebayo-adewole-ebenezer')).json()
   assert.deepEqual(relevant.map(story => story.id), ['presidential-roster-2027', 'adebayo-security-statement'])
+})
+
+test('publication validates optional evidence and remains compatible with earlier editions', async t => {
+  const dir = await mkdtemp(join(tmpdir(), 'matalens-news-compat-'))
+  t.after(() => rm(dir, { recursive: true, force: true }))
+  const batchPath = join(dir, 'pending.json')
+  const editionPath = join(dir, 'reviewed.json')
+  const batch = await generateDrafts({ mode: 'recorded', now })
+  const chosen = batch.drafts.find(({ story }) => story.id === 'presidential-roster-2027').story
+  const { timeline, sourceComparisons, ...original } = chosen
+  const { document: _document, ...commitment } = original.commitments[0]
+  const earlierStory = { ...original, commitments: [commitment] }
+  const stage = story => {
+    const revision = digest(story)
+    saveDraftBatch(batchPath, { ...batch, drafts: [{ story, revision }] })
+    return revision
+  }
+  const approve = revision => recordDecision({
+    batchPath, editionPath, id: chosen.id, revision, reviewer: 'Test editorial review', decision: 'approve', now,
+  })
+  const malformed = [
+    { ...chosen, timeline: [...timeline].reverse() },
+    { ...chosen, timeline: [{ ...timeline[0], sourceIds: ['missing-source'] }] },
+    { ...chosen, timeline: [{ ...timeline[0], date: '2026-02-30' }] },
+    { ...chosen, sourceComparisons: [{ ...sourceComparisons[0], sourceIds: ['presidential-notice', 'presidential-notice'] }] },
+    { ...chosen, sourceComparisons: [{ ...sourceComparisons[0], sourceIds: ['presidential-notice', 'missing-source'] }] },
+    { ...chosen, commitments: [{ ...chosen.commitments[0], document: { section: 'Reference', url: 'http://example.com/' } }] },
+  ]
+  for (const story of malformed) assert.throws(() => approve(stage(story)), /does not match/)
+
+  approve(stage(earlierStory))
+  const request = await openApi(t, editionPath)
+  const response = await request('/api/stories/' + chosen.id)
+  assert.equal(response.status, 200)
+  const story = await response.json()
+  assert.equal(story.timeline, undefined)
+  assert.equal(story.sourceComparisons, undefined)
+  assert.deepEqual(story.commitments, [commitment])
+})
+
+test('failed collection does not replace the five-story bundled edition', async t => {
+  const dir = await mkdtemp(join(tmpdir(), 'matalens-news-offline-'))
+  t.after(() => rm(dir, { recursive: true, force: true }))
+  const request = await openApi(t)
+  const before = await (await request('/api/stories')).json()
+  const batch = await generateDrafts({ mode: 'live', now, request: async () => { throw new Error('Publisher unavailable') } })
+  assert.equal(batch.drafts.length, 0)
+  assert.ok(batch.issues.length > 0)
+  saveDraftBatch(join(dir, 'pending.json'), batch)
+  const after = await (await request('/api/stories')).json()
+  assert.equal(after.length, 5)
+  assert.deepEqual(after, before)
 })

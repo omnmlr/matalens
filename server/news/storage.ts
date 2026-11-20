@@ -60,8 +60,13 @@ function validSource(source: StorySource) {
   if (!source || !isId(source.id) || !nonempty(source.title) || !nonempty(source.publisher) ||
     (source.publishedAt !== undefined && !isDay(source.publishedAt)) ||
     (source.evidence !== undefined && !nonempty(source.evidence))) return false
+  return isHttpsUrl(source.url)
+}
+
+function isHttpsUrl(value: unknown) {
+  if (!nonempty(value)) return false
   try {
-    const url = new URL(source.url)
+    const url = new URL(value)
     return url.protocol === 'https:' && !url.username && !url.password
   } catch {
     return false
@@ -78,10 +83,25 @@ function validDraft(story: DraftStory) {
     !Array.isArray(story.commitments)) return false
 
   const ids = new Set(story.sources.map(source => source.id))
+  const validSourceIds = (sourceIds: unknown, minimum: number) =>
+    strings(sourceIds) && sourceIds.length >= minimum && new Set(sourceIds).size === sourceIds.length && sourceIds.every(id => ids.has(id))
   if (ids.size !== story.sources.length || !story.commitments.every(item => item &&
     (isDay(item.date) || isMonth(item.date)) && nonempty(item.title) && nonempty(item.comparison) &&
     (item.kind === 'manifesto' || item.kind === 'public-statement') && story.personIds.includes(item.personId) &&
-    ids.has(item.sourceId))) return false
+    ids.has(item.sourceId) && (item.document === undefined || item.kind === 'manifesto' && item.document &&
+      isHttpsUrl(item.document.url) && nonempty(item.document.section)))) return false
+
+  if (story.sourceComparisons !== undefined && (!Array.isArray(story.sourceComparisons) ||
+    !story.sourceComparisons.every(item => item && nonempty(item.summary) && validSourceIds(item.sourceIds, 2)))) return false
+
+  const timelineIds = new Set<string>()
+  if (story.timeline !== undefined && (!Array.isArray(story.timeline) || !story.timeline.every((item, index, timeline) => {
+    if (!item || !isId(item.id) || timelineIds.has(item.id) || !isDay(item.date) ||
+      !['reported', 'published', 'scheduled'].includes(item.kind) || !nonempty(item.title) || !nonempty(item.summary) ||
+      !validSourceIds(item.sourceIds, 1) || (index > 0 && timeline[index - 1].date > item.date)) return false
+    timelineIds.add(item.id)
+    return true
+  }))) return false
 
   const quiz = story.quiz
   return quiz === undefined || Boolean(quiz && isId(quiz.id) && nonempty(quiz.prompt) && strings(quiz.options) &&

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import type { Story } from '../../src/story-contract.ts'
+import type { Story, StoryCommitment, StorySourceComparison, StoryTimelineEntry } from '../../src/story-contract.ts'
 
 export const digest = (record: unknown) => createHash('sha256').update(JSON.stringify(record)).digest('hex')
 
@@ -59,8 +59,14 @@ export type Recipe = {
   parties?: string[]
   contest?: string
   commitment?: EvidenceRef & {
-    title: string; kind: 'manifesto' | 'public-statement'; personId: string; date: string; comparison: string
+    title: string; kind: StoryCommitment['kind']; personId: string; date: string; comparison: string
+    document?: StoryCommitment['document']
   }
+  sourceComparisons?: {
+    summary: StorySourceComparison['summary']
+    evidence: [EvidenceRef, EvidenceRef, ...EvidenceRef[]]
+  }[]
+  timeline?: (Pick<StoryTimelineEntry, 'id' | 'kind' | 'title' | 'date'> & { evidence: EvidenceRef[] })[]
   openQuestion?: string
   quiz: EvidenceRef & { id: string; prompt: string; answer: string; distractors: [string, string] }
 }

@@ -2,8 +2,8 @@
   "version": 1,
   "entries": [
     {
-      "revision": "3e9edd881962619e4fa70309355270a6d7f09d482bfe45772f153b500d208146",
-      "reviewer": "Initial source review",
+      "revision": "a367b7c4e43032c6c40e355bb6dc663f18b57c936fc2117bc1dc32f4d972e7b9",
+      "reviewer": "Source comparison review",
       "story": {
         "id": "inec-recruitment-deadline-2027",
         "title": "INEC extends the election staff application deadline",
@@ -26,23 +26,54 @@
             "publisher": "Press Release Naija · INEC statement",
             "url": "https://pressreleasenaija.com.ng/extension-of-deadline-for-the-registration-of-ad-hoc-staff-on-the-inecpres-portal/",
             "publishedAt": "2026-11-19",
-            "evidence": "The accompanying statement identifies INECPRES as the recruitment portal for temporary staff for the 2027 general election."
+            "evidence": "The republished statement identifies INECPRES as the recruitment portal for temporary staff for the 2027 general election. The statement republished by Press Release Naija gives 3 December 2026 as the new cutoff."
           }
         ],
         "explanation": "INEC extended the application deadline for ad hoc election staff from 18 November to 2 December 2026.",
-        "context": "The accompanying statement identifies INECPRES as the recruitment portal for temporary staff for the 2027 general election.",
+        "context": "The republished statement identifies INECPRES as the recruitment portal for temporary staff for the 2027 general election.",
         "significance": "The original 18 November cutoff was replaced by a date two weeks later.",
         "commitments": [],
-        "openQuestion": "Has INEC published a later change to the application window?",
+        "sourceComparisons": [
+          {
+            "summary": "INEC’s own notice gives 2 December. The version republished by Press Release Naija gives 3 December. If applying, check INEC’s current notice or the official recruitment portal.",
+            "sourceIds": [
+              "recruitment-notice",
+              "recruitment-statement"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "id": "recruitment-update",
+            "date": "2026-11-19",
+            "kind": "published",
+            "title": "INEC publishes its deadline update",
+            "summary": "INEC extended the application deadline for ad hoc election staff from 18 November to 2 December 2026.",
+            "sourceIds": [
+              "recruitment-notice"
+            ]
+          },
+          {
+            "id": "revised-cutoff",
+            "date": "2026-12-02",
+            "kind": "scheduled",
+            "title": "Revised cutoff stated in INEC’s own notice",
+            "summary": "INEC extended the application deadline for ad hoc election staff from 18 November to 2 December 2026.",
+            "sourceIds": [
+              "recruitment-notice"
+            ]
+          }
+        ],
+        "openQuestion": "Has INEC clarified the difference between the two published dates?",
         "quiz": {
           "id": "recruitment-window",
-          "prompt": "What deadline did INEC announce for recruitment applications?",
+          "prompt": "Which revised deadline appears in INEC’s own recruitment notice?",
           "options": [
+            "3 December 2026",
             "2 December 2026",
-            "18 November 2026",
-            "28 November 2026"
+            "18 November 2026"
           ],
-          "correct": 0,
+          "correct": 1,
           "explanation": "INEC extended the application deadline for ad hoc election staff from 18 November to 2 December 2026.",
           "sourceIds": [
             "recruitment-notice"
@@ -53,8 +84,8 @@
       }
     },
     {
-      "revision": "b9ffc181f5360fa31386b3e0a0d932d9f965ed18b433992938a93fcd26666f7f",
-      "reviewer": "Initial source review",
+      "revision": "80a7ac677e6d2b61dd9bae3c85ab1331a1221e4d8a9e0ae86398471e63d948ab",
+      "reviewer": "Source comparison review",
       "story": {
         "id": "state-assembly-lists-2027",
         "title": "INEC publishes state assembly candidate lists",
@@ -83,6 +114,37 @@
         "context": "Separate files are listed for Lagos and Oyo. Open the state file first, then find the constituency heading.",
         "significance": "The published calendar schedules the state assembly elections alongside governorship elections on 6 February 2027.",
         "commitments": [],
+        "sourceComparisons": [
+          {
+            "summary": "INEC’s state-by-state lists identify the nominees. Its election calendar gives the scheduled voting date.",
+            "sourceIds": [
+              "assembly-notice",
+              "election-calendar"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "id": "assembly-lists-posted",
+            "date": "2026-11-14",
+            "kind": "published",
+            "title": "INEC posts updated state assembly lists",
+            "summary": "INEC published updated lists for the 2027 State House of Assembly elections, with documents organised by state.",
+            "sourceIds": [
+              "assembly-notice"
+            ]
+          },
+          {
+            "id": "assembly-election-date",
+            "date": "2027-02-06",
+            "kind": "scheduled",
+            "title": "State assembly elections scheduled",
+            "summary": "The published calendar schedules the state assembly elections alongside governorship elections on 6 February 2027.",
+            "sourceIds": [
+              "election-calendar"
+            ]
+          }
+        ],
         "quiz": {
           "id": "state-election-date",
           "prompt": "When did the published INEC calendar schedule state assembly elections?",
@@ -102,8 +164,8 @@
       }
     },
     {
-      "revision": "6007931ab0a7d1d2555135e32b0e47ca3e8ed0f9b30f4df68b82a835905f780e",
-      "reviewer": "Initial source review",
+      "revision": "01e539b2229868bd447e2ce027be4e3dddc0a842919bce904ec48599cfa9ff37",
+      "reviewer": "Source comparison review",
       "story": {
         "id": "mock-accreditation-2026",
         "title": "What INEC’s mock accreditation will test",
@@ -147,6 +209,47 @@
         "context": "Channels Television reported that INEC chair Joash Amupitan announced the rehearsal during a dialogue at Chatham House on 12 November. Accreditation is the part of the polling process when officials confirm a voter’s eligibility at the polling unit.",
         "significance": "The calendar schedules the presidential and National Assembly elections for 16 January 2027.",
         "commitments": [],
+        "sourceComparisons": [
+          {
+            "summary": "Channels Television reported the announcement at Chatham House on 12 November. INEC’s notice the next day recorded the planned date and tests. Both concern the announcement of the same exercise.",
+            "sourceIds": [
+              "mock-report",
+              "mock-notice"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "id": "chatham-house-report",
+            "date": "2026-11-12",
+            "kind": "reported",
+            "title": "Channels Television reports the announcement",
+            "summary": "Channels Television reported that INEC chair Joash Amupitan announced the rehearsal during a dialogue at Chatham House on 12 November.",
+            "sourceIds": [
+              "mock-report"
+            ]
+          },
+          {
+            "id": "mock-notice-posted",
+            "date": "2026-11-13",
+            "kind": "published",
+            "title": "INEC publishes its notice",
+            "summary": "INEC announced a nationwide mock accreditation exercise for 28 November 2026 to test voter accreditation and electronic result transmission.",
+            "sourceIds": [
+              "mock-notice"
+            ]
+          },
+          {
+            "id": "mock-exercise-date",
+            "date": "2026-11-28",
+            "kind": "scheduled",
+            "title": "Mock accreditation scheduled",
+            "summary": "INEC announced a nationwide mock accreditation exercise for 28 November 2026 to test voter accreditation and electronic result transmission.",
+            "sourceIds": [
+              "mock-notice"
+            ]
+          }
+        ],
         "openQuestion": "What did INEC find during the exercise? Look for a dated follow-up from the commission.",
         "quiz": {
           "id": "mock-purpose",
@@ -167,8 +270,8 @@
       }
     },
     {
-      "revision": "8eda07d9d836d37e89a1b69f045fa6b3c04056a51184c6b5f85bebf8f965f59e",
-      "reviewer": "Initial source review",
+      "revision": "ce5caaa0d31e51a68c5fff7675fb11842b9957da31fa405b8242128ba24b1f98",
+      "reviewer": "Source comparison review",
       "story": {
         "id": "presidential-roster-2027",
         "title": "The 2027 presidential candidate list is out",
@@ -262,7 +365,7 @@
             "title": "The Manifesto",
             "publisher": "All Progressives Congress · Renewed Hope",
             "url": "https://renewedhope02.com/manifesto",
-            "evidence": "The APC’s October 2026 manifesto proposes expanding social housing and affordable mortgages, and tracking homes handed over and mortgaged."
+            "evidence": "The APC’s October 2026 manifesto proposes expanding social housing and affordable mortgages. It proposes tracking homes handed over and mortgaged."
           }
         ],
         "explanation": "The INEC list names 18 presidential tickets. It also includes an Accord entry marked “COURT ORDER” with neither nominee named.",
@@ -270,12 +373,47 @@
         "significance": "The calendar schedules the presidential and National Assembly elections for 16 January 2027.",
         "commitments": [
           {
+            "sourceId": "apc-manifesto",
             "title": "Expand social housing and affordable mortgages",
             "kind": "manifesto",
-            "date": "2026-10",
             "personId": "tinubu-bola-ahmed",
-            "sourceId": "apc-manifesto",
-            "comparison": "The INEC list records Tinubu’s APC candidacy. The campaign document supplies measures to compare with later public housing records."
+            "date": "2026-10",
+            "comparison": "The INEC list identifies Tinubu’s APC candidacy. The manifesto proposes a public dashboard counting homes handed over and mortgaged. Published handover and mortgage figures would help assess delivery.",
+            "document": {
+              "url": "https://apc.com.ng/apc-2027-manifesto.pdf",
+              "section": "2027–2031 commitments · Pillar 2 · Mass social housing, affordable mortgages and secured land titles"
+            }
+          }
+        ],
+        "sourceComparisons": [
+          {
+            "summary": "INEC’s notice introduces the roster. Its attached PDF records the 18 named tickets and the separate Accord entry. The notice and PDF are parts of the same publication.",
+            "sourceIds": [
+              "presidential-notice",
+              "presidential-pdf"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "id": "presidential-list-posted",
+            "date": "2026-10-31",
+            "kind": "published",
+            "title": "INEC publishes its presidential list",
+            "summary": "INEC’s publication page links to the final presidential candidate list for the 2027 election.",
+            "sourceIds": [
+              "presidential-notice"
+            ]
+          },
+          {
+            "id": "presidential-election-date",
+            "date": "2027-01-16",
+            "kind": "scheduled",
+            "title": "Presidential and National Assembly elections scheduled",
+            "summary": "The calendar schedules the presidential and National Assembly elections for 16 January 2027.",
+            "sourceIds": [
+              "election-calendar"
+            ]
           }
         ],
         "openQuestion": "Has INEC published a revised entry for the Accord ticket?",
@@ -298,8 +436,8 @@
       }
     },
     {
-      "revision": "0be0af3ed5313e63daac484b6ef2e0650b6a0d744c6ad5cefb2e539fac0c4c8d",
-      "reviewer": "Initial source review",
+      "revision": "eb1beffef3d385ea6551a4b536de8ba2a3eba8fe89df5ebce286aaecb516bbce",
+      "reviewer": "Source comparison review",
       "story": {
         "id": "adebayo-security-statement",
         "title": "Adewole Adebayo names security as a priority",
@@ -334,12 +472,43 @@
         "significance": "The later INEC roster lists Adebayo Adewole Ebenezer as the SDP’s presidential candidate.",
         "commitments": [
           {
+            "sourceId": "sdp-statement",
             "title": "Prioritise national security if elected",
             "kind": "public-statement",
-            "date": "2026-08-06",
             "personId": "national-adebayo-adewole-ebenezer",
-            "sourceId": "sdp-statement",
+            "date": "2026-08-06",
             "comparison": "The later roster establishes the nomination. Assessing delivery would require a documented action, a timeline and relevant implementation records."
+          }
+        ],
+        "sourceComparisons": [
+          {
+            "summary": "Voice of Nigeria reports Adebayo’s campaign statement. The later INEC roster confirms his SDP nomination. The roster is evidence of candidacy and the report is evidence of the stated priority.",
+            "sourceIds": [
+              "sdp-statement",
+              "presidential-pdf"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "id": "security-priority-reported",
+            "date": "2026-08-06",
+            "kind": "reported",
+            "title": "Voice of Nigeria reports Adebayo’s remarks",
+            "summary": "Voice of Nigeria reported that Adewole Adebayo said he would prioritise national security if elected.",
+            "sourceIds": [
+              "sdp-statement"
+            ]
+          },
+          {
+            "id": "sdp-candidacy-listed",
+            "date": "2026-10-31",
+            "kind": "published",
+            "title": "INEC lists Adebayo as the SDP nominee",
+            "summary": "The later INEC roster lists Adebayo Adewole Ebenezer as the SDP’s presidential candidate.",
+            "sourceIds": [
+              "presidential-pdf"
+            ]
           }
         ],
         "openQuestion": "What actions, funding and timing would put this priority into practice?",

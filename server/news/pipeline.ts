@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import type { StoryCommitment, StorySource } from '../../src/story-contract.ts'
+import type { StoryCommitment, StorySource, StorySourceComparison, StoryTimelineEntry } from '../../src/story-contract.ts'
 import { catalogueCapture, contestLinks, knownParty, knownPerson } from './catalogue.ts'
 import { catalogueSources, recipes, sourceConfigs } from './desk.ts'
 import { digest, isDay, isId, isMonth, type Draft, type DraftBatch, type DraftStory, type EvidenceRef, type Recipe, type SourceRecord } from './model.ts'
@@ -13,6 +13,9 @@ const captures: {
 const sourcesById = new Map(sourceConfigs.map(source => [source.id, source]))
 const hosts = new Set(sourceConfigs.filter(source => source.kind === 'html').map(source => new URL(source.url).hostname))
 const unique = <T,>(values: T[]) => [...new Set(values)]
+const evidenceDate = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC',
+})
 
 function validateDesk() {
   if (sourcesById.size !== sourceConfigs.length ||
@@ -30,6 +33,27 @@ function validateDesk() {
     if (known.some(id => !sourcesById.has(id))) throw new Error(`Unknown source in ${recipe.id}`)
     const refs = [...recipe.explanation, ...recipe.context, ...recipe.significance, recipe.quiz]
     if (recipe.commitment) refs.push(recipe.commitment)
+    for (const item of recipe.sourceComparisons ?? []) {
+      if (!item.summary || unique(item.evidence.map(ref => ref.sourceId)).length < 2) {
+        throw new Error(`Invalid source comparison in ${recipe.id}`)
+      }
+      refs.push(...item.evidence)
+    }
+    const timelineIds = new Set<string>()
+    for (const item of recipe.timeline ?? []) {
+      if (!isId(item.id) || !isDay(item.date) || !item.title || !item.evidence.length || timelineIds.has(item.id)) {
+        throw new Error(`Invalid timeline entry in ${recipe.id}`)
+      }
+      const dateSupported = item.evidence.some(ref => {
+        const source = sourcesById.get(ref.sourceId)
+        if (item.kind !== 'scheduled') return source?.publishedAt === item.date
+        const summary = source?.evidence[ref.fact]?.summary
+        return summary && matches(normalize(summary), [[evidenceDate.format(new Date(item.date))]])
+      })
+      if (!dateSupported) throw new Error(`Unconfirmed timeline date in ${recipe.id}/${item.id}`)
+      timelineIds.add(item.id)
+      refs.push(...item.evidence)
+    }
     if (refs.some(ref => !Object.hasOwn(sourcesById.get(ref.sourceId)?.evidence ?? {}, ref.fact))) {
       throw new Error(`Unknown evidence reference in ${recipe.id}`)
     }
@@ -57,8 +81,12 @@ function buildDraft(recipe: Recipe, records: SourceRecord[]): Draft {
   if (!primary) throw new Error('The original publication could not be confirmed')
   const attached = unique([primary, ...clustered, ...records.filter(record => recipe.supporting?.includes(record.config.id))])
   const byId = new Map(attached.map(record => [record.config.id, record]))
+  const evidence = (ref: EvidenceRef) => byId.get(ref.sourceId)?.facts[ref.fact]
+  const hasEvidence = (refs: EvidenceRef[]) => refs.every(ref => Boolean(evidence(ref)))
+  const evidenceSources = (refs: EvidenceRef[]) => unique(refs.map(ref => ref.sourceId))
+
   function fact(ref: EvidenceRef) {
-    const value = byId.get(ref.sourceId)?.facts[ref.fact]
+    const value = evidence(ref)
     if (!value) throw new Error(`Unconfirmed evidence: ${ref.sourceId}/${ref.fact}`)
     return value
   }
@@ -71,11 +99,22 @@ function buildDraft(recipe: Recipe, records: SourceRecord[]): Draft {
   const partyCodes = unique([...(recipe.parties ?? []), ...(race?.parties ?? [])]).sort()
   const commitments: StoryCommitment[] = []
   const commitment = recipe.commitment
-  if (commitment && byId.get(commitment.sourceId)?.facts[commitment.fact]) {
+  if (commitment && evidence(commitment)) {
     if (!personIds.includes(commitment.personId)) throw new Error('Commitment is unlinked to the story subject')
-    const { title, kind, date, personId, sourceId, comparison } = commitment
-    commitments.push({ title, kind, date, personId, sourceId, comparison })
+    const { fact: _fact, ...details } = commitment
+    commitments.push(details)
   }
+
+  const sourceComparisons: StorySourceComparison[] = (recipe.sourceComparisons ?? [])
+    .filter(item => hasEvidence(item.evidence))
+    .map(item => {
+      const [first, second, ...others] = evidenceSources(item.evidence)
+      return { summary: item.summary, sourceIds: [first, second, ...others] }
+    })
+  const timeline: StoryTimelineEntry[] = (recipe.timeline ?? [])
+    .filter(item => hasEvidence(item.evidence))
+    .map(({ evidence: refs, ...item }) => ({ ...item, summary: paragraph(refs), sourceIds: evidenceSources(refs) }))
+    .sort((a, b) => a.date.localeCompare(b.date))
 
   const explanation = paragraph(recipe.explanation)
   const context = paragraph(recipe.context)
@@ -95,7 +134,10 @@ function buildDraft(recipe: Recipe, records: SourceRecord[]): Draft {
   const story: DraftStory = {
     id: recipe.id, title: recipe.title, topic: recipe.topic, publishedAt: primary.config.publishedAt!,
     personIds, partyCodes, sources: [toSource(primary), ...attached.slice(1).map(toSource)],
-    explanation, context, significance, commitments, ...(recipe.openQuestion && { openQuestion: recipe.openQuestion }),
+    explanation, context, significance, commitments,
+    ...(sourceComparisons.length > 0 && { sourceComparisons }),
+    ...(timeline.length > 0 && { timeline }),
+    ...(recipe.openQuestion && { openQuestion: recipe.openQuestion }),
     quiz: { id, prompt, options, correct: options.indexOf(answer), explanation: quizExplanation, sourceIds: [sourceId] },
   }
   return {
