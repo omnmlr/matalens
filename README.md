@@ -31,6 +31,10 @@ Browser tests use the system Chromium if available. Otherwise run `npx playwrigh
 - **Rights and practice** cover ballot secrecy, voting assistance, polling units, intimidation and vote buying. Learn through voting rehearsal, symbol clues and candidate-to-party practice. The built app can reopen guides and plans offline after the service worker has installed. INEC links, new submissions and receipt retrieval use the network.
 - **Civic Camera and My Actions** accept an original image with consent and factual context, preserve it privately, and issue a 256-bit bearer receipt. Download or copy the receipt to reopen the report in another browser. Guests can check status, view a metadata-stripped preview and withdraw the evidence. Reports are received by MataLens for review.
 
+## Political news API
+
+The same app serves a reviewed political briefing at `/api/stories`, with source links, catalogue identities and learning questions. The [news desk guide](docs/NEWS_INTELLIGENCE.md) covers collection, review, API use and integration with the political-learning frontend.
+
 ## Run a hosted pilot
 
 `npm start` serves the built client and API from the same origin. New intake stays disabled until all of these variables are supplied. See [.env.example](.env.example).
