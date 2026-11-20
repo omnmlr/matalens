@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Calendar, Camera, MapPin, ChevronRight } from 'lucide-react'
 import { contestPath, presidential, rosterFor } from './catalogue'
 import { FollowedPeople } from './follow'
 import { dailyLesson } from './learning-data'
@@ -7,7 +7,8 @@ import type { Follows } from './people'
 import { nigeriaDate } from './state'
 import { storyPath } from './stories'
 import { FeedNotice, SampleLabel, StoryList, StoryMeta, type StoryFeed } from './story-ui'
-import { ActionLink } from './ui'
+import { ActionLink, External } from './ui'
+import { links } from './content'
 
 const editionDate = new Intl.DateTimeFormat('en-NG', { timeZone: 'Africa/Lagos', weekday: 'long', day: 'numeric', month: 'long' })
 const ticketCount = rosterFor(presidential).length
@@ -23,7 +24,10 @@ export function HomePage({ feed, follows, progress }: { feed: StoryFeed; follows
         <p className="editorial-kicker">The Nigeria briefing</p>
         <h1 id="briefing-heading">Politics in <em>focus.</em></h1>
         <p>Follow the people shaping public life. Understand what happened, then go straight to the source.</p>
-        <ActionLink href="#briefing" down>Read the briefing</ActionLink>
+        <div className="briefing-actions">
+          <ActionLink href="#briefing" down>Read the briefing</ActionLink>
+          <a className="button button-secondary" href="/elections">2027 election guide <ChevronRight size={16} /></a>
+        </div>
       </div>
       <a className="election-cover" href={contestPath(presidential)}>
         <span className="cover-art" aria-hidden="true"><i /><i /><i /><i /></span>
@@ -44,6 +48,7 @@ export function HomePage({ feed, follows, progress }: { feed: StoryFeed; follows
           <StoryMeta story={lead} />
           <h3><a href={storyPath(lead.id)}>{lead.title}</a></h3>
           <p>{lead.explanation}</p>
+          {lead.sources.length > 0 && <div className="lead-source-line"><External href={lead.sources[0].url}>{lead.sources[0].publisher}</External></div>}
           <a className="text-link" href={storyPath(lead.id)}>Read the story <ArrowRight size={16} aria-hidden="true" /></a>
         </article>
         <StoryList stories={otherStories.slice(0, 2)} />
@@ -64,5 +69,22 @@ export function HomePage({ feed, follows, progress }: { feed: StoryFeed; follows
     </section>
 
     <DailyLesson key={lesson.id} lesson={lesson} {...progress} />
+
+    <section className="editorial-section capabilities-tray">
+      <div className="capabilities-grid">
+        <a className="capability-card" href={links.polling}>
+          <MapPin size={22} strokeWidth={1.7} />
+          <div><p className="capability-kicker">Polling unit</p><strong className="capability-title">Find where you vote</strong><small className="capability-note">Check your assigned unit with INEC before election day.</small></div>
+        </a>
+        <a className="capability-card" href={links.calendar}>
+          <Calendar size={22} strokeWidth={1.7} />
+          <div><p className="capability-kicker">Election dates</p><strong className="capability-title">2027 timetable</strong><small className="capability-note">Presidential and National Assembly elections on 16 January 2027.</small></div>
+        </a>
+        <a className="capability-card" href="/camera">
+          <Camera size={22} strokeWidth={1.7} />
+          <div><p className="capability-kicker">Civic Camera</p><strong className="capability-title">Document a concern</strong><small className="capability-note">Share a public result sheet or community issue privately.</small></div>
+        </a>
+      </div>
+    </section>
   </div>
 }

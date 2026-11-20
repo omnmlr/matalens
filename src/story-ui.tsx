@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, Bookmark, ChevronDown, FileText } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Bookmark, ChevronDown, FileText, Clock, GitCompare, Quote } from 'lucide-react'
 import { identities, partyNames, partyPath } from './catalogue'
 import { personPath } from './people'
 import { QuickCheck, storyExerciseId, type Progress } from './learning'
@@ -130,12 +130,18 @@ export function StoryPage({ id, feed, progress, saves }: { id: string; feed: Sto
         {story.commitments.length > 0 && <section className="story-commitments"><h2>Compare with commitments</h2>
           {story.commitments.map((item, index) => {
             const source = story.sources.find(source => source.id === item.sourceId)
-            return <Evidence key={index} label={item.title}>
-              <p className="story-meta"><span>{item.kind === 'manifesto' ? 'Manifesto' : 'Attributed campaign statement'}</span>
-                <time dateTime={item.date}>{nigeriaDate(item.date, item.date.length === 7 ? { month: 'long', year: 'numeric' } : undefined)}</time></p>
-              {identities[item.personId] && <p><a className="text-link" href={personPath(item.personId)}>{identities[item.personId].name}</a></p>}
-              <p>{item.comparison}</p>{source && <External href={source.url}>{source.title}</External>}
-            </Evidence>
+            return <article key={index} className="commitment-entry">
+              <header className="commitment-head">
+                <div className="commitment-meta">
+                  <span className="commitment-kind">{item.kind === 'manifesto' ? <><Quote size={13} aria-hidden="true" /> Manifesto</> : <><GitCompare size={13} aria-hidden="true" /> Attributed statement</>}</span>
+                  <time dateTime={item.date} className="commitment-date">{nigeriaDate(item.date, item.date.length === 7 ? { month: 'long', year: 'numeric' } : undefined)}</time>
+                </div>
+                <h3 className="commitment-title">{item.title}</h3>
+              </header>
+              {identities[item.personId] && <p className="commitment-person"><a className="text-link" href={personPath(item.personId)}>{identities[item.personId].name}</a></p>}
+              <p className="commitment-comparison">{item.comparison}</p>
+              {source && <External href={source.url} className="commitment-source">{source.title}</External>}
+            </article>
           })}
         </section>}
         {story.openQuestion && <section className="open-question"><h2>Open question</h2><p>{story.openQuestion}</p></section>}
