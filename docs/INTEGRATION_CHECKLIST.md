@@ -2,6 +2,8 @@
 
 The backend review branch is [codex/matalens-news-intelligence](https://github.com/omnmlr/matalens/tree/codex/matalens-news-intelligence). Chisom’s frontend starts from [f80c393](https://github.com/omnmlr/matalens/commit/f80c393a74351ad61eb977deeb935a8ec6f8d7dd). Use his pushed branch for the final integration and record both input commit SHAs with the demo results.
 
+The [release handoff](RELEASE_HANDOFF.md) records the pinned frontend and backend commits, the integrated test results and the production deployment.
+
 ## Merge review
 
 - [ ] Fetch the two remote heads. Check the frontend history against `f80c393`, inspect each branch’s changes from its merge base, and dry-run the merge with `git merge-tree --write-tree <backend-ref> <frontend-ref>`.
@@ -36,7 +38,7 @@ The Playwright suite builds the app with the provided environment and an isolate
 - [ ] **Responsive and accessibility.** Check 390 px mobile and 1440 px desktop in light and dark themes. Check 320 px for horizontal overflow and keyboard access for navigation, story disclosure and quiz controls. Run the existing accessibility and reduced-motion checks in the suite.
 - [ ] **Demo evidence.** Capture the briefing and a story showing source context at both widths and themes. Include a quiz result and, if it helps the demo, a synthetic Camera screen with no visible receipt token or private data. Record the tested commit, viewport, theme and passing commands. Capture mobile and desktop after reviewing the actual combined build.
 
-## Production-mode smoke check
+## Standalone production-mode smoke check
 
 Follow the [production runbook](RELEASE_RUNBOOK.md) to run the exact candidate locally. Use a clean shell with `MATALENS_NEWS_EDITION` unset and `MATALENS_ENABLE_UPLOADS=0`:
 
@@ -55,4 +57,12 @@ curl -sS -i http://127.0.0.1:3000/api/receipt
 curl -sS -i http://127.0.0.1:3000/api/unavailable
 ```
 
-Expect a five-item reviewed collection, a sourced detail, `uploadsEnabled: false`, HTTP 401 for a receipt request without a bearer token, and a JSON 404 in that order. Open the built client on the same origin and use the [demo walkthrough](NEWS_INTELLIGENCE.md#demo-walkthrough). Production hosting and any merge into main require approval.
+Expect a five-item reviewed collection, a sourced detail, `uploadsEnabled: false`, HTTP 401 for a receipt request without a bearer token, and a JSON 404 in that order. Open the built client on the same origin and use the [demo walkthrough](RELEASE_HANDOFF.md#three-minute-demo).
+
+## Vercel smoke check
+
+- [ ] Compare the deployment’s uploaded file hashes to `vercel-release/`. Check both Home and a story deep link, the referenced script and stylesheet, `/sw.js`, and the bundled Manrope and Newsreader fonts.
+- [ ] Check the five reviewed stories, a known catalogue filter and at least one nested story detail. Verify the public API and the private route errors use `Cache-Control: no-store`. Confirm a missing story or invalid API route returns JSON 404.
+- [ ] Confirm `/api/intake` reports `persistent-storage-unavailable` and `/api/receipt/photo` and `/api/reports` return 503. In the browser, confirm the Camera page explains what is unavailable and omits the file picker.
+- [ ] After the service worker activates, verify the shell can reopen and that no private API entries are cached. Open Discover, follow a candidate, save a story, answer its quiz, and reload My Desk.
+- [ ] Stage and verify the release before promotion. Repeat the hosted checks at the production URL and retain the prior deployment for rollback. [Runbook](RELEASE_RUNBOOK.md)
