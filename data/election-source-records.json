@@ -1,0 +1,2363 @@
+{
+  "offices": {
+    "president": [
+      "President",
+      "national",
+      "2027-01-16"
+    ],
+    "governor": [
+      "Governor",
+      "state",
+      "2027-02-06"
+    ],
+    "senate": [
+      "Senate",
+      "district",
+      "2027-01-16"
+    ],
+    "house": [
+      "House of Representatives",
+      "federal constituency",
+      "2027-01-16"
+    ],
+    "assembly": [
+      "State House of Assembly",
+      "state constituency",
+      "2027-02-06"
+    ]
+  },
+  "sources": {
+    "calendar": {
+      "label": "INEC election calendar",
+      "url": "https://www.inecnigeria.org/elections/calendar",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": null,
+      "reviewed": "2026-11-20"
+    },
+    "register": {
+      "label": "INEC registered political parties",
+      "url": "https://www.inecnigeria.org/parties",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": null,
+      "reviewed": "2026-11-20"
+    },
+    "presidential-2027": {
+      "label": "INEC final presidential list",
+      "url": "https://inecnigeria.org/documents/uploads/2026/10/b5af9099-864c-4d5e-924d-e1a2c771c529-final-list-presidential.pdf",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": "2026-10-31",
+      "reviewed": "2026-11-20"
+    },
+    "lagos-governor": {
+      "label": "INEC Lagos governorship list",
+      "url": "https://www.inecnigeria.org/documents/uploads/2026/10/d93fe7ec-8438-4222-94a3-405d2aa2d0e6-final-list-lagos-governorship.pdf",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": "2026-10-31",
+      "reviewed": "2026-11-20"
+    },
+    "lagos-senate": {
+      "label": "INEC Lagos Senate list",
+      "url": "https://www.inecnigeria.org/documents/uploads/2026/10/9b209609-1e9e-428c-ae67-26b2b7973cec-final-list-lagos-senatorial-districts.pdf",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": null,
+      "reviewed": "2026-11-20"
+    },
+    "oyo-senate": {
+      "label": "INEC Oyo Senate list",
+      "url": "https://www.inecnigeria.org/documents/uploads/2026/10/c7bcba45-c7eb-49a1-8cc9-89d14062dce5-final-list-oyo-senatorial-districts.pdf",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": null,
+      "reviewed": "2026-11-20"
+    },
+    "edo-senate": {
+      "label": "INEC Edo Senate list",
+      "url": "https://www.inecnigeria.org/documents/uploads/2026/10/f0e1cbc6-3714-492b-8501-fc430cba3ec2-final-list-edo-senatorial-districts.pdf",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": null,
+      "reviewed": "2026-11-20"
+    },
+    "lagos-house": {
+      "label": "INEC Lagos House of Representatives list",
+      "url": "https://www.inecnigeria.org/documents/uploads/2026/10/b7e9758b-56ae-4068-89c0-8a4b38dd5d35-final-list-lagos-house-of-representatives.pdf",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": null,
+      "reviewed": "2026-11-20"
+    },
+    "lagos-assembly": {
+      "label": "INEC Lagos State House of Assembly list",
+      "url": "https://www.inecnigeria.org/documents/uploads/2026/11/3a98d2ad-ccb7-4787-b919-85229f7ac426-final-list-lagos-state-house-of-assembly.pdf",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": "2026-11-14",
+      "reviewed": "2026-11-20"
+    },
+    "surulere-i": {
+      "label": "INEC Lagos House list · page 14",
+      "url": "https://www.inecnigeria.org/documents/uploads/2026/10/b7e9758b-56ae-4068-89c0-8a4b38dd5d35-final-list-lagos-house-of-representatives.pdf#page=14",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": null,
+      "reviewed": "2026-11-20"
+    },
+    "declaration-2023": {
+      "label": "INEC 2023 General Election Report · Annexure 2",
+      "url": "https://wp1.inecnigeria.org/wp-content/uploads/2024/02/2023-GENERAL-ELECTION-REPORT-1.pdf#page=457",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "published": "2024-02",
+      "reviewed": "2026-11-20"
+    },
+    "oyo-governor": {
+      "label": "INEC Oyo governorship list",
+      "url": "https://www.inecnigeria.org/documents/uploads/2026/10/67453900-d8a3-4c9a-a123-595e678b8529-final-list-oyo-governorship.pdf",
+      "published": "2026-10-31",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "reviewed": "2026-11-20"
+    },
+    "oyo-assembly": {
+      "label": "INEC Oyo State Assembly list",
+      "url": "https://www.inecnigeria.org/documents/uploads/2026/11/a752f3ef-224f-4d5b-8ffb-fbfe23436e4a-final-list-oyo-state-house-of-assembly.pdf",
+      "published": "2026-11-14",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "reviewed": "2026-11-20"
+    },
+    "roster-2023": {
+      "label": "INEC September 2022 final list · Presidential tickets",
+      "url": "https://www.inecnigeria.org/documents/Final-List-of-Candidates-for-National-Elections-1.pdf",
+      "published": "2022-09-20",
+      "publisher": "Independent National Electoral Commission (INEC)",
+      "reviewed": "2026-11-20"
+    }
+  },
+  "partyNames": {
+    "A": "Accord",
+    "AA": "Action Alliance",
+    "AAC": "African Action Congress",
+    "ADC": "African Democratic Congress",
+    "ADP": "Action Democratic Party",
+    "APC": "All Progressives Congress",
+    "APGA": "All Progressives Grand Alliance",
+    "APM": "Allied Peoples Movement",
+    "APP": "Action Peoples Party",
+    "BP": "Boot Party",
+    "DLA": "Democratic Leadership Alliance",
+    "LP": "Labour Party",
+    "NDC": "Nigeria Democratic Congress",
+    "NDP": "National Democratic Party",
+    "NNPP": "New Nigeria Peoples Party",
+    "NRM": "National Rescue Movement",
+    "PDP": "Peoples Democratic Party",
+    "PRP": "Peoples Redemption Party",
+    "SDP": "Social Democratic Party",
+    "YPP": "Young Progressives Party",
+    "ZLP": "Zenith Labour Party"
+  },
+  "contests": [
+    {
+      "id": "2027-president",
+      "office": "president",
+      "label": "2027 presidential election",
+      "state": null,
+      "sourceId": "presidential-2027",
+      "expected": 18,
+      "rows": [
+        {
+          "number": 2,
+          "party": "AA",
+          "name": "RUFAI ADEKUNLE F OMO-AJE",
+          "qual": "FLSC WAEC",
+          "age": 71,
+          "mate": "SHEHU HUSSAINI",
+          "mateQual": "FSLC G.S.S, Yabo F.C.E Zaria"
+        },
+        {
+          "number": 3,
+          "party": "AAC",
+          "name": "SOWORE OMOYELE",
+          "qual": "FSLC WAEC MASTERS DEGREE",
+          "age": 55,
+          "mate": "MAGASHI HARUNA GARBA",
+          "mateQual": "FSLC WAEC LLB"
+        },
+        {
+          "number": 4,
+          "party": "ADC",
+          "name": "ABUBAKAR ATIKU",
+          "qual": "F.S.L.C. WASC MA. (INT. RELATIONS",
+          "age": 79,
+          "mate": "AMAECHI CHIBUIKE ROTIMI",
+          "mateQual": "FSLC WAEC B.A. ENGLISH STUDIES"
+        },
+        {
+          "number": 5,
+          "party": "ADP",
+          "name": "ABBAS-BIN ALIYU",
+          "qual": "FSLC SSCE BSC",
+          "age": 44,
+          "mate": "IKE CHINAZAM",
+          "mateQual": "FSLC SSCE BNG"
+        },
+        {
+          "number": 6,
+          "party": "APC",
+          "name": "TINUBU BOLA AHMED",
+          "qual": "B.Sc",
+          "age": 74,
+          "mate": "SHETTIMA KASHIM",
+          "mateQual": "FSLC GENERAL CERTIFICATE OF EDUCATION B.Sc"
+        },
+        {
+          "number": 7,
+          "party": "APM",
+          "name": "MAKINDE OLUSEYI ABIODUN",
+          "qual": "BISHOP PHILIPS ACADEMY IBADAN · UNIVERSITY OF LAGOS, AKOKA",
+          "age": 58,
+          "mate": "MUSA LAWAL DAURA",
+          "mateQual": "FSLC GCE B.A (HONS) ABU ZARIA"
+        },
+        {
+          "number": 8,
+          "party": "APP",
+          "name": "YUSUF KABIRU",
+          "qual": "FSLC SSCE NATIONAL DIPLOMA",
+          "age": 54,
+          "mate": "OFORDILE PEACE EGOBIA",
+          "mateQual": "SSCE"
+        },
+        {
+          "number": 9,
+          "party": "BP",
+          "name": "ADENUGA SUNDAY",
+          "qual": "FSLC SSCE Masters",
+          "age": 52,
+          "mate": "MUSTAPHA USMAN TURAKI",
+          "mateQual": "FSLC NABTEB DIPLOMA"
+        },
+        {
+          "number": 10,
+          "party": "DLA",
+          "name": "ADEBISI MOSES OLUSOJI",
+          "qual": "FSLC SSCE BSc",
+          "age": 35,
+          "mate": "ABUBAKAR NAFISAT USAKU",
+          "mateQual": "FSLC SSCE BSc"
+        },
+        {
+          "number": 11,
+          "party": "LP",
+          "name": "OKEREKE SUNDAY CHIBUZO",
+          "qual": "FSLC NABTEC Ph.D., MLS (Distinction), MSC (Distinction) & BSC (Hons) (Nig)",
+          "age": 43,
+          "mate": "KONTO HAJJA BINTU",
+          "mateQual": "FSLC WAEC MPH; BSC (Hons) Health Education & Certificate in General Nursing"
+        },
+        {
+          "number": 12,
+          "party": "NDC",
+          "name": "OBI PETER GREGORY",
+          "qual": "ST. AUGUSTINES PRIMARY SCHOOL · ANAMBRA CHRIST THE KING · COLLEGE (C.K.C) WASC UNN B.A.",
+          "age": 65,
+          "mate": "MUSA MOHAMMED RABIU KWANKWASO",
+          "mateQual": "FSLC TTC CRAFT TRAINING CERT., · OND, HND, PGD, M.SC, PH.D"
+        },
+        {
+          "number": 13,
+          "party": "NDP",
+          "name": "OKWORI ADA ELIZABETH FREDRICK",
+          "qual": "FSLC SSCE HND ACCOUNTANCY",
+          "age": 48,
+          "mate": "CHUKWUEMEKA UCHENNA ANTHONY",
+          "mateQual": "FSLC SSCE L.L.B"
+        },
+        {
+          "number": 14,
+          "party": "NRM",
+          "name": "OKEREKE NKEM ESTHER",
+          "qual": "FSLC SSCE Bsc, MSC, Phd",
+          "age": 43,
+          "mate": "SULAIMAN NASIR MUHAMMED",
+          "mateQual": "FSLC SSCE"
+        },
+        {
+          "number": 15,
+          "party": "PDP",
+          "name": "ONOR SANDY OJANG",
+          "qual": "FSLC W.A.S.C. PH.D",
+          "age": 60,
+          "mate": "UMARU BABANGIDA",
+          "mateQual": "FSLC W.A.S.C. DIPLOMA"
+        },
+        {
+          "number": 16,
+          "party": "PRP",
+          "name": "DUKE DONALD",
+          "qual": "FSLC WASC LLB",
+          "age": 64,
+          "mate": "MOHAMMED SULE",
+          "mateQual": "WASC, BSC"
+        },
+        {
+          "number": 17,
+          "party": "SDP",
+          "name": "ADEBAYO ADEWOLE EBENEZER",
+          "qual": "FSLC WASCE LLB",
+          "age": 54,
+          "mate": "BUGAJE USMAN MUHAMMED",
+          "mateQual": "FSLC SSCE PHD"
+        },
+        {
+          "number": 18,
+          "party": "YPP",
+          "name": "AGADA PETER ADA",
+          "qual": "WAEC BSc, & MBA",
+          "age": 54,
+          "mate": "KEY PATIENCE NDIDI",
+          "mateQual": "WAEC BSc. & MBA"
+        },
+        {
+          "number": 19,
+          "party": "ZLP",
+          "name": "NWANYANWU DANIEL DABERECHUKWU",
+          "qual": "FSLC WAEC LLB, LLM",
+          "age": 66,
+          "mate": "HASSAN KHALID",
+          "mateQual": "FSLC SSCE PGD"
+        }
+      ],
+      "notes": [
+        "INEC’s final list has 19 party entries. Accord (A) has no presidential or vice-presidential names and is marked “COURT ORDER”. The named roster therefore contains 18 tickets."
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-presidential-election"
+    },
+    {
+      "id": "2027-lagos-governor",
+      "office": "governor",
+      "label": "Lagos governorship",
+      "state": "Lagos",
+      "sourceId": "lagos-governor",
+      "expected": 17,
+      "rows": [
+        {
+          "number": 1,
+          "party": "A",
+          "name": "SOWORE OTITOLOJU ROBERT",
+          "qual": "primary SSCE BSC",
+          "age": 58,
+          "mate": "CHINYERE AKABUEZE",
+          "mateQual": "primary SSCE BSC"
+        },
+        {
+          "number": 2,
+          "party": "AA",
+          "name": "SALAWU KAMARUDEEN",
+          "qual": "Frist School Leaving Certificate SSC Technical certificate",
+          "age": 47,
+          "mate": "GANIU ISMAIL SAMUEL",
+          "mateQual": "Frist School Leaving Certificate Neco B.S.c"
+        },
+        {
+          "number": 3,
+          "party": "AAC",
+          "name": "SOL-NUYI OLUWADAMOLA ADESOCA",
+          "qual": "B tech",
+          "age": 55,
+          "mate": "SAMSON EMEM EFUNTOLA",
+          "mateQual": "FSLC SSLC NBA"
+        },
+        {
+          "number": 4,
+          "party": "ADC",
+          "name": "GBADEBO RHODES VIVOUR",
+          "qual": "PRIMARY LEAVING CERTIFICATE SSCE BSc/Msc",
+          "age": 43,
+          "mate": "GBADAMOSI BABATUNDE OLALERE",
+          "mateQual": "PRIMARY LEAVING CERTIFICATE WAEC"
+        },
+        {
+          "number": 5,
+          "party": "ADP",
+          "name": "BOLAJI NASIR ADEWALE",
+          "qual": "FSCL SSCE LLB HONS",
+          "age": 73,
+          "mate": "OJO OLAOJO SAMUEL",
+          "mateQual": "FSCL SSCE HND"
+        },
+        {
+          "number": 6,
+          "party": "APC",
+          "name": "HAMZAT KADRI OBAFEMI",
+          "qual": "WEST AFRICAN CERTIFICATE EXAMINATION BS.c",
+          "age": 62,
+          "mate": "JAMES DAMILOLA SONAYON",
+          "mateQual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE BS.c"
+        },
+        {
+          "number": 7,
+          "party": "APM",
+          "name": "ADEOYE ADELAJA AZEEZ",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE · UNIVERSITY OF LAGOS, LEAD CITY",
+          "age": 45,
+          "mate": "ADENUGA OLUWAKEMI RAHMAT",
+          "mateQual": "FSLC SSCE BSC EDU"
+        },
+        {
+          "number": 8,
+          "party": "APP",
+          "name": "ADEYEMI ABIOLA",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE BSC",
+          "age": 49,
+          "mate": "OLAOYE SOLOMON ADEKUNLE",
+          "mateQual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE BED EDUCATION"
+        },
+        {
+          "number": 9,
+          "party": "LP",
+          "name": "ODUNAIKE OLUWAPEMILERIN OLUROTMI",
+          "qual": "WAEC/SSCE BSC & MBA",
+          "age": 49,
+          "mate": "ADELE LATEEF ADEKUNLE AYINLA",
+          "mateQual": "FSLC WAEC/SSEC"
+        },
+        {
+          "number": 10,
+          "party": "NDC",
+          "name": "DOHERTY OLUFUNSO ADESHINA",
+          "qual": "FSLC GCE BSC, MBA",
+          "age": 58,
+          "mate": "ANMASHAUN MORIAM TOLANI",
+          "mateQual": "CORONA SCHOOL VI LAGOS UNIVERSITY OF BECKINHAM UK"
+        },
+        {
+          "number": 11,
+          "party": "NDP",
+          "name": "OBADIA AKINOLA",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SENIOR SCHOOL CERTIFICATE H.N.D",
+          "age": 56,
+          "mate": "SONITAN GRACE MOTUNRAYO",
+          "mateQual": "FIRST SCHOOL LEAVING CERTIFICATE SENIOR SCHOOL CERTIFICATE B.S.C"
+        },
+        {
+          "number": 12,
+          "party": "NNPP",
+          "name": "ONIFADE ADEMOYEGUN TAIWO",
+          "qual": "SSCE(GRADE II) BSC",
+          "age": 62,
+          "mate": "WONOPWA DAUDA MAGAGI",
+          "mateQual": "FLCS SSCE SCHOOL OF AVIATION"
+        },
+        {
+          "number": 13,
+          "party": "NRM",
+          "name": "ONIGBOKUN ADEMOLA JOSEPH",
+          "qual": "FSLC WAEC OND",
+          "age": 53,
+          "mate": "ONANUGA ABIMBOLA",
+          "mateQual": "FSLC WAEC BSC/MASTERS"
+        },
+        {
+          "number": 14,
+          "party": "PDP",
+          "name": "DOHERTY ADEDEJI OLUGBEMIGA",
+          "qual": "MARYHILL COVENANT SCHOOL, IBADAN-PSLC GMS GRAMMAR SCHOOL, LAGOS-GCE CENTRAL STATE UNIVERSITY, USA-B.ENG",
+          "age": 64,
+          "mate": "BELLO KHADIJAT ABIKE",
+          "mateQual": "FSLC(COMMAND CHILDREN SCHOOL, IKEJA) SSCE(TOPMOST INTERNATIONAL COMPREHENSIVE) B. SC. (UNIVERSITY OF ILORIN)"
+        },
+        {
+          "number": 15,
+          "party": "SDP",
+          "name": "OLANIYI OLUFEMI",
+          "qual": "FSLC SSCE ND",
+          "age": 52,
+          "mate": "KAYODE EVELYN ADERIYIKE",
+          "mateQual": "FSLC SSCE B.SC"
+        },
+        {
+          "number": 16,
+          "party": "YPP",
+          "name": "TAIWO TEMITOPE ELIJAH",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE",
+          "age": 46,
+          "mate": "ANIBINIRAN YABODE OMOLABAKE",
+          "mateQual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE HND"
+        },
+        {
+          "number": 17,
+          "party": "ZLP",
+          "name": "PETER HELEN OJOTULE",
+          "qual": "FSLC SSCE",
+          "age": 36,
+          "mate": "ADENIPEBI ADELANI ORIYOMI",
+          "mateQual": "FSLC SSCE"
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-final-list-of-candidates-for-2027-governorship-election"
+    },
+    {
+      "id": "2027-oyo-governor",
+      "office": "governor",
+      "label": "Oyo governorship",
+      "state": "Oyo",
+      "sourceId": "oyo-governor",
+      "expected": 17,
+      "rows": [
+        {
+          "number": 1,
+          "name": "ORIYOMI HAMZAT ABDULRAHMAN",
+          "party": "A",
+          "age": 46,
+          "qual": "FSLC SSCE B.SC/MA",
+          "mate": "ADESOKAN TAIWO BIMPE",
+          "mateQual": "FSLC SSCE PH.D"
+        },
+        {
+          "number": 2,
+          "name": "OLADELE SAHEED",
+          "party": "AAC",
+          "age": 44,
+          "qual": "BACHELOR OF ARTS",
+          "mate": "JAYE DAMOLA TUNRAYO",
+          "mateQual": "BACHELOR OF SCIENCE"
+        },
+        {
+          "number": 3,
+          "name": "ADEGOKE TAOFEEK ADEGBOYEGA",
+          "party": "ADC",
+          "age": 62,
+          "qual": "PRIMARY LEAVING CERTIFICATE WAEC BSc",
+          "mate": "SALAKO ADEROJU OLADAYO",
+          "mateQual": "FSLC SSCE B.TECH"
+        },
+        {
+          "number": 4,
+          "name": "OLATUNJI KUNLE JAMES",
+          "party": "ADP",
+          "age": 58,
+          "qual": "FSLC WAEC B.SC (HON) (Geography & Planning / MBA",
+          "mate": "OLANREWAJU TAOFEEK",
+          "mateQual": "FSLC WAEC"
+        },
+        {
+          "number": 5,
+          "name": "ALLI SHARAF ADEEN ABIODUN",
+          "party": "APC",
+          "age": 63,
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE WAEC · BACHELOR OF LAWS",
+          "mate": "ADEDEJI ADESOJI MICHAEL",
+          "mateQual": "NECO BSc ECONOMICS"
+        },
+        {
+          "number": 6,
+          "name": "SALAMI GBOLAGADE TAJUDEEN",
+          "party": "APGA",
+          "age": 58,
+          "qual": "FSLC WAEC ND, HND, MBA",
+          "mate": "OYEWOLE EMMANUEL OYETAYO",
+          "mateQual": "FSLC WAEC POST GRADUATE DIPLOMA"
+        },
+        {
+          "number": 7,
+          "name": "ADEKANMBI ABIMBOLA",
+          "party": "APM",
+          "age": 53,
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE OAU, IFFE",
+          "mate": "SALAWU MUFTAU OPEN",
+          "mateQual": "SSCE MASTER OF ENGINEERING"
+        },
+        {
+          "number": 8,
+          "name": "TIJANI ISMAILA AKINBOYE",
+          "party": "APP",
+          "age": 64,
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE WAEC OND",
+          "mate": "FANEYE YEMISI",
+          "mateQual": ""
+        },
+        {
+          "number": 9,
+          "name": "KAREEM THOMPSON SOLA",
+          "party": "LP",
+          "age": 58,
+          "qual": "FSLC WAEC HND",
+          "mate": "OLABODE SIMEON BOLAJI",
+          "mateQual": "FSLC O'LEVEL HND"
+        },
+        {
+          "number": 10,
+          "name": "YUSUF AKIM ADEBOLA",
+          "party": "NDC",
+          "age": 57,
+          "qual": "PRIMARY SCHOOL CERTIFICATE SECONDARY SCHOOL CERTIFICATE B.SC POLITICAL SCIENCE",
+          "mate": "OLOWOOKERE MONSURAT AYOADE",
+          "mateQual": "PRIMARY SCHOOL CERYIFICATE SSCE TEACHERS CERTIFICATE GRADE 2"
+        },
+        {
+          "number": 11,
+          "name": "TAIWO IBIYEMI OTEGBEYE",
+          "party": "NDP",
+          "age": 59,
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SENIOR SCHOOL CERTIFICATE B.S.C",
+          "mate": "ADENIJI SELIAT OLAJUMOKE",
+          "mateQual": "SSCE BSC"
+        },
+        {
+          "number": 12,
+          "name": "OGUNJIMI ADEWUMI JOSEPH",
+          "party": "NNPP",
+          "age": 65,
+          "qual": "FSLC WAEC BSC",
+          "mate": "FOLAWIYO MOSHOOD OLADIPUPO",
+          "mateQual": "FSLC SSCE COLLEGE OF AGRIC"
+        },
+        {
+          "number": 13,
+          "name": "AFOLABI TAOFEEK ADEMOLA",
+          "party": "NRM",
+          "age": 60,
+          "qual": "FSLC SSCE CIEMA USA",
+          "mate": "OYINOLA OLUWAKEMI TOYIN",
+          "mateQual": "FSLC SSCE HND"
+        },
+        {
+          "number": 14,
+          "name": "GBOLARUMI HAZEEM OLA",
+          "party": "PDP",
+          "age": 69,
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE EST AFRICAN SENIOR SCHOOL CERTIFICATE BACHELOR OF LAW(L.L.B)",
+          "mate": "ADEROJU ADEMOLA EMMANUEL",
+          "mateQual": "FSLC SSCE(WAEC)"
+        },
+        {
+          "number": 15,
+          "name": "YINUSA KAZEEM AYANDOYE",
+          "party": "PRP",
+          "age": 52,
+          "qual": "FSLC SSCE IJMB",
+          "mate": "OLAIFA SOLA OTOLOLA",
+          "mateQual": "FLSC AWE HIGH SCHOOL, AWE, OYO UNIVERSITY OF IBADAN"
+        },
+        {
+          "number": 16,
+          "name": "ADEYEMI IDOWU ADEDEJI",
+          "party": "YPP",
+          "age": 46,
+          "qual": "FSLC SSCE BSC",
+          "mate": "ADETUNJI ADENIYI TEMITOPE",
+          "mateQual": "FSLC SSCE PHD"
+        },
+        {
+          "number": 17,
+          "name": "AZZAN WAHEED OLANREWAJU",
+          "party": "ZLP",
+          "age": 66,
+          "qual": "WAEC",
+          "mate": "OLADOKUN AJIBOLA JOHNSON",
+          "mateQual": "FSLC"
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-final-list-of-candidates-for-2027-governorship-election"
+    },
+    {
+      "id": "2027-lagos-central-senate",
+      "office": "senate",
+      "label": "Lagos Central",
+      "state": "Lagos",
+      "sourceId": "lagos-senate",
+      "expected": 11,
+      "rows": [
+        {
+          "number": 1,
+          "party": "A",
+          "name": "WAHAB SOLOMON OLADIMEJI",
+          "qual": "primary SSCE",
+          "age": 57
+        },
+        {
+          "number": 2,
+          "party": "AAC",
+          "name": "ODUNUYI BABATUNDE SAMUEL",
+          "qual": "",
+          "age": 59
+        },
+        {
+          "number": 3,
+          "party": "ADC",
+          "name": "ABAYOMI IDOWU OMOTAYO",
+          "qual": "Secondary Sch. Testimonial Cert. BSC",
+          "age": 69
+        },
+        {
+          "number": 4,
+          "party": "APC",
+          "name": "SANNI ESHILOKUN WASIU OLATUNJI",
+          "qual": "FSLC WAEC BS.C, MILB",
+          "age": 65
+        },
+        {
+          "number": 5,
+          "party": "APM",
+          "name": "OJUMU DESMOND OLUDARE",
+          "qual": "",
+          "age": 58
+        },
+        {
+          "number": 6,
+          "party": "NDC",
+          "name": "JOHNSON LAWRENCE ADENIYI OLADIPUPO",
+          "qual": "",
+          "age": 57
+        },
+        {
+          "number": 7,
+          "party": "NDP",
+          "name": "OMOLOLA OLUWATOSIN DAVID",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SENIOR SCHOOL CERTIFICATE B.SC",
+          "age": 51
+        },
+        {
+          "number": 8,
+          "party": "NRM",
+          "name": "MAKINDE MUYIWA",
+          "qual": "PRIMARY SCHOOL LEAVING CERTIFICATE SENIOR SECONDARY CERTIFICATE HIGHER NATIONAL DIPLOMA",
+          "age": 53
+        },
+        {
+          "number": 9,
+          "party": "PDP",
+          "name": "DAKOVA-VAUGHAN KOLAWOLE DAVID",
+          "qual": "FSLC SSCE",
+          "age": 64
+        },
+        {
+          "number": 10,
+          "party": "PRP",
+          "name": "OLOKO AFOLABI LOOKMAN",
+          "qual": "FLSC SSCE NATIONAL DIPLOMA",
+          "age": 43
+        },
+        {
+          "number": 11,
+          "party": "SDP",
+          "name": "AKINYEMI AKINTUNDE KAZEEM",
+          "qual": "FLSC SSCE BSC",
+          "age": 49
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-senatorial-district-elections"
+    },
+    {
+      "id": "2027-lagos-east-senate",
+      "office": "senate",
+      "label": "Lagos East",
+      "state": "Lagos",
+      "sourceId": "lagos-senate",
+      "expected": 10,
+      "rows": [
+        {
+          "number": 12,
+          "party": "A",
+          "name": "MADUKA-SUNDAY BLESSING MARIA",
+          "qual": "primary SSCE HND",
+          "age": 41
+        },
+        {
+          "number": 13,
+          "party": "AAC",
+          "name": "OLUWANUYI OLORUNGBOLAGA EMMANUEL",
+          "qual": "SSCE",
+          "age": 53
+        },
+        {
+          "number": 14,
+          "party": "ADC",
+          "name": "MOSHOOD BABATUNDE OLANREWAJU",
+          "qual": "FSLC WAEC ADHRM, DCHO",
+          "age": 65
+        },
+        {
+          "number": 15,
+          "party": "ADP",
+          "name": "ADEJUMO ADEYEMI KINGSLEY",
+          "qual": "FSLC SSCE",
+          "age": 59
+        },
+        {
+          "number": 16,
+          "party": "APC",
+          "name": "ABIRU ADETOKUNBO MUKHAIL",
+          "qual": "PRIMARY SCHOOL CERTIFICATE WASC (O'LEVEL) $ WASC (A'LEVELS) B.SC ECONOMICS",
+          "age": 62
+        },
+        {
+          "number": 17,
+          "party": "APM",
+          "name": "OBADIARU CHARLES IMWEMOGHOMWEN",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE WAEC",
+          "age": 70
+        },
+        {
+          "number": 18,
+          "party": "NDC",
+          "name": "ADEBANJO ADEOLA DAMILOLA",
+          "qual": "FSLC SSCE BENG, PGD",
+          "age": 43
+        },
+        {
+          "number": 19,
+          "party": "NDP",
+          "name": "OLAYOKUN ADESHINA",
+          "qual": "",
+          "age": 71
+        },
+        {
+          "number": 20,
+          "party": "PDP",
+          "name": "GANIYU TOYIN SAKIRU",
+          "qual": "FSLC SSCE",
+          "age": 60
+        },
+        {
+          "number": 21,
+          "party": "SDP",
+          "name": "ADENIJI VICTOR",
+          "qual": "ST. PAUL'S EB, LAGOS ST. FINBORI COLLEGE",
+          "age": 70
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-senatorial-district-elections"
+    },
+    {
+      "id": "2027-lagos-west-senate",
+      "office": "senate",
+      "label": "Lagos West",
+      "state": "Lagos",
+      "sourceId": "lagos-senate",
+      "expected": 15,
+      "rows": [
+        {
+          "number": 22,
+          "party": "A",
+          "name": "OLADEJI OLADELE OLUWATOSIN",
+          "qual": "primary SSCE",
+          "age": 44
+        },
+        {
+          "number": 23,
+          "party": "AAC",
+          "name": "SOMEFUN OLUSOLA ALFRED",
+          "qual": "FSLC SSCE BSC.ED ACCOUNTANCY EDUCATION",
+          "age": 46
+        },
+        {
+          "number": 24,
+          "party": "ADC",
+          "name": "BELLO OWOLABI HAFIS",
+          "qual": "PRIMARY SCHOOL TESTIMONIAL WAEC",
+          "age": 46
+        },
+        {
+          "number": 25,
+          "party": "ADP",
+          "name": "ISHOLA BAMIDELE JOHNSON",
+          "qual": "FSCL SSCE B. SC. ED",
+          "age": 62
+        },
+        {
+          "number": 26,
+          "party": "APC",
+          "name": "ADEBULE IDIAT OLURANTI",
+          "qual": "ST. MICHAEL SCH ILOJO AWORI COLLEGE OJO · LAGOS STATE UNIVERSITY OJO",
+          "age": 55
+        },
+        {
+          "number": 27,
+          "party": "APM",
+          "name": "KOSHOEDO SETONJI GBEMENU",
+          "qual": "",
+          "age": 65
+        },
+        {
+          "number": 28,
+          "party": "APP",
+          "name": "AJAYI ADEWALE",
+          "qual": "WASSCE",
+          "age": 52
+        },
+        {
+          "number": 29,
+          "party": "LP",
+          "name": "OLATUNBOSUN-ODUNSAMI OSWALD OLAREWAJU",
+          "qual": "FIRST SCHOOL LEAAVING CERTIFICATE SSCE · Bachelor of Science (BSc)",
+          "age": 61
+        },
+        {
+          "number": 30,
+          "party": "NDC",
+          "name": "SALVADOR ADEGOKE MOSHOOD",
+          "qual": "",
+          "age": 70
+        },
+        {
+          "number": 31,
+          "party": "NDP",
+          "name": "UDOH GODWIN SUNDAY",
+          "qual": "FSLC WAEC HD",
+          "age": 55
+        },
+        {
+          "number": 32,
+          "party": "NNPP",
+          "name": "ADEBOWALE PRINCESS TENIOLA ANIKE",
+          "qual": "LAGOS ANGLICAN GIRLS 1ST LEAVING SCHOOL · CERTIFICATE AUNTY AYO/MAYLAND COMP · CELL/82/ WACE/GCE NCR COMPUTER INSTITUTE · YABA TECH",
+          "age": 62
+        },
+        {
+          "number": 33,
+          "party": "PDP",
+          "name": "PHILLIPS ADEBIYI ABIODUN",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE · SECONDARY SCHOOL LEAVING CERTIFICATE · B.SC(HONS), MBA, FELLOW",
+          "age": 54
+        },
+        {
+          "number": 34,
+          "party": "SDP",
+          "name": "AMIKE PRIMATE HENRY",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE BSC OF ART",
+          "age": 64
+        },
+        {
+          "number": 35,
+          "party": "YPP",
+          "name": "AJANI ADEOLU",
+          "qual": "FSLC SSCE DIPLOMA IN THEOLOGY/CPA",
+          "age": 62
+        },
+        {
+          "number": 36,
+          "party": "ZLP",
+          "name": "ADENIPEBI MODE ADEKUNLE",
+          "qual": "FLSC SSCE BSC EDU",
+          "age": 47
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-senatorial-district-elections"
+    },
+    {
+      "id": "2027-oyo-central-senate",
+      "office": "senate",
+      "label": "Oyo Central",
+      "state": "Oyo",
+      "sourceId": "oyo-senate",
+      "expected": 11,
+      "rows": [
+        {
+          "number": 1,
+          "party": "A",
+          "name": "JIMOH SHAKIRULAHI ORANKAN",
+          "qual": "SSCE",
+          "age": 48
+        },
+        {
+          "number": 2,
+          "party": "ADC",
+          "name": "KAMIL AKINLABI MUDASHIRU",
+          "qual": "FIRST SCHOOL LEAVING CERT WAEC LL.B",
+          "age": 60
+        },
+        {
+          "number": 3,
+          "party": "ADP",
+          "name": "HAMMED ABIMBOLA",
+          "qual": "FSLC WAEC",
+          "age": 58
+        },
+        {
+          "number": 4,
+          "party": "APC",
+          "name": "AKINTUNDE YUNUS ABIODUN",
+          "qual": "PRIMARY SCHOOL LEAVING CERTIFICATE WAEC PHD",
+          "age": 64
+        },
+        {
+          "number": 5,
+          "party": "APM",
+          "name": "OGUNTOYINBO OLUFEMI AJADI",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE HIGHER NATIONAL DIPLOMA",
+          "age": 46
+        },
+        {
+          "number": 6,
+          "party": "LP",
+          "name": "ADEYEYE ABIODUN",
+          "qual": "FSLC O level Degree",
+          "age": 58
+        },
+        {
+          "number": 7,
+          "party": "NDC",
+          "name": "SALAWU AKEEM",
+          "qual": "PRIMARY SCHOOL LEAVING CERTIFICAT E SCHOOL LEAVING CERTIFICATE",
+          "age": 46
+        },
+        {
+          "number": 8,
+          "party": "NDP",
+          "name": "ADEDJI-OGUNSANYA FUNMILAYO AYONADE",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SENIOR SCHOOL CERTIFICATE BACHELOR OF THEOLOGY",
+          "age": 51
+        },
+        {
+          "number": 9,
+          "party": "PDP",
+          "name": "OLUNLOYO AYOBAMI AKINYODE",
+          "qual": "PRIMARY SCHOOL LEAVING CERTIFICATE SSCE M. ENG , M. BA",
+          "age": 49
+        },
+        {
+          "number": 10,
+          "party": "PRP",
+          "name": "AKINPADE TEMITOPE FOLASHADE",
+          "qual": "FSLC SSCE B.Edu",
+          "age": 55
+        },
+        {
+          "number": 11,
+          "party": "SDP",
+          "name": "OLATUNJI ALADE ISMAILA",
+          "qual": "FSLC SSCE B.SC",
+          "age": 54
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-senatorial-district-elections"
+    },
+    {
+      "id": "2027-oyo-north-senate",
+      "office": "senate",
+      "label": "Oyo North",
+      "state": "Oyo",
+      "sourceId": "oyo-senate",
+      "expected": 12,
+      "rows": [
+        {
+          "number": 12,
+          "party": "A",
+          "name": "MUSLIM YISA YUSUFF",
+          "qual": "FSLC SSCE B.SC",
+          "age": 64
+        },
+        {
+          "number": 13,
+          "party": "ADC",
+          "name": "AGORO LANRE ADEHIRAH",
+          "qual": "WAEC B.- AGRICULTURE",
+          "age": 59
+        },
+        {
+          "number": 14,
+          "party": "ADP",
+          "name": "IGE SALAWUDEEN ADEYEMI",
+          "qual": "FSLC WAEC",
+          "age": 58
+        },
+        {
+          "number": 15,
+          "party": "APC",
+          "name": "OGUNESAN HANNAH OLAWUMI",
+          "qual": "WAEC BSC, MBA",
+          "age": 61
+        },
+        {
+          "number": 16,
+          "party": "APM",
+          "name": "PELLER SHINA ABIOLA",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE B.TECH (HONS)",
+          "age": 50
+        },
+        {
+          "number": 17,
+          "party": "LP",
+          "name": "OWOYEMI OBAFEMI EMMANUEL",
+          "qual": "FSLC SSCE",
+          "age": 84
+        },
+        {
+          "number": 18,
+          "party": "NDC",
+          "name": "OJEKUNLE ABIGAIL OLANIKE",
+          "qual": "MODEL PRIMARY SCHOOL BIDA NIGAR STATE BAPTIST MODERN SCHOOL IGBOHO WORDS VISION THEOLOGICAL SEMINARY",
+          "age": 63
+        },
+        {
+          "number": 19,
+          "party": "PDP",
+          "name": "ADEOYE BEULAH OLUFEMI AYODEJI",
+          "qual": "PRIMARY SCHOOL CERTIFICATE SECONDARY SCHOOL CERTIFICATE BACHELOR OF LAW(LL.B)",
+          "age": 44
+        },
+        {
+          "number": 20,
+          "party": "PRP",
+          "name": "TAIWO AJIBOYE",
+          "qual": "SSCE B.Sc Nursing",
+          "age": 62
+        },
+        {
+          "number": 21,
+          "party": "SDP",
+          "name": "ADEBOYE BRAHEEM SAHEED",
+          "qual": "FSLC SSCE B.SC",
+          "age": 45
+        },
+        {
+          "number": 22,
+          "party": "YPP",
+          "name": "OBISESAN DAVID OLUWAFEMI",
+          "qual": "FSLC SSCE",
+          "age": 40
+        },
+        {
+          "number": 23,
+          "party": "ZLP",
+          "name": "OJO JAMES",
+          "qual": "FSLC WAEC",
+          "age": 68
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-senatorial-district-elections"
+    },
+    {
+      "id": "2027-oyo-south-senate",
+      "office": "senate",
+      "label": "Oyo South",
+      "state": "Oyo",
+      "sourceId": "oyo-senate",
+      "expected": 15,
+      "rows": [
+        {
+          "number": 24,
+          "party": "A",
+          "name": "OWOLABI OLUDARE AMOS",
+          "qual": "FSLC SSCE",
+          "age": 63
+        },
+        {
+          "number": 25,
+          "party": "AA",
+          "name": "KOLAWOLE DAYO",
+          "qual": "HSC",
+          "age": 61
+        },
+        {
+          "number": 26,
+          "party": "ADC",
+          "name": "LUKMAN ADEOLA ADETUNJI",
+          "qual": "BSc",
+          "age": 55
+        },
+        {
+          "number": 27,
+          "party": "ADP",
+          "name": "OLOYEDE ESTHER",
+          "qual": "AMAZING GRACE MODEL COMMAND SECONDARY SCH UNIVERSITY OF ABUJA",
+          "age": 36
+        },
+        {
+          "number": 28,
+          "party": "APC",
+          "name": "OSENI ABASI ADEREMI",
+          "qual": "LEAVING TESTIMONIAL WAEC ND, MSC",
+          "age": 61
+        },
+        {
+          "number": 29,
+          "party": "APM",
+          "name": "ADEDEJI STANLEY OLAJIDE",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE",
+          "age": 61
+        },
+        {
+          "number": 30,
+          "party": "LP",
+          "name": "ONI AYOBAMI OPEYEMI",
+          "qual": "NECO",
+          "age": 40
+        },
+        {
+          "number": 31,
+          "party": "NDC",
+          "name": "ADOYI PAUL OCHE",
+          "qual": "PRIMARY SCHOOL LEAVING CERTIFICATE SECONDARY SCHOOL CERTIFICATE DVM",
+          "age": 53
+        },
+        {
+          "number": 32,
+          "party": "NNPP",
+          "name": "OLUWAFEMI AKINOLA SOLOMON",
+          "qual": "DIPLOMA",
+          "age": 45
+        },
+        {
+          "number": 33,
+          "party": "NRM",
+          "name": "OMOTOSHO TAOHFEED ADEKUNLE",
+          "qual": "PRIMARY SCHOOL LEAVING CERTIFICATE SENIOR SECONDARY CERTIFICATE HIGHER NATIONAL DIPLOMA",
+          "age": 45
+        },
+        {
+          "number": 34,
+          "party": "PDP",
+          "name": "SARUMI-ALIYU CAROLINE BOLANLE",
+          "qual": "SCHOOL LEAVING CERTIFICATE SCHOOL LEAVING CERTIFICATE DEGREE BA HONS. SOCIAL POLICY",
+          "age": 47
+        },
+        {
+          "number": 35,
+          "party": "PRP",
+          "name": "ABDULATEEF GBOLAGADE",
+          "qual": "LLB",
+          "age": 61
+        },
+        {
+          "number": 36,
+          "party": "SDP",
+          "name": "BAALE AYOADE RAIMI",
+          "qual": "FSLC SSCE",
+          "age": 64
+        },
+        {
+          "number": 37,
+          "party": "YPP",
+          "name": "AKINOLA OLANREWAJU",
+          "qual": "FSLC SSCE HND",
+          "age": 36
+        },
+        {
+          "number": 38,
+          "party": "ZLP",
+          "name": "OLADIMEJI THEOPHILUS OLUWASEGUN",
+          "qual": "FLSC WEAC B.SC/MSC",
+          "age": 58
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-senatorial-district-elections"
+    },
+    {
+      "id": "2027-edo-central-senate",
+      "office": "senate",
+      "label": "Edo Central",
+      "state": "Edo",
+      "sourceId": "edo-senate",
+      "expected": 7,
+      "rows": [
+        {
+          "number": 1,
+          "party": "A",
+          "name": "IYERE KENNEDY EBHENYA",
+          "qual": "FSLC SSCE",
+          "age": 52
+        },
+        {
+          "number": 2,
+          "party": "ADC",
+          "name": "OKONOFUA HERBERTA INEMEZELE",
+          "qual": "PRIMARY SCHOOL CERTIFICATE WAEC BACHELORS OF SCIENCE, MASTERS OF SCIENCE",
+          "age": 64
+        },
+        {
+          "number": 3,
+          "party": "ADP",
+          "name": "AISABOKHAE CLIFFORD",
+          "qual": "School leaving certificate West African school certificate BSc",
+          "age": 50
+        },
+        {
+          "number": 4,
+          "party": "APC",
+          "name": "JOSEPH IGIAGBE IKPEA",
+          "qual": "FSLC WAEC BACHELOR OF SCIENCE DEGREE",
+          "age": 64
+        },
+        {
+          "number": 5,
+          "party": "APM",
+          "name": "ADUDU EVELYN OMONIGHO",
+          "qual": "FIRST SCHOOL LEAVING SSCE",
+          "age": 40
+        },
+        {
+          "number": 6,
+          "party": "NDC",
+          "name": "YAKUBU EHIBHATIOMAN JOHN",
+          "qual": "FSLC SSCE POLY",
+          "age": 61
+        },
+        {
+          "number": 7,
+          "party": "SDP",
+          "name": "OKOEGUALE EUGENE JOSEPH",
+          "qual": "FSLC WAEC B.SC",
+          "age": 49
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-senatorial-district-elections"
+    },
+    {
+      "id": "2027-edo-north-senate",
+      "office": "senate",
+      "label": "Edo North",
+      "state": "Edo",
+      "sourceId": "edo-senate",
+      "expected": 11,
+      "rows": [
+        {
+          "number": 8,
+          "party": "AAC",
+          "name": "LAWAL ABDULHAFIZ",
+          "qual": "FLSC SSCE",
+          "age": 36
+        },
+        {
+          "number": 9,
+          "party": "ADC",
+          "name": "ARUNA ABUBAKARI",
+          "qual": "PRIMARY SCHOOL CERTIFICATE SSCE",
+          "age": 51
+        },
+        {
+          "number": 10,
+          "party": "ADP",
+          "name": "AKHIMIE KINGSON",
+          "qual": "West African school certificate",
+          "age": 39
+        },
+        {
+          "number": 11,
+          "party": "APC",
+          "name": "OSHIOMHOLE ADAMS ALIYU",
+          "qual": "FSLC WASC BACHELOR OF ARTS",
+          "age": 75
+        },
+        {
+          "number": 12,
+          "party": "APM",
+          "name": "EZOMO TIMOTHY EDE",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE NABTEB B.SC",
+          "age": 46
+        },
+        {
+          "number": 13,
+          "party": "DLA",
+          "name": "SIMEON FRIDAY",
+          "qual": "FSLC SSCE BSC",
+          "age": 43
+        },
+        {
+          "number": 14,
+          "party": "LP",
+          "name": "ERAGBE ANSLEM APHIMIA",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE B.ENG",
+          "age": 53
+        },
+        {
+          "number": 15,
+          "party": "NDC",
+          "name": "OISAMOJE MARIA EVUARHERHE",
+          "qual": "SSCE B.SC",
+          "age": 72
+        },
+        {
+          "number": 16,
+          "party": "PDP",
+          "name": "MOMOH-DEJIH BASHIR EUGINE",
+          "qual": "PSLC GCE O’LEVEL HND, B.SC",
+          "age": 57
+        },
+        {
+          "number": 17,
+          "party": "SDP",
+          "name": "IMONIKHE ROLAND KELLY BELLO",
+          "qual": "FSLC WAEC",
+          "age": 39
+        },
+        {
+          "number": 18,
+          "party": "YPP",
+          "name": "OBOZOKHAI JOHN ALBERT",
+          "qual": "BSc. Engineering (Mechanical)",
+          "age": 53
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-senatorial-district-elections"
+    },
+    {
+      "id": "2027-edo-south-senate",
+      "office": "senate",
+      "label": "Edo South",
+      "state": "Edo",
+      "sourceId": "edo-senate",
+      "expected": 8,
+      "rows": [
+        {
+          "number": 19,
+          "party": "AAC",
+          "name": "OHWOJEHERI ESEOGHENE",
+          "qual": "SSCE",
+          "age": 40
+        },
+        {
+          "number": 20,
+          "party": "ADC",
+          "name": "IDUORIYEKEMWEN MATTHEW AIGBUHUENZE",
+          "qual": "PRIMARY SCHOOL CERTIFICATE WAEC BSC",
+          "age": 60
+        },
+        {
+          "number": 21,
+          "party": "ADP",
+          "name": "EKHORUTOMWEN OSAHENOMA",
+          "qual": "N C E",
+          "age": 36
+        },
+        {
+          "number": 22,
+          "party": "APC",
+          "name": "OGBEIDE-IHAMA OMOREGIE",
+          "qual": "FSLC WASC BACHELOR OF SCIENCE DEGREE",
+          "age": 52
+        },
+        {
+          "number": 23,
+          "party": "APM",
+          "name": "UGIAGBE ODARO SYLVESTER",
+          "qual": "",
+          "age": 55
+        },
+        {
+          "number": 24,
+          "party": "NDC",
+          "name": "EPELLE-ASEMOTA BRIDGITTE OSAYUKI",
+          "qual": "FSLC WASC/GCE MAST. OF EDU. MGT",
+          "age": 62
+        },
+        {
+          "number": 25,
+          "party": "PDP",
+          "name": "PAX-OSIFO FRANK IDEHEN",
+          "qual": "LYDIA GROUP OF SCHOOLS IMMACULATE CONCEPTON COLLEGE AMBROSE ALLI UNIVERSITY",
+          "age": 47
+        },
+        {
+          "number": 26,
+          "party": "ZLP",
+          "name": "OJEDIAMEN BENJAMIN EHIChIOYA",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE",
+          "age": 48
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-senatorial-district-elections"
+    },
+    {
+      "id": "2027-lagos-agege-house",
+      "office": "house",
+      "label": "Agege",
+      "state": "Lagos",
+      "sourceId": "lagos-house",
+      "expected": 8,
+      "rows": [
+        {
+          "number": 1,
+          "party": "A",
+          "name": "ISA ADAM",
+          "qual": "SSCE",
+          "age": 39
+        },
+        {
+          "number": 2,
+          "party": "ADC",
+          "name": "SARUMI OLUWASEYI",
+          "qual": "AFFIDAVIT OF FSLC CERT. LOSS WAEC",
+          "age": 50
+        },
+        {
+          "number": 3,
+          "party": "ADP",
+          "name": "ISHOLA ABIOYE JANET",
+          "qual": "FSCL SSCE",
+          "age": 54
+        },
+        {
+          "number": 4,
+          "party": "APC",
+          "name": "OBASA MUDASHIRU AJAYI",
+          "qual": "FSLC WASC BACHELOR OF SCIENCE DEGREE",
+          "age": 53
+        },
+        {
+          "number": 5,
+          "party": "APM",
+          "name": "ABIOYE KAZEEM OLALEKAN DANJUMA",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE WASC",
+          "age": 44
+        },
+        {
+          "number": 6,
+          "party": "NDC",
+          "name": "DABIRI BAMIDELE RASHEED",
+          "qual": "SSCE B.SC & MASTERS DEGREE",
+          "age": 52
+        },
+        {
+          "number": 7,
+          "party": "PDP",
+          "name": "ODUFOLAKUN OLALEKAN GANIYU",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE B. SC",
+          "age": 48
+        },
+        {
+          "number": 8,
+          "party": "SDP",
+          "name": "AFOLABI AJOSE",
+          "qual": "SSCE",
+          "age": 64
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-jan-2027-national-assembly-elections"
+    },
+    {
+      "id": "2027-lagos-ajeromi-ifelodun-house",
+      "office": "house",
+      "label": "Ajeromi/Ifelodun",
+      "state": "Lagos",
+      "sourceId": "lagos-house",
+      "expected": 8,
+      "rows": [
+        {
+          "number": 9,
+          "party": "A",
+          "name": "LAWAL OLAJIDE RAZZAAQ",
+          "qual": "primary SSCE BSC",
+          "age": 37
+        },
+        {
+          "number": 10,
+          "party": "ADC",
+          "name": "EZEUDE EMILIA UCHE",
+          "qual": "WAEC NCE",
+          "age": 58
+        },
+        {
+          "number": 11,
+          "party": "ADP",
+          "name": "UWANDU WILFRED CHUKWUMA",
+          "qual": "FSCL SSCE DIPLOMA",
+          "age": 60
+        },
+        {
+          "number": 12,
+          "party": "APC",
+          "name": "KALEJAIYE ADEBOYE PAUL",
+          "qual": "PRIMARY LEAVING CERT WEST AFRICAN CERTIFICATE PHD IN PUBLIC ADMIN",
+          "age": 66
+        },
+        {
+          "number": 13,
+          "party": "APM",
+          "name": "ABBA OLIVER ECHE",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE BSC MECHANICAL ENGINEERING",
+          "age": 44
+        },
+        {
+          "number": 14,
+          "party": "NDC",
+          "name": "FRANCIS BARTHLOMEW CHIMA",
+          "qual": "FSLC WAEC",
+          "age": 43
+        },
+        {
+          "number": 15,
+          "party": "NNPP",
+          "name": "IWEGBUNA CLEMENT C.",
+          "qual": "FSLC SSCE EXECUTIVE DEIPLOMA CERTIFICATES",
+          "age": 63
+        },
+        {
+          "number": 16,
+          "party": "PDP",
+          "name": "DIRIWARI OLADIPUPO O. WILSON",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE WAEC Ph.D, LLM, LLB, LB",
+          "age": 56
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-jan-2027-national-assembly-elections"
+    },
+    {
+      "id": "2027-lagos-alimosho-house",
+      "office": "house",
+      "label": "Alimosho",
+      "state": "Lagos",
+      "sourceId": "lagos-house",
+      "expected": 11,
+      "rows": [
+        {
+          "number": 17,
+          "party": "A",
+          "name": "ODEYINGBO MAYOWA SODIQ",
+          "qual": "primary SSCE BSC",
+          "age": 34
+        },
+        {
+          "number": 18,
+          "party": "AAC",
+          "name": "OLURINDE OLAIDE BASIRAT",
+          "qual": "DIPLOMA",
+          "age": 36
+        },
+        {
+          "number": 19,
+          "party": "ADC",
+          "name": "OLA OLUSOLA MOTUNRAYO",
+          "qual": "PRIMARY SCHOOL AFFIDAVIT WAEC HND",
+          "age": 52
+        },
+        {
+          "number": 20,
+          "party": "ADP",
+          "name": "OLAOJO OLUFEYIKEMI",
+          "qual": "FSCL SSCE HND MBA",
+          "age": 48
+        },
+        {
+          "number": 21,
+          "party": "APC",
+          "name": "ADEBANJO OLABISI",
+          "qual": "IFAKO PRIMARY SCHOOL GBAGADA BBIC COLLAGE EGBEDA",
+          "age": 49
+        },
+        {
+          "number": 22,
+          "party": "APM",
+          "name": "FATAI KEHINDE OWOLABI",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE BSC ELCT ELECT",
+          "age": 43
+        },
+        {
+          "number": 23,
+          "party": "NDC",
+          "name": "LANIHUN OLUWATOYIN OMOLABAKE",
+          "qual": "FSLC WAEC BA",
+          "age": 59
+        },
+        {
+          "number": 24,
+          "party": "PDP",
+          "name": "FAGBULU TAIWO OLUBUNMI",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE B. ENG",
+          "age": 46
+        },
+        {
+          "number": 25,
+          "party": "PRP",
+          "name": "WOLE-OSHO IFEOLUWALAYOMI",
+          "qual": "FSLC SSCE B.Sc Physics",
+          "age": 38
+        },
+        {
+          "number": 26,
+          "party": "YPP",
+          "name": "JAIYEOLA OLUSEGUN MOBOLAJI",
+          "qual": "FSLC SSCE",
+          "age": 51
+        },
+        {
+          "number": 27,
+          "party": "ZLP",
+          "name": "ORIAKU AMAKA JELOVE",
+          "qual": "FSLC SSCE",
+          "age": 47
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-jan-2027-national-assembly-elections"
+    },
+    {
+      "id": "2027-lagos-amuwo-odofin-house",
+      "office": "house",
+      "label": "Amuwo-Odofin",
+      "state": "Lagos",
+      "sourceId": "lagos-house",
+      "expected": 10,
+      "rows": [
+        {
+          "number": 28,
+          "party": "A",
+          "name": "OKWOR PRINCE MOSES",
+          "qual": "",
+          "age": 34
+        },
+        {
+          "number": 29,
+          "party": "APC",
+          "name": "OLAREWAJU MOSES",
+          "qual": "FIRST SCH LEAVING CERT WASC BSC",
+          "age": 45
+        },
+        {
+          "number": 30,
+          "party": "APGA",
+          "name": "IBEH KENECHUKWU THANKGOD",
+          "qual": "BSC",
+          "age": 51
+        },
+        {
+          "number": 31,
+          "party": "APM",
+          "name": "ILESANMI YESIDE KAFAYAT",
+          "qual": "WAEC B.Sc ED",
+          "age": 58
+        },
+        {
+          "number": 32,
+          "party": "APP",
+          "name": "OSHO OMOTOLANI AMINAT",
+          "qual": "DEGREE",
+          "age": 38
+        },
+        {
+          "number": 33,
+          "party": "LP",
+          "name": "EDEBIRI BELINDA ESOSA",
+          "qual": "SSCE",
+          "age": 38
+        },
+        {
+          "number": 34,
+          "party": "NDC",
+          "name": "OLAWANDE GEORGE FOLARIN",
+          "qual": "FSLC SSC",
+          "age": 40
+        },
+        {
+          "number": 35,
+          "party": "PDP",
+          "name": "CHIMSOM GOODLUCK SAMSON",
+          "qual": "WAEC",
+          "age": 51
+        },
+        {
+          "number": 36,
+          "party": "SDP",
+          "name": "SOKUNLE OLADIMEJU",
+          "qual": "",
+          "age": 93
+        },
+        {
+          "number": 37,
+          "party": "ZLP",
+          "name": "UZOGARAH ATHANASIUS IKECHUKWU",
+          "qual": "FLSC WAEC LLB",
+          "age": 47
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-jan-2027-national-assembly-elections"
+    },
+    {
+      "id": "2027-lagos-agege-i-assembly",
+      "office": "assembly",
+      "label": "Agege I",
+      "state": "Lagos",
+      "sourceId": "lagos-assembly",
+      "expected": 9,
+      "rows": [
+        {
+          "number": 1,
+          "party": "ADC",
+          "name": "NURA ALI MUHAMMED",
+          "qual": "PRIMARY SCHOOL CERTIFICATE WAEC",
+          "age": 41
+        },
+        {
+          "number": 2,
+          "party": "ADP",
+          "name": "ADEYEMI OLUWAKEMI",
+          "qual": "FSCL SSCE",
+          "age": 55
+        },
+        {
+          "number": 3,
+          "party": "APC",
+          "name": "ABIOLA OLUWAGBENGA MICHAEL",
+          "qual": "FSLC SSCE BSC",
+          "age": 38
+        },
+        {
+          "number": 4,
+          "party": "APM",
+          "name": "ADELUGBA GBENGA ADESINA",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE",
+          "age": 48
+        },
+        {
+          "number": 5,
+          "party": "NDC",
+          "name": "MURITALA OLALEKAN GANIU",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SENIOR SECONDARY SCHOOL CERTIFICATE",
+          "age": 32
+        },
+        {
+          "number": 6,
+          "party": "NNPP",
+          "name": "SHOBOWALE SAMUEL BABATUNDE",
+          "qual": "FSLC SSCE ND",
+          "age": 50
+        },
+        {
+          "number": 7,
+          "party": "NRM",
+          "name": "OBITOKUN OLADIPO OLUSEGUN DAVID",
+          "qual": "",
+          "age": 42
+        },
+        {
+          "number": 8,
+          "party": "PDP",
+          "name": "ADESANYA LUKMAN ABIODUN",
+          "qual": "FSLC SSCE",
+          "age": 42
+        },
+        {
+          "number": 9,
+          "party": "SDP",
+          "name": "SUZANA JOSEPH",
+          "qual": "FSLC WAEC B.SC",
+          "age": 46
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-state-houses-of-assembly-elections"
+    },
+    {
+      "id": "2027-lagos-agege-ii-assembly",
+      "office": "assembly",
+      "label": "Agege II",
+      "state": "Lagos",
+      "sourceId": "lagos-assembly",
+      "expected": 7,
+      "rows": [
+        {
+          "number": 10,
+          "party": "ADC",
+          "name": "SHAIBU NANAH AWA",
+          "qual": "PRIMARY SCHOOL CERTIFICATE WAEC",
+          "age": 49
+        },
+        {
+          "number": 11,
+          "party": "APC",
+          "name": "SULE SAKIRU AKINDELE",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE",
+          "age": 50
+        },
+        {
+          "number": 12,
+          "party": "APM",
+          "name": "TAJUDEEN TANIWA NIMOTA",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE",
+          "age": 38
+        },
+        {
+          "number": 13,
+          "party": "LP",
+          "name": "OLORUNGBoye MICHAEL OLUWAROTIMI",
+          "qual": "FSLC WAEC BA MUSIC",
+          "age": 59
+        },
+        {
+          "number": 14,
+          "party": "NDC",
+          "name": "OYESOLA MUFUTAU ADEWALE",
+          "qual": "FIRST SCHOOL LEAVING SENIOR SCHOOL CERTIFICATE BACHELOR OF SCIENCE",
+          "age": 46
+        },
+        {
+          "number": 15,
+          "party": "NRM",
+          "name": "DANIELS PATRICK",
+          "qual": "",
+          "age": 45
+        },
+        {
+          "number": 16,
+          "party": "PDP",
+          "name": "AKINYEMI ABIODUN ADETUNJI",
+          "qual": "PRIM SCH. SSCE HND",
+          "age": 43
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-state-houses-of-assembly-elections"
+    },
+    {
+      "id": "2027-lagos-ajeromi-ifelodun-i-assembly",
+      "office": "assembly",
+      "label": "Ajeromi/Ifelodun I",
+      "state": "Lagos",
+      "sourceId": "lagos-assembly",
+      "expected": 7,
+      "rows": [
+        {
+          "number": 17,
+          "party": "ADC",
+          "name": "ORJI TEMITOPE JENNIFER",
+          "qual": "PRIMARY SCHOOL CERTIFICATE WAEC",
+          "age": 31
+        },
+        {
+          "number": 18,
+          "party": "APC",
+          "name": "OLUMOH SAAD LUKMAN",
+          "qual": "FSLC SSCE MSC",
+          "age": 59
+        },
+        {
+          "number": 19,
+          "party": "APM",
+          "name": "AGBOOLA OLADELE JOEL",
+          "qual": "FIRST SCHOOL LEAVING SSCE KWARA STATE POLYTECHNIC",
+          "age": 43
+        },
+        {
+          "number": 20,
+          "party": "LP",
+          "name": "OLUWASANMI OLUWASEGUN AKANBI",
+          "qual": "FSLC WAEC MBA",
+          "age": 51
+        },
+        {
+          "number": 21,
+          "party": "NDC",
+          "name": "NOSIKE TIM PRINCE",
+          "qual": "",
+          "age": 42
+        },
+        {
+          "number": 22,
+          "party": "PDP",
+          "name": "OKEKUNLE OLAKUNLE",
+          "qual": "FSLC SSCE BSC, MBA, MELS",
+          "age": 54
+        },
+        {
+          "number": 23,
+          "party": "SDP",
+          "name": "OLOKA AZEEZ",
+          "qual": "FSLC WAEC B.SC",
+          "age": 37
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-state-houses-of-assembly-elections"
+    },
+    {
+      "id": "2027-oyo-irepo-olorunsogo-assembly",
+      "office": "assembly",
+      "label": "Irepo & Olorunsogo",
+      "state": "Oyo",
+      "sourceId": "oyo-assembly",
+      "expected": 10,
+      "rows": [
+        {
+          "number": 1,
+          "name": "RUFAI ADEBAYO JAMIU",
+          "party": "A",
+          "age": 39,
+          "qual": "FSLC SSCE NCE"
+        },
+        {
+          "number": 2,
+          "name": "NASIRU IBRAHIM ADENIYI",
+          "party": "ADC",
+          "age": 42,
+          "qual": "FIRST SCHOOL LEAVING CERT SSCE BSC"
+        },
+        {
+          "number": 3,
+          "name": "BAKARE USMAN OLADIMEJI",
+          "party": "ADP",
+          "age": 39,
+          "qual": "NIL NIL NIL"
+        },
+        {
+          "number": 4,
+          "name": "SALAMI WALIU AYINDE",
+          "party": "APC",
+          "age": 43,
+          "qual": "PRIMARY SCHOOL LEAVING CERTIFICATE<br>SENIOR SCHOOL CERTIFICATE HND"
+        },
+        {
+          "number": 5,
+          "name": "SALIU SARAF ADEEN AYINDE",
+          "party": "APM",
+          "age": 40,
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE"
+        },
+        {
+          "number": 6,
+          "name": "JONATHAN OLA",
+          "party": "NDC",
+          "age": 51,
+          "qual": "PSLC SSCE HND ACCOUNTING"
+        },
+        {
+          "number": 7,
+          "name": "BONUOLA OPEYEMI JEMIL",
+          "party": "NDP",
+          "age": 31,
+          "qual": "FSLC WAEC HND\\PGD"
+        },
+        {
+          "number": 8,
+          "name": "SOLIU NURUDEEN OLAWALE",
+          "party": "NNPP",
+          "age": 35,
+          "qual": "FSLC SSCE ND"
+        },
+        {
+          "number": 9,
+          "name": "ISHOLA MARUFU BABATUNDE",
+          "party": "PDP",
+          "age": 43,
+          "qual": "FSLC WAEC"
+        },
+        {
+          "number": 10,
+          "name": "AJIBADE DAYO",
+          "party": "PRP",
+          "age": 46,
+          "qual": "SSCE"
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-state-houses-of-assembly-elections"
+    },
+    {
+      "id": "2027-lagos-surulere-i-house",
+      "office": "house",
+      "label": "Surulere I",
+      "state": "Lagos",
+      "sourceId": "surulere-i",
+      "expected": 8,
+      "rows": [
+        {
+          "number": 171,
+          "party": "AAC",
+          "name": "Odebunmi Obafemi Babatunde",
+          "qual": "FSLC, SSCE, BSc",
+          "age": 37,
+          "id": "aac-171"
+        },
+        {
+          "number": 172,
+          "party": "ADC",
+          "name": "Adeshina Riliwan Kofoworola",
+          "qual": "Primary school testimonial, WAEC, HND",
+          "age": 37,
+          "id": "adc-172"
+        },
+        {
+          "number": 173,
+          "party": "APC",
+          "name": "Laguda Fuad Kayode",
+          "qual": "FSLC, SSCE, BSc",
+          "age": 49,
+          "id": "apc-173"
+        },
+        {
+          "number": 174,
+          "party": "APM",
+          "name": "Oworu Olumide Abiodun",
+          "qual": "First School Leaving, SSCE, BSc",
+          "age": 31,
+          "id": "apm-174"
+        },
+        {
+          "number": 175,
+          "party": "APP",
+          "name": "Ishaaq Tunde Kazeem",
+          "qual": "WASSCE",
+          "age": 49,
+          "id": "app-175"
+        },
+        {
+          "number": 176,
+          "party": "NDC",
+          "name": "Adebayo Adefolaseye Adebomi",
+          "qual": "PSCE, SSCE, MBChB, FWACS, FMC-OP",
+          "age": 53,
+          "id": "ndc-176"
+        },
+        {
+          "number": 177,
+          "party": "NRM",
+          "name": "Adepitan Olusegun Olatunji",
+          "qual": "Primary School Leaving Certificate, WAEC, BSc",
+          "age": 60,
+          "id": "nrm-177"
+        },
+        {
+          "number": 178,
+          "party": "PDP",
+          "name": "Ugbah Ozo-Brown Lewis",
+          "qual": "First School Leaving Certificate, WAEC, BSc Political Science",
+          "age": 54,
+          "id": "pdp-178"
+        }
+      ],
+      "publisherPage": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-jan-2027-national-assembly-elections"
+    },
+    {
+      "id": "2023-president",
+      "office": "president",
+      "label": "2023 presidential election",
+      "state": null,
+      "sourceId": "declaration-2023",
+      "expected": 18,
+      "rows": [
+        {
+          "number": 1,
+          "party": "A",
+          "name": "Imumolen Irene Christopher",
+          "qual": "SSC BACHELOR OF ENGINEERING (MECHANICAL ENGINEERING)",
+          "age": 38,
+          "votes": 61014,
+          "listingNumber": 1,
+          "listingName": "IMUMOLEN IRENE CHRISTOPHER",
+          "mate": "BELLO BALA MARU",
+          "mateQual": "SSC BACHELOR OF SCIENCE (TEXILE SCIENCE AND TECHNOLOGY)",
+          "mateNumber": 2
+        },
+        {
+          "number": 2,
+          "party": "AA",
+          "name": "Almustapha Hamza",
+          "qual": "F.L.S.C WAEC NDACE",
+          "age": 62,
+          "votes": 14542,
+          "listingNumber": 3,
+          "listingName": "ALMUSTAPHA HAMZA",
+          "mate": "JOHNSON EMMANUEL CHUKWUKA",
+          "mateQual": "WAEC",
+          "mateNumber": 4
+        },
+        {
+          "number": 3,
+          "party": "AAC",
+          "name": "Sowore Omoyele Stephen",
+          "qual": "FSLC WAEC MASTER'S DEGREE",
+          "age": 51,
+          "votes": 14608,
+          "listingNumber": 5,
+          "listingName": "SOWORE OMOYELE STEPHEN",
+          "mate": "MAGASHI HARUNA GARBA",
+          "mateQual": "FSLC SSCE LLB",
+          "mateNumber": 6
+        },
+        {
+          "number": 4,
+          "party": "ADC",
+          "name": "Kachikwu Dumebi",
+          "qual": "FLSC WAEC",
+          "age": 48,
+          "votes": 81919,
+          "listingNumber": 7,
+          "listingName": "KACHIKWU DUMEBI",
+          "mate": "BUHARI MUHAMMED AHMED",
+          "mateQual": "FSLC SSCE",
+          "mateNumber": 8
+        },
+        {
+          "number": 5,
+          "party": "ADP",
+          "name": "Sani Yabagi Yusuf",
+          "qual": "FSLC SECONDARY SCHOOL CERTIFICATE BSC",
+          "age": 68,
+          "votes": 43924,
+          "listingNumber": 9,
+          "listingName": "SANI YABAGI YUSUF",
+          "mate": "UDO OKEY OKORO",
+          "mateQual": "FSLC SSCE BSC",
+          "mateNumber": 10
+        },
+        {
+          "number": 6,
+          "party": "APC",
+          "name": "Tinubu Bola Ahmed",
+          "qual": "BSC BUSINESS AND ADMINISTRATION",
+          "age": 70,
+          "votes": 8794726,
+          "listingNumber": 11,
+          "listingName": "TINUBU BOLA AHMED",
+          "mate": "SHETTIMA KASHIM",
+          "mateQual": "PRIMARY SCHOOL CERTIFICATE GENERAL CERTIFICATE OF EDUCATION B.Sc AGRICULTURE",
+          "mateNumber": 12
+        },
+        {
+          "number": 7,
+          "party": "APGA",
+          "name": "Umeadi Peter Nnanna Chukwudi",
+          "qual": "ST. MACHAEL'S PRIMARY SCHOOL UMAHIA WAEC, CHRIST THE KING COLLEGE, ONITSHA LL.B, (HONS), BL. UNN AND NIGERIA LAW SCHOOL LAGOS",
+          "age": 67,
+          "votes": 61966,
+          "listingNumber": 13,
+          "listingName": "UMEADI PETER NNANNA CHUKWUDI",
+          "mate": "MOHAMMED ABDULLAHI KOLI",
+          "mateQual": "NASARUPRIM SCHOOL WAEC, DSS BAUCHI HND, CASS/ ABU KADUNA",
+          "mateNumber": 14
+        },
+        {
+          "number": 8,
+          "party": "APM",
+          "name": "Ojei Princess Chichi",
+          "qual": "AMERICAN INTERNATIONAL SCHOOL (AIS) AIS/AGOS LEROSEY ROLLE, SWITZERLAND",
+          "age": 44,
+          "votes": 25961,
+          "listingNumber": 15,
+          "listingName": "OJEI PRINCESS CHICHI",
+          "mate": "IBRAHIM MOHAMMED",
+          "mateQual": "FIRST SCHOOL LEAVING CERTIFICATE SECONDARY SCHOOL HIGHER NATIONAL DIPLOMA",
+          "mateNumber": 16
+        },
+        {
+          "number": 9,
+          "party": "APP",
+          "name": "Nnadi Charles Osita",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SENIOR SECONDARY SCHOOL CERTIFICATE",
+          "age": 49,
+          "votes": 12839,
+          "listingNumber": 17,
+          "listingName": "NNADI CHARLES OSITA",
+          "mate": "HAMISU ISAH",
+          "mateQual": "FIRST SCHOOL LEAVING CERTIFICATE SENIOR SECONDARY SCHOOL CERTIFICATE ND",
+          "mateNumber": 18
+        },
+        {
+          "number": 10,
+          "party": "BP",
+          "name": "Adenuga Sunday Oluwafemi",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE MASTER OF SCIENCE",
+          "age": 48,
+          "votes": 16156,
+          "listingNumber": 19,
+          "listingName": "ADENUGA SUNDAY OLUWAFEMI",
+          "mate": "MUSTAPHA USMAN TURAKI",
+          "mateQual": "FIRST SCHOOL LEAVING CERTIFICATE NABTEB KANO STATE POLYTECHNIC",
+          "mateNumber": 20
+        },
+        {
+          "number": 11,
+          "party": "LP",
+          "name": "Obi Peter Gregory",
+          "qual": "FSLC WASC/GCE Degree",
+          "age": 61,
+          "votes": 6101533,
+          "listingNumber": 21,
+          "listingName": "OBI PETER GREGORY",
+          "mate": "BABA AHMED YUSUF DATTI",
+          "mateQual": "FSLC GCE PhD",
+          "mateNumber": 22
+        },
+        {
+          "number": 12,
+          "party": "NNPP",
+          "name": "Musa Mohammed Rabiu Kwankwaso",
+          "qual": "FIRST SCHOOL LEAVING CERTIFICATE TECHNICAL TRAINING CERTIFICATE CRAFT TRAINING CERT, OND, HND, POST GRADUATE DIPLOMA, MASTERS OF SCIENCE (MSc), PHD (WATER)",
+          "age": 66,
+          "votes": 1496687,
+          "listingNumber": 23,
+          "listingName": "MUSA MOHAMMED RABIU KWANKWASO",
+          "mate": "ODIRI IDAHOSA, ISAAC",
+          "mateQual": "FIRST SCHOOL LEAVING CERTIFICATE WASC CERT. AUTOMOBILE ENGINEERING, BACHELORS DEGREE, MASTERS, DOCTORATE",
+          "mateNumber": 24
+        },
+        {
+          "number": 13,
+          "party": "NRM",
+          "name": "Osakwe Felix Johnson",
+          "qual": "NABTEB (NBC/NTC & ANBC/ANTC) FIRST SCHOOL LEAVING CERTIFICATE B.A MSc",
+          "age": 57,
+          "votes": 24869,
+          "listingNumber": 25,
+          "listingName": "OSAKWE FELIX JOHNSON",
+          "mate": "KYABO YAHAYA MUHAMMAD",
+          "mateQual": "FIRST SCHOOL LEAVING CERTIFICATE SSCE",
+          "mateNumber": 26
+        },
+        {
+          "number": 14,
+          "party": "PDP",
+          "name": "Abubakar Atiku",
+          "qual": "GCE MASTERS",
+          "age": 75,
+          "votes": 6984520,
+          "listingNumber": 27,
+          "listingName": "ABUBAKAR ATIKU",
+          "mate": "OKOWA ARTHUR IFEANYI",
+          "mateQual": "HSC MBBS",
+          "mateNumber": 28
+        },
+        {
+          "number": 15,
+          "party": "PRP",
+          "name": "Abiola Latifu Kolawole",
+          "qual": "SCHOOL LEAVING CERTIFICATE WAEC BSC. MBA & MSC.",
+          "age": 60,
+          "votes": 72144,
+          "listingNumber": 29,
+          "listingName": "ABIOLA LATIFU KOLAWOLE",
+          "mate": "ZEGO HARO HARUNA",
+          "mateQual": "F.S.L.C WAEC",
+          "mateNumber": 30
+        },
+        {
+          "number": 16,
+          "party": "SDP",
+          "name": "Adebayo Adewole Ebenezer",
+          "qual": "FLSC SSCE LLB",
+          "age": 50,
+          "votes": 80267,
+          "listingNumber": 31,
+          "listingName": "ADEBAYO ADEWOLE EBENEZER",
+          "mate": "BUHARI YUSUF",
+          "mateQual": "FLSC SSCE MSC",
+          "mateNumber": 32
+        },
+        {
+          "number": 17,
+          "party": "YPP",
+          "name": "Ado-Ibrahim Abdulmalik",
+          "qual": "PREPARATORY HIGH SCHOOL DIPLOMA BACHELOR OF SCIENCE IN ECONOMICS",
+          "age": 58,
+          "votes": 60600,
+          "listingNumber": 33,
+          "listingName": "ADO-IBRAHIM ABDULMALIK",
+          "mate": "ENYINNA MICHAEL KASARACHI",
+          "mateQual": "FIRST LEAVING CERTIFICATE WAEC BSC",
+          "mateNumber": 34
+        },
+        {
+          "number": 18,
+          "party": "ZLP",
+          "name": "Nwanyanwu Daniel Daberechukwu",
+          "qual": "WEST AFRICAN SCHOOL CERTIFICATE BACHELOR OF LAWS",
+          "age": 62,
+          "votes": 77665,
+          "listingNumber": 35,
+          "listingName": "NWANYANWU DANIEL DABERECHUKWU",
+          "mate": "ABUBAKAR JIBRIN IBRAHIM RAMALAN",
+          "mateQual": "DIPLOMA IN LAW",
+          "mateNumber": 36
+        }
+      ],
+      "year": 2023,
+      "date": "2023-02-25",
+      "declaration": {
+        "declared": "2023-03-01",
+        "valid": 24025940,
+        "rejected": 939278,
+        "electedParty": "APC"
+      },
+      "listingSourceId": "roster-2023"
+    }
+  ]
+}
