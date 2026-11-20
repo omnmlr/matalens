@@ -1,4 +1,4 @@
-# MataLens Technical & Security Red-Team Audit
+# MataLens Technical & Security Red-Team Audit (Verified Edition)
 
 > **Target Platform:** MataLens (AIESEC × HISA Hackathon Release)  
 > **Auditors:** Principal QA Engineer & Security Red-Team Subagent  
@@ -11,37 +11,37 @@
 
 ## 1. Executive Summary & Audit Methodology
 
-As an independent red-team, our mission is to break MataLens before the hackathon judges do. 
+As an independent red-team, our mission is to identify technical defects, security risks, and demonstration hazards before the hackathon judges do.
 
-We executed runtime test suites, inspected compiled client bundles, performed cross-platform file system stress tests, analyzed cryptographic receipt lifecycles, and simulated low-connectivity/offline failure modes.
+We strictly distinguish between **Runtime-Reproduced Defects** (empirically confirmed by executing test suites and scripts) and **Static-Analysis Risks** (identified through code review and architectural audits).
 
-### Runtime vs. Static Code Inspection Summary:
-- **Runtime Tests Executed:** `npm test` (`tests/api.test.mjs`), `npm run typecheck` (`tsc --noEmit`), `npm run build`, and script validations (`node scripts/import-election-catalogue.mjs --check`).
-- **Critical Runtime Defects Uncovered:** 2 blocking build/runtime failures on Windows environments (NTFS permission check failure and CRLF assertion mismatch).
-- **Security & Privacy Posture:** **Strong**. Zero telemetry for political following confirmed; SHA-256 receipt hashing verified; EXIF stripping verified. However, platform resilience on Windows and fallback edge-cases require immediate attention.
+### Verification Summary:
+- **Runtime-Reproduced Defects:** 2 blocking build/runtime failures on Windows workstations (NTFS permission mode bitmask check failure and CRLF assertion mismatch).
+- **Static-Analysis Risks:** 6 identified hazards across native dependency resilience, offline lookup edge cases, network retry throttling, Windows file locking, iOS photo format compatibility, and data spelling.
+- **Privacy Posture (Verified):** **Strong**. Zero telemetry for political following confirmed; SHA-256 receipt hashing verified; client-side EXIF stripping verified.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                               PRIORITIZED DEFECT SUMMARY MATRIX                                 │
 ├──────┬──────────┬─────────────────────────────────────────────────┬──────────────┬──────────────┤
-│ ID   │ SEVERITY │ DEFECT TITLE                                    │ VERIFICATION │ SUGGESTED    │
-│      │          │                                                 │ STATUS       │ OWNER        │
+│ ID   │ SEVERITY │ DEFECT TITLE                                    │ CLASSIFICATION│ SUGGESTED   │
+│      │          │                                                 │              │ OWNER        │
 ├──────┼──────────┼─────────────────────────────────────────────────┼──────────────┼──────────────┤
 │ SEC-1│ CRITICAL │ Server store crashes on Windows (0700 stat check)│ RUNTIME FAIL │ Codex Sol    │
 ├──────┼──────────┼─────────────────────────────────────────────────┼──────────────┼──────────────┤
 │ BLD-1│ CRITICAL │ Catalogue `--check` fails on Windows CRLF       │ RUNTIME FAIL │ Sol / Chisom │
 ├──────┼──────────┼─────────────────────────────────────────────────┼──────────────┼──────────────┤
-│ DEP-1│ HIGH     │ Unconditional top-level import of native `sharp` │ CODE AUDIT   │ Codex Sol    │
+│ DEP-1│ HIGH     │ Unconditional top-level import of native `sharp` │ STATIC RISK  │ Codex Sol    │
 ├──────┼──────────┼─────────────────────────────────────────────────┼──────────────┼──────────────┤
-│ UX-1 │ HIGH     │ Offline story lookup dead-end if un-cached       │ CODE AUDIT   │ Chisom       │
+│ UX-1 │ HIGH     │ Offline story lookup dead-end if un-cached       │ STATIC RISK  │ Chisom       │
 ├──────┼──────────┼─────────────────────────────────────────────────┼──────────────┼──────────────┤
-│ NET-1│ MEDIUM   │ Rapid retry loop in `useStoryFeed`              │ CODE AUDIT   │ Chisom       │
+│ NET-1│ MEDIUM   │ Rapid retry loop in `useStoryFeed`              │ STATIC RISK  │ Chisom       │
 ├──────┼──────────┼─────────────────────────────────────────────────┼──────────────┼──────────────┤
-│ FS-1 │ MEDIUM   │ Atomic edition swap `EPERM` risk on Windows      │ CODE AUDIT   │ Codex Sol    │
+│ FS-1 │ MEDIUM   │ Atomic edition swap `EPERM` risk on Windows      │ STATIC RISK  │ Codex Sol    │
 ├──────┼──────────┼─────────────────────────────────────────────────┼──────────────┼──────────────┤
-│ CAM-1│ MEDIUM   │ iPhone HEIC image upload format drop            │ CODE AUDIT   │ Chisom       │
+│ CAM-1│ MEDIUM   │ iPhone HEIC image upload format drop            │ STATIC RISK  │ Chisom       │
 ├──────┼──────────┼─────────────────────────────────────────────────┼──────────────┼──────────────┤
-│ EDT-1│ LOW      │ Typo in INECPRES portal name in reviewed edition│ DATA AUDIT   │ Codex Sol    │
+│ EDT-1│ LOW      │ Typo in INECPRES portal name in reviewed edition│ STATIC RISK  │ Codex Sol    │
 └──────┴──────────┴─────────────────────────────────────────────────┴──────────────┴──────────────┘
 ```
 
@@ -52,8 +52,7 @@ We executed runtime test suites, inspected compiled client bundles, performed cr
 ---
 
 ### [SEC-1] CRITICAL: Server store crashes on Windows due to POSIX `0700` permission check
-
-- **Severity:** **CRITICAL** (Blocks server execution on Windows machines)
+- **Classification:** **RUNTIME-REPRODUCED DEFECT** (Blocks server execution on Windows machines)
 - **Suggested Owner:** **Codex Sol**
 - **Affected File:** [`server/store.mjs`](file:///c:/Users/USER/Desktop/matalens/server/store.mjs#L10-L12)
 - **Runtime Evidence:**
@@ -88,8 +87,7 @@ We executed runtime test suites, inspected compiled client bundles, performed cr
 ---
 
 ### [BLD-1] CRITICAL: Catalogue `--check` fails on Windows due to line-ending mismatch
-
-- **Severity:** **CRITICAL** (Blocks `npm run build` and Playwright WebServer on Windows)
+- **Classification:** **RUNTIME-REPRODUCED DEFECT** (Blocks `npm run build` and Playwright WebServer on Windows)
 - **Suggested Owner:** **Codex Sol / Chisom**
 - **Affected File:** [`scripts/import-election-catalogue.mjs`](file:///c:/Users/USER/Desktop/matalens/scripts/import-election-catalogue.mjs#L145-L150)
 - **Runtime Evidence:**
@@ -119,8 +117,7 @@ We executed runtime test suites, inspected compiled client bundles, performed cr
 ---
 
 ### [DEP-1] HIGH: Unconditional top-level import of native `sharp` dependency
-
-- **Severity:** **HIGH** (Deployment and demo fragility)
+- **Classification:** **STATIC-ANALYSIS RISK** (Deployment and demo fragility)
 - **Suggested Owner:** **Codex Sol**
 - **Affected File:** [`server/upload.mjs`](file:///c:/Users/USER/Desktop/matalens/server/upload.mjs#L2)
 - **Code Audit Evidence:**
@@ -146,8 +143,7 @@ We executed runtime test suites, inspected compiled client bundles, performed cr
 ---
 
 ### [UX-1] HIGH: Offline story lookup dead-end if un-cached
-
-- **Severity:** **HIGH** (Offline demo failure risk)
+- **Classification:** **STATIC-ANALYSIS RISK** (Offline demo failure risk)
 - **Suggested Owner:** **Chisom**
 - **Affected File:** `src/story-ui.tsx` (in `StoryPage` component)
 - **Code Audit Evidence:**
@@ -168,8 +164,7 @@ We executed runtime test suites, inspected compiled client bundles, performed cr
 ---
 
 ### [NET-1] MEDIUM: Rapid retry loop in `useStoryFeed` hook
-
-- **Severity:** **MEDIUM** (Performance & rate limiting)
+- **Classification:** **STATIC-ANALYSIS RISK** (Performance & rate limiting)
 - **Suggested Owner:** **Chisom**
 - **Affected File:** `src/story-ui.tsx`
 - **Audit Findings:**
@@ -180,8 +175,7 @@ We executed runtime test suites, inspected compiled client bundles, performed cr
 ---
 
 ### [FS-1] MEDIUM: Atomic edition swap `EPERM` risk on Windows
-
-- **Severity:** **MEDIUM** (File system lock contention)
+- **Classification:** **STATIC-ANALYSIS RISK** (File system lock contention)
 - **Suggested Owner:** **Codex Sol**
 - **Affected File:** `server/news/storage.ts`
 - **Audit Findings:**
@@ -192,8 +186,7 @@ We executed runtime test suites, inspected compiled client bundles, performed cr
 ---
 
 ### [CAM-1] MEDIUM: iPhone HEIC image upload format drop
-
-- **Severity:** **MEDIUM** (User experience for iOS judges/users)
+- **Classification:** **STATIC-ANALYSIS RISK** (User experience for iOS judges/users)
 - **Suggested Owner:** **Chisom**
 - **Affected File:** `src/camera.tsx`
 - **Audit Findings:**
@@ -205,8 +198,7 @@ We executed runtime test suites, inspected compiled client bundles, performed cr
 ---
 
 ### [EDT-1] LOW: Typo in official portal name in reviewed news edition
-
-- **Severity:** **LOW** (Editorial credibility)
+- **Classification:** **STATIC-ANALYSIS RISK** (Editorial credibility)
 - **Suggested Owner:** **Codex Sol**
 - **Affected File:** `data/news/reviewed-edition.json` (Story 1: `recruitment-notice`)
 - **Audit Findings:**
@@ -219,6 +211,6 @@ We executed runtime test suites, inspected compiled client bundles, performed cr
 
 ## 3. Verification & Compliance Sign-Off
 
-- [x] **Guest-First Zero-Login Verification:** Audited `localStorage` usage across `matalens_followed_politicians:v1`, `matalens_receipts:v1`, and `matalens_saved_notes:v1`. Zero telemetry requests or political profiling cookies transmitted.
+- [x] **Guest-First Zero-Login Verification:** Audited `localStorage` usage across `followed`, `receipts`, and `stories`. Zero telemetry requests or political profiling cookies transmitted.
 - [x] **Receipt Cryptography:** Verified that only the SHA-256 hash of the unguessable receipt code (`ML-XXXX-XXXX`) is stored server-side.
 - [x] **WCAG 2.1 AA Compliance:** Minimum tap target $\ge 44\times 44\text{px}$ verified in CSS; contrast ratios exceed $8.9:1$.

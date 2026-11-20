@@ -1,101 +1,102 @@
-# MataLens Judge Q&A Defense Bank
+# MataLens Judge Q&A Defense Bank (Grounded Edition)
 
 > **Event:** AIESEC × HISA Civic Innovation Hackathon  
 > **Audience:** Hackathon Jury & Technical Judges  
-> **Purpose:** Ironclad, defensible responses to challenging judicial cross-examination  
+> **Purpose:** Realistic, defensible responses grounded strictly in the implemented codebase  
 > **Date:** 20 November 2026  
 > **Status:** Stage-Ready Q&A Playbook  
 
 ---
 
-## Category 1: Technical Architecture & Ingestion Pipeline
+## Category 1: News Intelligence & Editorial Pipeline
 
-### Q1.1: "How does your news pipeline work? Are you just scraping websites with LLMs, or is there a real data engine?"
-- **The Core Trap:** Judges suspect an uncurated OpenAI API wrapper that hallucinates facts.
+### Q1.1: "How does your news intelligence pipeline actually work? Are you just using ChatGPT to generate summaries?"
+- **The Core Trap:** Judges suspect an uncurated LLM wrapper that hallucinates news.
 - **Defensible Response:**
-  > *"We explicitly rejected autonomous LLM scraping because political news requires zero-tolerance for hallucinations. 
-  Our news engine (built by Codex Sol in `server/news/pipeline.ts`) operates on a **deterministic 4-stage pipeline**:
-  1. **Ingest:** Ingests RSS feeds and public webhooks from a registered watchlist of 22 accredited Nigerian newsrooms.
-  2. **Cluster:** Semantic term-combination recipes group overlapping reports into single master events.
-  3. **Anchor:** The pipeline extracts verbatim quotes and maps them against indexed manifesto clauses and gazetted statutes.
-  4. **Human Review Queue:** Every candidate edition requires an explicit administrative review stamp before entering the public SQLite WAL store. 
-  Our bundled edition is 100% verified, source-linked, and reproducible offline."*
+  > *"We explicitly do **not** use unconstrained LLM web scraping or generative text for breaking political news. In an electoral context, automated hallucinations destroy public trust.
+  Our news architecture (implemented in `server/news/pipeline.ts` by Codex Sol) is a **deterministic, evidence-bounded pipeline**:
+  1. **Registered Source Watchlist:** The desk tracks specific public endpoints (official INEC releases, Channels TV, Voice of Nigeria) defined in `server/news/desk.ts`.
+  2. **Event Recipes:** We define event grouping recipes with strict temporal windows and required evidence terms.
+  3. **Evidence Fragments:** Explanations and context are assembled only from verified evidence fragments that actually exist in the source capture.
+  4. **Strict Review CLI:** Drafts cannot be published automatically. An editor must run `npm run news -- approve <id> <full-revision>` against the exact content hash before a story enters the reviewed edition (`reviewed-edition.json`).
+  The current build ships with 5 thoroughly reviewed and source-linked stories. Expanding this watchlist across broader national topics is part of our post-hackathon roadmap."*
 
 ---
 
-### Q1.2: "Why use SQLite instead of a scalable cloud database like PostgreSQL or Supabase?"
-- **The Core Trap:** Judges thinking "production scale" equate SQLite with a toy.
+### Q1.2: "Why do you only have five stories in your edition? How does this scale?"
+- **The Core Trap:** Challenging the breadth and production viability of the platform.
 - **Defensible Response:**
-  > *"We chose Node.js native `DatabaseSync` SQLite in WAL mode for three strategic reasons:
-  1. **Zero-Latency Read Performance:** In a reading app where 99.9% of traffic is read-only public civic content, an in-process SQLite instance running on an edge NVMe drive responds in sub-millisecond speeds—outperforming remote database network round-trips.
-  2. **Cost Sustainability:** It keeps our cloud operating costs under \$10/month on a basic VPS, preventing the platform from going bankrupt or relying on government grants.
-  3. **Air-Gapped Privacy:** Civic Camera hashes and reports remain strictly self-contained on our infrastructure, eliminating third-party cloud database leak vulnerabilities."*
+  > *"We deliberately chose five high-integrity, multi-source stories for this hackathon release to prove our primary learning loop end-to-end:
+  - Covering candidate lists, election administration, mock accreditation, presidential rosters, and campaign promises.
+  - Demonstrating direct source comparison (e.g. comparing conflicting application cutoff dates in Story 1), dated timeline progression (Story 3), and manifesto clause linking (Story 4).
+  Our backend CLI (`npm run news -- collect/queue/approve/withdraw`) provides the exact operational workflow needed for editorial teams to ingest, stage, review, and approve stories safely. Our priority for this release was **zero hallucinations and 100% evidentiary rigor**, rather than volume without accountability."*
 
 ---
 
-## Category 2: Nonpartisanship, Neutrality & Legal Compliance
+## Category 2: Civic Camera, Security & Moderation
 
-### Q2.1: "How do you guarantee MataLens won't favor the ruling APC or popular opposition figures like Peter Obi?"
-- **The Core Trap:** Accusation of political bias or editorial favoritism.
+### Q2.1: "How does Civic Camera verify result sheets? Does it automatically verify them against INEC's IReV portal?"
+- **The Core Trap:** Trying to catch us overclaiming automatic government API integration.
 - **Defensible Response:**
-  > *"We enforce four programmatic, non-negotiable neutrality guardrails:
-  1. **The 40% Publisher & Entity Cap:** No single political party, candidate, or media house can occupy more than 40% of the featured stories in any 7-day rolling window.
-  2. **The 4-Pillar Perspective Requirement:** Every major development must feature at least two opposing viewpoints alongside primary public gazette citations.
-  3. **Strict Verbs Filter:** We ban editorialized tabloid verbs (*'slams', 'blasts', 'demolishes'*), enforcing neutral journalistic verbs (*'states', 'responds', 'introduced'*).
-  4. **Zero Editorial Endorsements:** We do not publish candidate letter grades, popularity rankings, or voting scorecards. We present the primary facts, verbatim manifesto clauses, and the multi-source spread—the citizen draws their own conclusions."*
+  > *"No, we do **not** claim an automatic integration with INEC’s IReV system. INEC does not provide an open real-time verification API for third-party apps.
+  What Civic Camera actually implements is an **abuse-controlled, guest-first evidence preservation intake**:
+  1. **Guest-First Privacy:** Users do not need an account. They can submit a photo of a publicly posted Form EC8A result sheet or community facility issue immediately.
+  2. **On-Device EXIF Stripping:** The client-side code strips private GPS and device metadata to protect citizen privacy.
+  3. **Cryptographic Private Receipt:** Upon submission, the server issues a high-entropy receipt token (e.g., `ML-8K2P-4X1B`). The server stores only the **SHA-256 hash** of this token in SQLite (`server/store.mjs`). The user can check status or withdraw their submission using their private token.
+  4. **Moderation:** Submissions enter an internal moderation queue (`server/moderate.mjs`) where reviewers evaluate clarity, reject invalid uploads (e.g., photos of marked ballot papers), and verify records."*
 
 ---
 
-### Q2.2: "Aren't you violating copyright by aggregating articles from Nigerian newspapers?"
-- **The Core Trap:** Threat of publisher copyright infringement claims.
+### Q2.2: "What prevents someone from uploading illegal photos of marked ballot papers or spamming the server?"
+- **The Core Trap:** Violating ballot secrecy laws under Section 122 of the Electoral Act 2022.
 - **Defensible Response:**
-  > *"No. Our architecture strictly complies with **Section 20 of the Nigerian Copyright Act 2022** (Fair Dealing for purposes of criticism, review, and reporting of current events):
-  1. We never reprint full articles. We synthesize our own original 2-sentence neutral event summary.
-  2. Every perspective card prominently credits the publishing newsroom with an external outbound link directly to the original publisher's page.
-  3. Official gazettes, Electoral Act clauses, and Supreme Court rulings are legally in the public domain under Nigerian law."*
+  > *"Our intake enforces strict technical and policy boundaries:
+  1. **Explicit Legal Scope:** Our intake explicitly forbids photos of marked ballot papers, citizens voting in secret, or permanent voter cards (PVC). We only accept publicly displayed Form EC8A result sheets and community infrastructure issues.
+  2. **Strict File Restrictions:** Client-side and server-side checks restrict uploads to JPEG, PNG, and WebP, strictly under 8MB.
+  3. **Rate Limiting & Duplicate Detection:** The server enforces upload rate limits and duplicate submission detection (`server/upload.mjs`).
+  4. **Immediate Decline & Purge:** Flagged or non-compliant uploads are declined and deleted through the moderation desk."*
 
 ---
 
-## Category 3: Security, Privacy & Civic Camera
+## Category 3: Guest-First Privacy & Architecture
 
-### Q3.1: "Why don't you require user accounts? Doesn't zero-login make your platform vulnerable to abuse?"
-- **The Core Trap:** The enterprise assumption that security requires mandatory accounts.
+### Q3.1: "How can you personalize the briefing and follow politicians without requiring a user account?"
+- **The Core Trap:** Skepticism regarding zero-login personalization and state persistence.
 - **Defensible Response:**
-  > *"In Nigeria, requiring phone numbers, emails, or National Identity Numbers (NIN) actively disenfranchises citizens who fear political surveillance or retribution. 
-  Under the **Nigeria Data Protection Act 2023**, a citizen's political reading habits and candidate preferences are sensitive personal data. By storing followed politicians and reading notes **100% locally on-device in browser `localStorage`**, zero political preference telemetry is transmitted to our servers.
-  For Civic Camera, we prevent abuse without accounts through:
-  - Strict client-side file validation (JPG/PNG/WebP, max 8MB, stripped EXIF metadata).
-  - Rate limiting (max 3 uploads/hour per IP/subnet).
-  - High-entropy unguessable private receipt tokens (`ML-XXXX-XXXX`) whose SHA-256 hashes are stored server-side. A user can check status or withdraw their report using their token, with zero identity exposure."*
+  > *"We use **local-first client architecture** via browser `localStorage`:
+  - When a user taps 'Follow' on candidate cards (e.g., Bola Ahmed Tinubu or Adewole Adebayo), the candidate ID is stored locally in the browser (`useLocal('followed', [])`).
+  - The homepage dynamically filters 'Updates for you' in real-time in JavaScript without making any authenticated backend query.
+  - Saved stories, election day preparation plans, and completed learning quizzes are similarly stored strictly on-device.
+  This means **zero personal political profiling data ever leaves the user’s phone**, fully complying with sensitive data principles under the Nigeria Data Protection Act 2023."*
 
 ---
 
-### Q3.2: "What if someone uploads a photograph of a marked ballot paper?"
-- **The Core Trap:** Violating ballot secrecy under Nigerian electoral law.
+### Q3.2: "What happens if a user is in an area with poor cellular connectivity or goes offline?"
+- **The Core Trap:** Fragility on real Nigerian 2G/3G mobile networks.
 - **Defensible Response:**
-  > *"Under Section 122 of the Electoral Act 2022, photographing marked ballots is illegal. 
-  Our intake rules explicitly state: **'Official Form EC8A Result Sheets only. No marked ballot papers or voting citizens.'**
-  Every upload undergoes client-side pre-flight checks and server-side perceptual validation. If an image contains ballot markings or private voters, it is immediately declined and permanently purged during moderation."*
+  > *"MataLens was architected from day one as a mobile-first PWA:
+  1. **Offline Service Worker:** Our service worker (`sw.js`) caches the core app shell, election catalog, voter rights guides, and learning modules.
+  2. **Bundled Offline Fallbacks:** If the live news API is unreachable, the frontend can seamlessly render from bundled local fixtures (`src/story-fixtures.ts`).
+  3. **Lightweight Assets:** The entire client build uses modern SVG iconography and optimized web fonts, avoiding bloated megabyte-sized frameworks."*
 
 ---
 
-## Category 4: Competitive Differentiation & Sustainability
+## Category 4: Neutrality, Feasibility & Hackathon Scope
 
-### Q4.1: "VotersDesk and Elect.ng already exist. Why does Nigeria need MataLens?"
-- **The Core Trap:** "You are just replicating existing platforms."
+### Q4.1: "Are you partnered with INEC or civil society organizations like YIAGA or CDD?"
+- **The Core Trap:** Overclaiming official endorsements or fake partnerships.
 - **Defensible Response:**
-  > *"VotersDesk and Elect.ng are static encyclopedias. They dump 400 candidate profiles and 36 states on the user, then ask for sign-in or run AdSense banner ads. They only feel useful during the 48 hours of election weekend.
-  MataLens is different in three fundamental ways:
-  1. **The Signature Daily Learning Loop:** We turn breaking governance news into daily, bite-sized clarity—linking today's headlines to the politician's signed manifesto commitments.
-  2. **The Nigerian 4-Pillar Perspective Engine:** We provide Ground News-level multi-source transparency tailored for Nigeria's media landscape without a \$30/year paywall.
-  3. **Active Civic Rehearsals:** Inspired by Brilliant, we offer 60-second scenario checks that turn passive news consumers into empowered constitutional citizens."*
+  > *"No, we are an independent civic technology initiative developed for this hackathon. We have no official endorsement from or formal partnership with INEC or any civic organization.
+  What we do is cite publicly available, authoritative public records—such as official INEC election calendars, certified candidate lists, published party manifestos, and research reports like Chatham House’s 2023 BVAS assessment.
+  Our goal post-hackathon is to demonstrate this working prototype to civic observation coalitions as an open-source, nonpartisan learning companion."*
 
 ---
 
-### Q4.2: "How will this project survive financially after the hackathon?"
-- **The Core Trap:** "Another unsustainable hackathon project that will die in 3 months."
+### Q4.2: "How is MataLens different from VotersDesk or Elect.ng?"
+- **The Core Trap:** "Isn't this just another election website?"
 - **Defensible Response:**
-  > *"Our zero-login, static-edge architecture requires less than \$15/month in total server hosting (Cloudflare Edge + single low-cost Node instance).
-  For operational sustainability:
-  1. **Civil Society Fellowships:** We are partnering with accredited fact-checking coalitions (such as Dubawa, CDD West Africa, and YIAGA Africa) who already spend millions on voter education and can use our open-source platform as their interactive distribution layer.
-  2. **Enterprise Civic API:** While consumer access is 100% free and private, research institutes, newsrooms, and international election observation missions can license our structured, machine-readable election dataset via a commercial B2B API."*
+  > *"VotersDesk and Elect.ng are comprehensive reference directories. They focus on cataloging hundreds of candidates and historical election results, but they operate primarily as static directories or raw news feeds.
+  MataLens is fundamentally different:
+  1. **The Primary Learning Loop:** We connect broken news directly to **manifesto commitments** (with exact section citations) and **dated event timelines**.
+  2. **Active Comprehension:** Every story includes an interactive `QuickCheck` quiz that tests statutory and procedural understanding in under 60 seconds.
+  3. **Zero Mandatory Sign-In:** Everything—from candidate following to Civic Camera photo receipts—works immediately as a guest, protecting citizen privacy."*
