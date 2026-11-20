@@ -17,6 +17,14 @@ The product overhaul builds on `035c5c8` on `codex/matalens-first-release`. The 
 | Photos, data expansion and maps | External dependency | Media and VotersDesk CSV access are documented in the data ledger. Geographic boundaries, nationwide nominations, additional results and the ability to match a polling unit to the exact ballot require further verified source data. |
 | Responsive interaction and access | Working in Chromium testing | Verified narrow layout, both themes, keyboard controls, search and browser Back. See screenshot and test evidence. Human usability and physical Android/iOS coverage remain unverified. |
 
+## Political-news intelligence
+
+| Capability | Status | Evidence and boundary |
+| --- | --- | --- |
+| Story collection and review | Working from recorded sources | Five stories generated from original-source evidence and the catalogue. Exact-revision approval and withdrawal control the public edition. Live HTML parsing, event grouping, and unavailable sources are tested with controlled publisher responses. The workspace proxy blocked direct publisher fetches. |
+| Story API | Working | HTTP tests cover list, detail, stable-person filtering, pending and withdrawn content, and an unavailable edition. |
+| Grounded learning | Working for registered topics | Every seed question provides source IDs. Explanations combine registered evidence. The October 2026 manifesto is dated at month precision and attributed to its campaign. |
+
 ## Verification commands
 
 - `npm run build` checks catalogue drift, typechecks, creates the compiled app and builds the offline cache manifest.

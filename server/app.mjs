@@ -2,6 +2,7 @@ import express from 'express'
 import { createHash, randomUUID } from 'node:crypto'
 import { expireReports, findReport, openStore, publicReport, retentionDays, setStatus } from './store.mjs'
 import { readUpload, RequestError, validateUpload } from './upload.mjs'
+import { storyRoutes } from './news/routes.ts'
 
 const evidenceCapacity = 512 * 1024 * 1024
 const receiptFormat = /^[a-f0-9]{64}$/
@@ -32,7 +33,7 @@ function rateLimiter(limit, windowMs, message) {
   }
 }
 
-export function createApp({ directory, uploadsEnabled = false, origin, trustLoopbackProxy = false } = {}) {
+export function createApp({ directory, uploadsEnabled = false, origin, trustLoopbackProxy = false, newsEdition } = {}) {
   const app = express()
   const db = openStore(directory)
   app.disable('x-powered-by')
@@ -65,6 +66,7 @@ export function createApp({ directory, uploadsEnabled = false, origin, trustLoop
     next()
   })
   app.get('/api/intake', (req, res) => res.json({ uploadsEnabled, retentionDays }))
+  app.use('/api/stories', storyRoutes(newsEdition))
 
   const writeLimit = rateLimiter(8, 10 * 60_000, 'Too many upload attempts. Wait a few minutes and try again.')
   const readLimit = rateLimiter(90, 10 * 60_000, 'Too many receipt requests. Wait a few minutes and try again.')

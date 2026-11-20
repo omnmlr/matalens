@@ -1,0 +1,45 @@
+{
+  "reviewedAt": "2026-11-20",
+  "captures": {
+    "recruitment-notice": {
+      "title": "INEC Updates Closing Date for INECPRESS Ad-Hoc Staff Recruitment",
+      "text": "INECPRESS Ad-hoc Staff Recruitment. Extended: 18th November, 2026 to 2nd December, 2026."
+    },
+    "recruitment-statement": {
+      "title": "Extension of deadline for the registration of ad hoc staff on the INECPRES portal",
+      "text": "Registration of ad hoc staff. INECPRES. 2nd December 2026. 2027 General Election."
+    },
+    "assembly-notice": {
+      "title": "Updated list of candidates for 2027 State Houses of Assembly elections",
+      "text": "Updated list of candidates for 2027 State Houses of Assembly elections. Lagos. Oyo."
+    },
+    "election-calendar": {
+      "title": "Full Election Calendar & Timetable",
+      "text": "Presidential and National Assembly elections: 16 January 2027. Governorship and State Houses of Assembly elections: 6 February 2027."
+    },
+    "mock-notice": {
+      "title": "INEC sets 28th November, 2026 for nationwide mock accreditation exercise",
+      "text": "Nationwide mock accreditation: 28th November 2026. Electronic result transmission."
+    },
+    "mock-report": {
+      "title": "INEC Fixes Nov 28 For Nationwide Mock Accreditation Ahead Of 2027 General Elections",
+      "text": "Nov 28 mock accreditation. Chatham House. Electronic result transmission."
+    },
+    "voter-education": {
+      "title": "Voter Education & Guidelines",
+      "text": "BVAS biometric accreditation. Present your PVC. Registered polling unit."
+    },
+    "presidential-notice": {
+      "title": "Updated list of candidates for 2027 presidential election",
+      "text": "Updated list of candidates for 2027 presidential election. Final list – Presidential."
+    },
+    "sdp-statement": {
+      "title": "2027 Election: SDP Candidate Prioritises Security",
+      "text": "Adewole Adebayo. Prioritise the country’s security if elected. Arewa Awareness Summit, Kaduna State."
+    },
+    "apc-manifesto": {
+      "title": "The Manifesto",
+      "text": "October 2026. Social housing. Affordable mortgages. Units handed over and mortgaged."
+    }
+  }
+}

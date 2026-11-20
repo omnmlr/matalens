@@ -23,7 +23,10 @@ if (origin && new URL(origin).origin !== origin) throw new Error('MATALENS_ORIGI
 const uploadsEnabled = mode === 'dev'
   ? process.env.MATALENS_ENABLE_UPLOADS !== '0'
   : Boolean(process.env.MATALENS_ENABLE_UPLOADS === '1' && directory && origin && new URL(origin).protocol === 'https:')
-const { app } = createApp({ directory, uploadsEnabled, origin, trustLoopbackProxy: process.env.MATALENS_TRUST_LOOPBACK_PROXY === '1' })
+const { app } = createApp({
+  directory, uploadsEnabled, origin, newsEdition: process.env.MATALENS_NEWS_EDITION,
+  trustLoopbackProxy: process.env.MATALENS_TRUST_LOOPBACK_PROXY === '1',
+})
 if (mode !== 'dev') serveClient(app)
 
 const host = process.env.MATALENS_HOST || '127.0.0.1'

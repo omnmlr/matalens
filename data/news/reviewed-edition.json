@@ -1,0 +1,365 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "revision": "3e9edd881962619e4fa70309355270a6d7f09d482bfe45772f153b500d208146",
+      "reviewer": "Initial source review",
+      "story": {
+        "id": "inec-recruitment-deadline-2027",
+        "title": "INEC extends the election staff application deadline",
+        "topic": "Election administration",
+        "publishedAt": "2026-11-19",
+        "personIds": [],
+        "partyCodes": [],
+        "sources": [
+          {
+            "id": "recruitment-notice",
+            "title": "INEC Updates Closing Date for INECPRESS Ad-Hoc Staff Recruitment",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://inecnigeria.org/press/inec-updates-closing-date-for-inecpress-ad-hoc-staff-recruitment",
+            "publishedAt": "2026-11-19",
+            "evidence": "INEC extended the application deadline for ad hoc election staff from 18 November to 2 December 2026. The original 18 November cutoff was replaced by a date two weeks later."
+          },
+          {
+            "id": "recruitment-statement",
+            "title": "Extension of deadline for the registration of ad hoc staff on the INECPRES portal",
+            "publisher": "Press Release Naija · INEC statement",
+            "url": "https://pressreleasenaija.com.ng/extension-of-deadline-for-the-registration-of-ad-hoc-staff-on-the-inecpres-portal/",
+            "publishedAt": "2026-11-19",
+            "evidence": "The accompanying statement identifies INECPRES as the recruitment portal for temporary staff for the 2027 general election."
+          }
+        ],
+        "explanation": "INEC extended the application deadline for ad hoc election staff from 18 November to 2 December 2026.",
+        "context": "The accompanying statement identifies INECPRES as the recruitment portal for temporary staff for the 2027 general election.",
+        "significance": "The original 18 November cutoff was replaced by a date two weeks later.",
+        "commitments": [],
+        "openQuestion": "Has INEC published a later change to the application window?",
+        "quiz": {
+          "id": "recruitment-window",
+          "prompt": "What deadline did INEC announce for recruitment applications?",
+          "options": [
+            "2 December 2026",
+            "18 November 2026",
+            "28 November 2026"
+          ],
+          "correct": 0,
+          "explanation": "INEC extended the application deadline for ad hoc election staff from 18 November to 2 December 2026.",
+          "sourceIds": [
+            "recruitment-notice"
+          ]
+        },
+        "reviewStatus": "reviewed",
+        "reviewedAt": "2026-11-20"
+      }
+    },
+    {
+      "revision": "b9ffc181f5360fa31386b3e0a0d932d9f965ed18b433992938a93fcd26666f7f",
+      "reviewer": "Initial source review",
+      "story": {
+        "id": "state-assembly-lists-2027",
+        "title": "INEC publishes state assembly candidate lists",
+        "topic": "Candidate records",
+        "publishedAt": "2026-11-14",
+        "personIds": [],
+        "partyCodes": [],
+        "sources": [
+          {
+            "id": "assembly-notice",
+            "title": "Updated list of candidates for 2027 State Houses of Assembly elections",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-state-houses-of-assembly-elections",
+            "publishedAt": "2026-11-14",
+            "evidence": "INEC published updated lists for the 2027 State House of Assembly elections, with documents organised by state. Separate files are listed for Lagos and Oyo. Open the state file first, then find the constituency heading."
+          },
+          {
+            "id": "election-calendar",
+            "title": "Full Election Calendar & Timetable",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://www.inecnigeria.org/elections/calendar",
+            "evidence": "The published calendar schedules the state assembly elections alongside governorship elections on 6 February 2027. The calendar schedules the presidential and National Assembly elections for 16 January 2027."
+          }
+        ],
+        "explanation": "INEC published updated lists for the 2027 State House of Assembly elections, with documents organised by state.",
+        "context": "Separate files are listed for Lagos and Oyo. Open the state file first, then find the constituency heading.",
+        "significance": "The published calendar schedules the state assembly elections alongside governorship elections on 6 February 2027.",
+        "commitments": [],
+        "quiz": {
+          "id": "state-election-date",
+          "prompt": "When did the published INEC calendar schedule state assembly elections?",
+          "options": [
+            "6 February 2027",
+            "16 January 2027",
+            "28 November 2026"
+          ],
+          "correct": 0,
+          "explanation": "The published calendar schedules the state assembly elections alongside governorship elections on 6 February 2027.",
+          "sourceIds": [
+            "election-calendar"
+          ]
+        },
+        "reviewStatus": "reviewed",
+        "reviewedAt": "2026-11-20"
+      }
+    },
+    {
+      "revision": "6007931ab0a7d1d2555135e32b0e47ca3e8ed0f9b30f4df68b82a835905f780e",
+      "reviewer": "Initial source review",
+      "story": {
+        "id": "mock-accreditation-2026",
+        "title": "What INEC’s mock accreditation will test",
+        "topic": "Election process",
+        "publishedAt": "2026-11-13",
+        "personIds": [],
+        "partyCodes": [],
+        "sources": [
+          {
+            "id": "mock-notice",
+            "title": "INEC sets 28th November, 2026 for nationwide mock accreditation exercise",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://inecnigeria.org/press/inec-sets-28th-november-2026-for-nationwide-mock-accreditation-exercise",
+            "publishedAt": "2026-11-13",
+            "evidence": "INEC announced a nationwide mock accreditation exercise for 28 November 2026 to test voter accreditation and electronic result transmission."
+          },
+          {
+            "id": "mock-report",
+            "title": "INEC Fixes Nov 28 For Nationwide Mock Accreditation Ahead Of 2027 General Elections",
+            "publisher": "Channels Television",
+            "url": "https://www.channelstv.com/2026/11/12/inec-fixes-nov-28-for-nationwide-mock-accreditation-ahead-of-2027-general-elections/",
+            "publishedAt": "2026-11-12",
+            "evidence": "Channels Television reported that INEC chair Joash Amupitan announced the rehearsal during a dialogue at Chatham House on 12 November."
+          },
+          {
+            "id": "election-calendar",
+            "title": "Full Election Calendar & Timetable",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://www.inecnigeria.org/elections/calendar",
+            "evidence": "The published calendar schedules the state assembly elections alongside governorship elections on 6 February 2027. The calendar schedules the presidential and National Assembly elections for 16 January 2027."
+          },
+          {
+            "id": "voter-education",
+            "title": "Voter Education & Guidelines",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://www.inecnigeria.org/voters/education",
+            "evidence": "Accreditation is the part of the polling process when officials confirm a voter’s eligibility at the polling unit."
+          }
+        ],
+        "explanation": "INEC announced a nationwide mock accreditation exercise for 28 November 2026 to test voter accreditation and electronic result transmission.",
+        "context": "Channels Television reported that INEC chair Joash Amupitan announced the rehearsal during a dialogue at Chatham House on 12 November. Accreditation is the part of the polling process when officials confirm a voter’s eligibility at the polling unit.",
+        "significance": "The calendar schedules the presidential and National Assembly elections for 16 January 2027.",
+        "commitments": [],
+        "openQuestion": "What did INEC find during the exercise? Look for a dated follow-up from the commission.",
+        "quiz": {
+          "id": "mock-purpose",
+          "prompt": "What did INEC say the exercise would test?",
+          "options": [
+            "Campaign spending limits",
+            "The order of names on the ballot",
+            "Accreditation and electronic result transmission"
+          ],
+          "correct": 2,
+          "explanation": "INEC announced a nationwide mock accreditation exercise for 28 November 2026 to test voter accreditation and electronic result transmission.",
+          "sourceIds": [
+            "mock-notice"
+          ]
+        },
+        "reviewStatus": "reviewed",
+        "reviewedAt": "2026-11-20"
+      }
+    },
+    {
+      "revision": "8eda07d9d836d37e89a1b69f045fa6b3c04056a51184c6b5f85bebf8f965f59e",
+      "reviewer": "Initial source review",
+      "story": {
+        "id": "presidential-roster-2027",
+        "title": "The 2027 presidential candidate list is out",
+        "topic": "Presidential election",
+        "publishedAt": "2026-10-31",
+        "personIds": [
+          "abubakar-atiku",
+          "adenuga-sunday",
+          "amaechi-chibuike-rotimi",
+          "duke-donald",
+          "makinde-oluseyi-abiodun",
+          "musa-mohammed-rabiu-kwankwaso",
+          "national-abbas-bin-aliyu",
+          "national-abubakar-nafisat-usaku",
+          "national-adebayo-adewole-ebenezer",
+          "national-adebisi-moses-olusoji",
+          "national-agada-peter-ada",
+          "national-bugaje-usman-muhammed",
+          "national-chukwuemeka-uchenna-anthony",
+          "national-hassan-khalid",
+          "national-ike-chinazam",
+          "national-key-patience-ndidi",
+          "national-konto-hajja-bintu",
+          "national-magashi-haruna-garba",
+          "national-mohammed-sule",
+          "national-musa-lawal-daura",
+          "national-mustapha-usman-turaki",
+          "national-nwanyanwu-daniel-daberechukwu",
+          "national-ofordile-peace-egobia",
+          "national-okereke-nkem-esther",
+          "national-okereke-sunday-chibuzo",
+          "national-okwori-ada-elizabeth-fredrick",
+          "national-onor-sandy-ojang",
+          "national-rufai-adekunle-f-omo-aje",
+          "national-shehu-hussaini",
+          "national-sulaiman-nasir-muhammed",
+          "national-umaru-babangida",
+          "national-yusuf-kabiru",
+          "obi-peter-gregory",
+          "shettima-kashim",
+          "sowore-omoyele",
+          "tinubu-bola-ahmed"
+        ],
+        "partyCodes": [
+          "A",
+          "AA",
+          "AAC",
+          "ADC",
+          "ADP",
+          "APC",
+          "APM",
+          "APP",
+          "BP",
+          "DLA",
+          "LP",
+          "NDC",
+          "NDP",
+          "NRM",
+          "PDP",
+          "PRP",
+          "SDP",
+          "YPP",
+          "ZLP"
+        ],
+        "sources": [
+          {
+            "id": "presidential-notice",
+            "title": "Updated list of candidates for 2027 presidential election",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-presidential-election",
+            "publishedAt": "2026-10-31",
+            "evidence": "INEC’s publication page links to the final presidential candidate list for the 2027 election."
+          },
+          {
+            "id": "election-calendar",
+            "title": "Full Election Calendar & Timetable",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://www.inecnigeria.org/elections/calendar",
+            "evidence": "The published calendar schedules the state assembly elections alongside governorship elections on 6 February 2027. The calendar schedules the presidential and National Assembly elections for 16 January 2027."
+          },
+          {
+            "id": "presidential-pdf",
+            "title": "Final List – Presidential",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://inecnigeria.org/documents/uploads/2026/10/b5af9099-864c-4d5e-924d-e1a2c771c529-final-list-presidential.pdf",
+            "publishedAt": "2026-10-31",
+            "evidence": "The INEC list names 18 presidential tickets. It also includes an Accord entry marked “COURT ORDER” with neither nominee named. The presidential list pairs a candidate for president and a running mate on each named party ticket. The later INEC roster lists Adebayo Adewole Ebenezer as the SDP’s presidential candidate."
+          },
+          {
+            "id": "apc-manifesto",
+            "title": "The Manifesto",
+            "publisher": "All Progressives Congress · Renewed Hope",
+            "url": "https://renewedhope02.com/manifesto",
+            "evidence": "The APC’s October 2026 manifesto proposes expanding social housing and affordable mortgages, and tracking homes handed over and mortgaged."
+          }
+        ],
+        "explanation": "The INEC list names 18 presidential tickets. It also includes an Accord entry marked “COURT ORDER” with neither nominee named.",
+        "context": "The presidential list pairs a candidate for president and a running mate on each named party ticket.",
+        "significance": "The calendar schedules the presidential and National Assembly elections for 16 January 2027.",
+        "commitments": [
+          {
+            "title": "Expand social housing and affordable mortgages",
+            "kind": "manifesto",
+            "date": "2026-10",
+            "personId": "tinubu-bola-ahmed",
+            "sourceId": "apc-manifesto",
+            "comparison": "The INEC list records Tinubu’s APC candidacy. The campaign document supplies measures to compare with later public housing records."
+          }
+        ],
+        "openQuestion": "Has INEC published a revised entry for the Accord ticket?",
+        "quiz": {
+          "id": "named-tickets",
+          "prompt": "How many presidential tickets name both nominees in the published 2027 list?",
+          "options": [
+            "20",
+            "18",
+            "19"
+          ],
+          "correct": 1,
+          "explanation": "The INEC list names 18 presidential tickets. It also includes an Accord entry marked “COURT ORDER” with neither nominee named.",
+          "sourceIds": [
+            "presidential-pdf"
+          ]
+        },
+        "reviewStatus": "reviewed",
+        "reviewedAt": "2026-11-20"
+      }
+    },
+    {
+      "revision": "0be0af3ed5313e63daac484b6ef2e0650b6a0d744c6ad5cefb2e539fac0c4c8d",
+      "reviewer": "Initial source review",
+      "story": {
+        "id": "adebayo-security-statement",
+        "title": "Adewole Adebayo names security as a priority",
+        "topic": "Campaign statement",
+        "publishedAt": "2026-08-06",
+        "personIds": [
+          "national-adebayo-adewole-ebenezer"
+        ],
+        "partyCodes": [
+          "SDP"
+        ],
+        "sources": [
+          {
+            "id": "sdp-statement",
+            "title": "2027 Election: SDP Candidate Prioritises Security",
+            "publisher": "Voice of Nigeria",
+            "url": "https://von.gov.ng/2027-election-sdp-candidate-prioritises-security/",
+            "publishedAt": "2026-08-06",
+            "evidence": "Voice of Nigeria reported that Adewole Adebayo said he would prioritise national security if elected. Voice of Nigeria attributes the remarks to a summit on insecurity in Kaduna State."
+          },
+          {
+            "id": "presidential-pdf",
+            "title": "Final List – Presidential",
+            "publisher": "Independent National Electoral Commission (INEC)",
+            "url": "https://inecnigeria.org/documents/uploads/2026/10/b5af9099-864c-4d5e-924d-e1a2c771c529-final-list-presidential.pdf",
+            "publishedAt": "2026-10-31",
+            "evidence": "The INEC list names 18 presidential tickets. It also includes an Accord entry marked “COURT ORDER” with neither nominee named. The presidential list pairs a candidate for president and a running mate on each named party ticket. The later INEC roster lists Adebayo Adewole Ebenezer as the SDP’s presidential candidate."
+          }
+        ],
+        "explanation": "Voice of Nigeria reported that Adewole Adebayo said he would prioritise national security if elected.",
+        "context": "Voice of Nigeria attributes the remarks to a summit on insecurity in Kaduna State.",
+        "significance": "The later INEC roster lists Adebayo Adewole Ebenezer as the SDP’s presidential candidate.",
+        "commitments": [
+          {
+            "title": "Prioritise national security if elected",
+            "kind": "public-statement",
+            "date": "2026-08-06",
+            "personId": "national-adebayo-adewole-ebenezer",
+            "sourceId": "sdp-statement",
+            "comparison": "The later roster establishes the nomination. Assessing delivery would require a documented action, a timeline and relevant implementation records."
+          }
+        ],
+        "openQuestion": "What actions, funding and timing would put this priority into practice?",
+        "quiz": {
+          "id": "sdp-security-priority",
+          "prompt": "What priority did Voice of Nigeria report that Adebayo named?",
+          "options": [
+            "National security",
+            "Housing construction",
+            "Tax collection"
+          ],
+          "correct": 0,
+          "explanation": "Voice of Nigeria reported that Adewole Adebayo said he would prioritise national security if elected.",
+          "sourceIds": [
+            "sdp-statement"
+          ]
+        },
+        "reviewStatus": "reviewed",
+        "reviewedAt": "2026-11-20"
+      }
+    }
+  ]
+}
