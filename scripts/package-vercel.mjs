@@ -19,7 +19,7 @@ rmSync(target, { recursive: true, force: true })
 cpSync('dist', target, { recursive: true, filter: path => basename(path) !== '.encodings' })
 mkdirSync(join(target, 'api'))
 const handler = readFileSync(new URL('../server/hosted-api.cjs', import.meta.url), 'utf8')
-writeFileSync(join(target, 'api/[...path].js'), handler + '\nmodule.exports = module.exports(' + JSON.stringify(stories) + ')\n')
+writeFileSync(join(target, 'api/read-only.js'), handler + '\nmodule.exports = module.exports(' + JSON.stringify(stories) + ')\n')
 
 const config = {
   headers: [
@@ -36,6 +36,7 @@ const config = {
     { source: '/assets/(.*)', headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }] },
   ],
   rewrites: [
+    { source: '/api/:segments*', destination: '/api/read-only?__matalensRoute=:segments*' },
     { source: '/((?!api/|api$|assets/|assets$|sw\\.js$|manifest\\.webmanifest$|mark\\.svg$|icon-192\\.png$|icon-512\\.png$).*)', destination: '/index.html' },
   ],
 }

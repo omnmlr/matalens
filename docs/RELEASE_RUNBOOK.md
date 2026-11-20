@@ -1,6 +1,16 @@
 # MataLens production runbook
 
-The production package is the integrated React client and Node server on one HTTPS origin. Build and verify the exact integration commit before requesting deployment approval. Use a single Node 24 or later process and a loopback reverse proxy on the same host. For a publishing-only demo, the public story API works with photo intake disabled.
+The hackathon site uses the Vercel release package below. The standalone Node deployment in the rest of this runbook supports private receipt storage. Build and verify the exact integration commit on a preview before promoting it.
+
+## Vercel hackathon release
+
+Build on Node 24 or later with `npm ci --include=dev` and `npm run build:vercel`. Upload the contents of `vercel-release/` as the deployment root of the existing `matalens` project. Record the source commit in deployment metadata. The packaging script enables `VITE_STORY_PROVIDER=api` at build time and validates the five reviewed stories from `data/news/reviewed-edition.json` before embedding them in the read-only function. The hosted package needs no runtime environment variables, database, or API credentials. Publishing a changed reviewed edition requires rebuilding and redeploying this package.
+
+Vercel serves the browser bundle, fonts and service worker over HTTPS. Client deep links fall back to the app shell. The same-origin `/api/stories`, `/api/stories/:id` and `/api/intake` use the hosted function with `Cache-Control: no-store`. The service worker bypasses `/api/`. Civic Camera shows photo intake and private receipts as unavailable because this deployment has no persistent private store. The private routes return 503 and store no evidence. Followed politicians, saved stories and learning progress stay in the browser.
+
+Stage the package on a preview URL. Check the homepage, a story deep link, both web fonts, `/api/stories` (five entries), a story detail with supporting evidence, `/api/intake` and private route rejection. Save the current production deployment ID. Promote the verified build and repeat the checks on the canonical URL. If validation fails after promotion, restore the prior deployment in Vercel and verify the canonical domain again.
+
+## Standalone server with persistent storage
 
 ## Build and start
 

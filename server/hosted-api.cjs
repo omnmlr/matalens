@@ -6,7 +6,8 @@ module.exports = function createReadOnlyApi(stories) {
     res.setHeader('Cache-Control', 'no-store')
     const json = (status, body) => res.status(status).json(body)
     const url = new URL(req.url, 'http://matalens.invalid')
-    const path = url.pathname
+    const rewritten = url.pathname === '/api/read-only' ? url.searchParams.getAll('__matalensRoute') : []
+    const path = rewritten.length === 1 ? '/api/' + rewritten[0] : url.pathname
 
     if (req.headers['sec-fetch-site'] === 'cross-site') {
       return json(403, { error: 'Open this action directly in MataLens.' })

@@ -18,6 +18,9 @@ test('hosted read-only API serves the authoritative edition and rejects evidence
   assert.equal(feed.headers.get('cache-control'), 'no-store')
   const id = 'presidential-roster-2027'
   assert.deepEqual(await (await request('/api/stories/' + id)).json(), stories.find(story => story.id === id))
+  assert.deepEqual(await (await request('/api/read-only?__matalensRoute=stories%2F' + id)).json(), stories.find(story => story.id === id))
+  assert.equal((await request('/api/read-only?__matalensRoute=receipt%2Fphoto')).status, 503)
+  assert.equal((await request('/api/read-only?__matalensRoute=stories&__matalensRoute=receipt')).status, 404)
   assert.deepEqual((await (await request('/api/stories?personId=tinubu-bola-ahmed')).json()).map(story => story.id), [id])
   assert.equal((await request('/api/stories?personId=a&personId=b')).status, 400)
   assert.equal((await request('/api/stories/missing')).status, 404)
