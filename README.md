@@ -13,7 +13,16 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. Vite serves the app and proxies the API to port 3001. Guest photo intake is enabled in development, where reports persist in a private `.matalens/` SQLite directory. Use synthetic or non-sensitive photos for local testing. `MATALENS_ENABLE_UPLOADS=0` disables intake while leaving saved receipts retrievable.
+Open `http://localhost:5173`. Vite serves the app and proxies the API to port 3001. With image sanitization available, development enables guest photo intake and stores reports in a private `.matalens/` SQLite directory. Use synthetic or non-sensitive photos for local testing. `MATALENS_ENABLE_UPLOADS=0` disables intake while leaving saved receipts retrievable.
+
+On Windows, use an NTFS path for persistent Camera storage. The app applies a private ACL when it creates the directory and verifies existing storage before opening it. If an earlier run created an unprotected `.matalens` directory, point new development reports at a new path under your profile:
+
+```powershell
+$env:MATALENS_DATA_DIR = Join-Path $env:LOCALAPPDATA 'MataLens\private-reports'
+npm run dev
+```
+
+Keep existing report data in place until an administrator verifies its ACL.
 
 ```sh
 npm test
@@ -44,7 +53,7 @@ See the [production runbook](docs/RELEASE_RUNBOOK.md) for API routing, build and
 | Variable | Purpose |
 | --- | --- |
 | `MATALENS_ENABLE_UPLOADS=1` | Enable guest intake deliberately |
-| `MATALENS_DATA_DIR` | Dedicated persistent directory with mode `0700`, outside `public/` and `dist/` |
+| `MATALENS_DATA_DIR` | Dedicated persistent directory outside `public/` and `dist/`, with mode `0700` on POSIX or a protected NTFS ACL on Windows |
 | `MATALENS_ORIGIN` | Exact HTTPS public origin, without a path or trailing slash |
 | `MATALENS_HOST`, `MATALENS_PORT` | Listener settings, defaulting to `127.0.0.1:3000` |
 | `MATALENS_TRUST_LOOPBACK_PROXY=1` | Use only with a trusted loopback reverse proxy that overwrites client IP headers |

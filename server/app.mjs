@@ -1,7 +1,7 @@
 import express from 'express'
 import { createHash, randomUUID } from 'node:crypto'
 import { expireReports, findReport, openStore, publicReport, retentionDays, setStatus } from './store.mjs'
-import { readUpload, RequestError, validateUpload } from './upload.mjs'
+import { imageSanitizationAvailable, readUpload, RequestError, validateUpload } from './upload.mjs'
 import { storyRoutes } from './news/routes.ts'
 
 const evidenceCapacity = 512 * 1024 * 1024
@@ -39,6 +39,7 @@ export function createApp({ directory, uploadsEnabled = false, origin, trustLoop
   app.disable('x-powered-by')
   if (trustLoopbackProxy) app.set('trust proxy', 'loopback')
   let activeUploads = 0
+  const intakeEnabled = uploadsEnabled && imageSanitizationAvailable
 
   expireReports(db)
   const expiry = setInterval(() => {
@@ -65,7 +66,7 @@ export function createApp({ directory, uploadsEnabled = false, origin, trustLoop
     }
     next()
   })
-  app.get('/api/intake', (req, res) => res.json({ uploadsEnabled, retentionDays }))
+  app.get('/api/intake', (req, res) => res.json({ uploadsEnabled: intakeEnabled, retentionDays }))
   app.use('/api/stories', storyRoutes(newsEdition))
 
   const writeLimit = rateLimiter(8, 10 * 60_000, 'Too many upload attempts. Wait a few minutes and try again.')
@@ -81,7 +82,7 @@ export function createApp({ directory, uploadsEnabled = false, origin, trustLoop
     expireReports(db)
     const previous = findReport(db, req.receiptHash)
     if (previous) return res.json(publicReport(previous))
-    if (!uploadsEnabled) throw new RequestError(503, 'Photo intake is unavailable on this copy of MataLens.')
+    if (!intakeEnabled) throw new RequestError(503, 'Photo intake is unavailable on this copy of MataLens.')
     if (activeUploads >= 3) {
       res.set('Retry-After', '10')
       throw new RequestError(503, 'Photo intake is busy. Try again in a moment.')
@@ -144,5 +145,5 @@ export function createApp({ directory, uploadsEnabled = false, origin, trustLoop
     res.status(500).json({ error: 'MataLens could not complete this action. Please try again.' })
   })
 
-  return { app, db, close: () => { clearInterval(expiry); db.close() } }
+  return { app, db, uploadsEnabled: intakeEnabled, close: () => { clearInterval(expiry); db.close() } }
 }

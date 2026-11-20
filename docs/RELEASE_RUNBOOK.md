@@ -29,7 +29,7 @@ Playwright needs system Chromium or `npx playwright install chromium`. Start the
 | `MATALENS_PORT` | Runtime | Defaults to `3000`. Point the proxy at the same local port. |
 | `MATALENS_NEWS_EDITION` | Runtime | Leave unset for the bundled five-story edition. An optional absolute path selects an operator-managed reviewed edition. |
 | `MATALENS_ENABLE_UPLOADS` | Runtime | Use `0` for a read-only pilot. `1` enables new production intake when the private data directory and HTTPS origin are also configured. |
-| `MATALENS_DATA_DIR` | Runtime | Absolute path to a persistent private directory with mode `0700`, outside `public/` and `dist/`. Keep the same directory across restarts and releases to preserve receipts. |
+| `MATALENS_DATA_DIR` | Runtime | Absolute path to a persistent private directory outside `public/` and `dist/`, with mode `0700` on POSIX or a protected NTFS ACL on Windows. Keep the same directory across restarts and releases to preserve receipts. |
 | `MATALENS_ORIGIN` | Runtime | Exact canonical HTTPS origin, with no path or trailing slash. The server compares it to the browser’s `Origin` on writes. |
 | `MATALENS_TRUST_LOOPBACK_PROXY` | Runtime | Use `1` only for a trusted loopback proxy that replaces `X-Forwarded-For` with the verified client address. |
 
@@ -58,6 +58,8 @@ If using `MATALENS_NEWS_EDITION`, keep the approved file outside web-served dire
 
 ## Civic Camera operations
 
-Use TLS and a service-owned encrypted volume that is accessible only to the service and authorised operators. Keep SQLite and its WAL private. The server stores the original photo, a metadata-stripped preview and a one-way receipt hash. Uploaded originals can contain metadata. Maintain the 30-day retention policy for backups and operator review copies. Restrict and promptly remove temporary review copies. [Moderation commands](../README.md#run-a-hosted-pilot)
+Use TLS and a service-owned encrypted volume that is accessible only to the service and authorised operators. On Windows, keep the data path under a service-controlled parent on NTFS. Provision a new leaf by running the server as its service identity. Windows PowerShell sets and checks a protected ACL restricted to the service identity, SYSTEM and local Administrators. For an existing store, the app verifies the directory and checks the database and its sidecar files before opening SQLite. Have an administrator correct an unverified ACL before reusing that store. Write moderation exports inside a separately verified private directory. Keep SQLite and its WAL private. The server stores the original photo, a metadata-stripped preview and a one-way receipt hash. Uploaded originals can contain metadata. Maintain the 30-day retention policy for backups and operator review copies. Restrict and promptly remove temporary review copies. [Moderation commands](../README.md#run-a-hosted-pilot)
+
+The native Sharp installation must support reading still JPEG, PNG and WebP images and writing sanitized WebP previews. If Sharp cannot load or initialize, new intake reports as unavailable and rejects uploads. The story API and existing private receipt operations remain available.
 
 The public app can remain read-only with `MATALENS_ENABLE_UPLOADS=0` while the server still opens existing receipt links from the configured persistent database. Before enabling new intake, review moderation ownership, test both report types with synthetic photos and confirm the proxy preserves the existing security controls. If an intake problem occurs, disable new uploads with `0`, restart, and keep the data directory mounted for receipt recovery and withdrawal. [Integration and smoke checklist](INTEGRATION_CHECKLIST.md)

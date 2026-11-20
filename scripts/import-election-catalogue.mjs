@@ -102,6 +102,6 @@ const geography = Object.fromEntries([...new Set(contests.map(contest => contest
   state, { name: state, constituencies: Object.values(races).filter(contest => contest.state === state && currentOffices[contest.office].scope.includes('constituency')).map(contest => contest.id), districts: Object.values(races).filter(contest => contest.state === state && contest.office === 'senate').map(contest => contest.id) },
 ]))
 const rendered = JSON.stringify({ sources, offices: currentOffices, elections, geography, races, parties, people, candidacies, results }) + '\n'
-if (process.argv.includes('--check')) assert.equal(readFileSync(output, 'utf8'), rendered, 'Run npm run data:import to regenerate the catalogue.')
+if (process.argv.includes('--check')) assert.equal(readFileSync(output, 'utf8').replace(/\r\n/g, '\n'), rendered, 'Run npm run data:import to regenerate the catalogue.')
 else writeFileSync(output, rendered)
 console.log(`${candidacies.length} candidacies · ${Object.keys(races).length} contests · ${Object.keys(parties).length} parties`)
