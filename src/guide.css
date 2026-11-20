@@ -85,6 +85,7 @@
 .story-body .case-header h2 { margin-block: 8px; }
 .story-body .case-document h3 { margin: 9px 0 6px; font-size: clamp(28px, 3vw, 44px); }
 .story-body .case-verdict h3 { margin-block: 0; font-family: var(--body); font-size: 14px; }
+#manifestos { scroll-margin-top: 90px; }
 .cycle-links { margin: 0 0 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 9px 18px; }
 .cycle-links a[aria-current] { color: var(--text); border-bottom: 2px solid var(--green); }
 .discovery-filters { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin-bottom: 15px; }

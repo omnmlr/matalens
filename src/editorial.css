@@ -50,13 +50,13 @@
 .brief-list h3 a svg { align-self: center; color: var(--green); }
 .brief-list-compact h3 { font-size: clamp(23px, 2.5vw, 30px); }
 .desk-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .85fr); gap: clamp(22px, 5vw, 64px); align-items: start; }
-.follow-list, .discover-list, .desk-list { list-style: none; padding: 0; margin: 0; }
-.follow-list li, .desk-list li { border-top: 1px solid var(--line); padding: 12px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.follow-list li > div { min-width: 0; }
-.follow-list small, .discover-person small { display: block; color: var(--muted); font-size: 12px; }
+.watch-list, .discover-list, .desk-list { list-style: none; padding: 0; margin: 0; }
+.watch-list li, .desk-list li { border-top: 1px solid var(--line); padding: 12px 0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.watch-list li > div { min-width: 0; }
+.watch-list small, .discover-person small { display: block; color: var(--muted); font-size: 12px; }
 .person-name, .desk-list li > a, .discover-list a { font-weight: 790; }
-.follow-button { font-size: 12px; white-space: nowrap; min-height: 42px; padding: 8px 12px; }
-.follow-button[aria-pressed='true'], .story-save[aria-pressed='true'] { color: var(--green); border-color: var(--line-strong); background: var(--folio); }
+.watch-button { font-size: 12px; white-space: nowrap; min-height: 42px; padding: 8px 12px; }
+.watch-button[aria-pressed='true'], .story-save[aria-pressed='true'] { color: var(--green); border-color: var(--line-strong); background: var(--folio); }
 .editorial-empty, .editorial-note { color: var(--muted); }
 .editorial-empty .text-link, .editorial-note .link-button { margin-top: 5px; }
 .editorial-note { padding-block: 11px; }
@@ -137,9 +137,9 @@
 .desk-side { display: grid; gap: 15px; }
 .desk-camera > p { color: var(--muted); margin-block: 4px 10px; }
 .desk-camera .text-link { display: flex; width: fit-content; margin-top: 6px; }
-.editorial-profile-head { grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; border-bottom: 1px solid var(--line-strong); padding-bottom: 24px; margin-bottom: 22px; }
+.editorial-profile-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; border-bottom: 1px solid var(--line-strong); padding-bottom: 24px; margin-bottom: 22px; }
 .editorial-profile-head .editorial-title h1 { font-size: clamp(44px, 5.9vw, 82px); }
-.editorial-profile-head .follow-button { min-width: 115px; }
+.editorial-profile-head .watch-button { min-width: 115px; }
 .profile-section { padding-top: 20px; }
 .profile-section > .editorial-kicker { margin-bottom: 8px; }
 .profile-evidence li { margin: 12px 0; padding: 9px 0 5px 12px; border-inline-start: 2px solid var(--line-strong); }
@@ -154,7 +154,7 @@
   .story-byline { align-items: flex-start; flex-direction: column; }
   .story-layout { padding-top: 20px; gap: 21px; }
   .editorial-profile-head { grid-template-columns: auto minmax(0, 1fr); gap: 11px; }
-  .editorial-profile-head .follow-button { grid-column: 2; justify-self: start; }
+  .editorial-profile-head .watch-button { grid-column: 2; justify-self: start; }
   .editorial-profile-head .editorial-title h1 { font-size: clamp(39px, 10vw, 53px); }
 }
 @media (max-width: 365px) {
@@ -189,3 +189,15 @@
   background: var(--green);
 }
 .story-timeline h3 { margin-block: 2px; }
+
+.portrait-initials { font: 820 13px/1 var(--body); }
+.portrait-large.portrait-initials { font: 500 clamp(25px, 4vw, 42px)/1 var(--editorial); letter-spacing: -.04em; }
+.profile-context { margin-top: 6px; }
+.watch-list .watch-details { min-width: 0; }
+.watch-links { display: flex; flex-wrap: wrap; gap: 2px 12px; margin-top: 4px; }
+.watch-links .text-link { font-size: 12px; min-height: 30px; }
+.exercise-status { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 800; }
+.exercise-status[data-correct] { color: var(--green); }
+.quick-feedback > .exercise-status { margin-inline-start: 12px; }
+.related-election-records { border-top: 1px solid var(--line); margin-top: 15px; padding-top: 11px; }
+.related-election-records > h3 { font: 800 14px/1.4 var(--body); margin-bottom: 6px; }

@@ -1,10 +1,10 @@
 import { useRef, useState, type ReactNode } from 'react'
-import { ArrowRight, Bookmark, ChevronDown, GitCompareArrows, Search, UserRound } from 'lucide-react'
+import { ArrowRight, Bookmark, ChevronDown, GitCompareArrows, Search } from 'lucide-react'
 import { candidatePath, candidateStatus, findCandidates, offices, partyNames, partyPath, publicRecords, sources, type Candidate } from './catalogue'
 import type { PlanProps } from './explorer'
 import { External } from './ui'
-import { FollowButton } from './follow'
-import type { Follows } from './people'
+import { WatchButton } from './watchlist'
+import type { Watchlist } from './people'
 
 export function useQueryField(key: string, fallback = '') {
   const [value, setValue] = useState(() => new URLSearchParams(window.location.search).get(key) ?? fallback)
@@ -26,8 +26,10 @@ export function SearchField({ label, value, update, placeholder, inputRef }: { l
   return <label className="directory-label search-field">{label}<span><Search aria-hidden="true" size={18} /><input ref={inputRef} type="search" value={value} onChange={event => update(event.target.value)} placeholder={placeholder} maxLength={120} /></span></label>
 }
 
-export function Portrait({ person, large = false }: { person: Candidate; large?: boolean }) {
-  return <span className={`portrait ${large ? 'portrait-large' : ''}`} aria-hidden="true"><UserRound strokeWidth={1.35} size={large ? 54 : 20} /></span>
+export function Portrait({ person, large = false }: { person: { name: string }; large?: boolean }) {
+  const names = person.name.trim().split(/\s+/)
+  const initials = [names[0], ...(names.length > 1 ? [names[names.length - 1]] : [])].map(part => part[0]?.toUpperCase()).join('')
+  return <span className={`portrait ${large ? 'portrait-large' : ''} portrait-initials`} aria-hidden="true">{initials}</span>
 }
 
 function Disclosure({ person, children }: { person: Candidate; children: ReactNode }) {
@@ -48,7 +50,7 @@ function Disclosure({ person, children }: { person: Candidate; children: ReactNo
   </details>
 }
 
-export function CandidateRows({ people, withRace = false, plan, updatePlan, follows }: { people: Candidate[]; withRace?: boolean; follows?: Follows } & Partial<PlanProps>) {
+export function CandidateRows({ people, withRace = false, plan, updatePlan, watchlist }: { people: Candidate[]; withRace?: boolean; watchlist?: Watchlist } & Partial<PlanProps>) {
   const [notice, setNotice] = useState('')
   return <><p className="sr-only" role="status">{notice}</p><ul className="directory-rows registry-list">
     {people.map(person => {
@@ -65,12 +67,12 @@ export function CandidateRows({ people, withRace = false, plan, updatePlan, foll
             {person.qualification && <p><strong>Qualifications listed by INEC</strong> {person.qualification}</p>}
             {record && <p>{record.fact} <External href={record.source}>Read the record</External></p>}
             <div className="inline-actions">
-              {follows && <FollowButton id={person.personId} {...follows} />}
+              {watchlist && <WatchButton id={person.personId} {...watchlist} compact />}
               <a className="text-link" href={candidatePath(person.id)}>View full profile <ArrowRight size={15} /></a>
               {plan && updatePlan && <button className="link-button" aria-pressed={saved} type="button" onClick={() => {
                 const stored = updatePlan({ candidates: saved ? plan.candidates.filter(id => id !== person.id) : [...new Set([...plan.candidates, person.id])] })
                 setNotice(saved ? `${person.name}: bookmark removed.` : `${person.name}: ${stored ? 'saved on this device' : 'saved for this visit'}.`)
-              }}><Bookmark size={16} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save privately'}</button>}
+              }}><Bookmark size={16} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save to My Ballot'}</button>}
               <a className="text-link" href={`/elections/${person.race.id}/compare`} data-compare-id={person.id}><GitCompareArrows size={16} /> Compare</a>
               <a className="text-link" href={partyPath(person.party)}>Party record</a>
             </div>
@@ -82,7 +84,7 @@ export function CandidateRows({ people, withRace = false, plan, updatePlan, foll
   </ul></>
 }
 
-export function CandidateSearch({ people, query, update, withRace, plan, updatePlan, follows }: { people: Candidate[]; query: string; update: (query: string) => void; withRace?: boolean; follows?: Follows } & Partial<PlanProps>) {
+export function CandidateSearch({ people, query, update, withRace, plan, updatePlan, watchlist }: { people: Candidate[]; query: string; update: (query: string) => void; withRace?: boolean; watchlist?: Watchlist } & Partial<PlanProps>) {
   const queryKey = window.location.pathname + window.location.search
   const [shown, setShown] = useState(() => history.state?.directoryLimit?.url === queryKey ? Number(history.state.directoryLimit.shown) : 25)
   const search = useRef<HTMLInputElement>(null)
@@ -95,7 +97,7 @@ export function CandidateSearch({ people, query, update, withRace, plan, updateP
   return <>
     <SearchField label="Candidate or party search" value={query} update={value => { update(value); setShown(25) }} placeholder="Name, party or running mate" inputRef={search} />
     <p className="directory-caption" role="status">{matches.length} of {people.length} candidate records · Alphabetical by name</p>
-    {matches.length > 0 ? <CandidateRows people={matches.slice(0, shown)} withRace={withRace} plan={plan} updatePlan={updatePlan} follows={follows} /> : <div className="directory-note">
+    {matches.length > 0 ? <CandidateRows people={matches.slice(0, shown)} withRace={withRace} plan={plan} updatePlan={updatePlan} watchlist={watchlist} /> : <div className="directory-note">
       <p>No published candidates match this search.</p><button className="link-button" type="button" onClick={() => { update(''); search.current?.focus() }}>Clear search</button>
     </div>}
     {matches.length > shown && <button type="button" className="button button-secondary more-results" onClick={showMore}>Show {Math.min(25, matches.length - shown)} more candidates</button>}

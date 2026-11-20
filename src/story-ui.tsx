@@ -187,7 +187,7 @@ export function StoryPage({ id, feed, progress, saves }: { id: string; feed: Sto
         </section>}
         {story.openQuestion && !featured && <section className="open-question"><h2>Open question</h2><p>{story.openQuestion}</p></section>}
         {quiz && <section className="story-check"><h2>Check your understanding</h2>
-          <QuickCheck key={quiz.id} quiz={quiz} sources={story.sources} done={progress.completed.includes(storyExerciseId(id, quiz))} complete={() => progress.complete(storyExerciseId(id, quiz))} />
+          <QuickCheck key={quiz.id} quiz={quiz} sources={story.sources} status={progress.outcomes[storyExerciseId(id, quiz)]} submitAnswer={correct => progress.recordAttempt(storyExerciseId(id, quiz), correct)} />
         </section>}
         <a className="text-link lesson-return" href="/stories">Browse more developments <ArrowRight size={16} aria-hidden="true" /></a>
       </div>

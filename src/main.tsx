@@ -19,7 +19,7 @@ import { RightsPage } from './rights'
 import { ResultsPage } from './results'
 import { DiscoverPage } from './discover'
 import { DeskPage } from './desk'
-import { LearnPage, LessonPage } from './learning'
+import { LearnPage, LessonPage, type ExerciseStatus } from './learning'
 import { lessonPath, lessons } from './learning-data'
 import { mateRoutes } from './people'
 import { RunningMatePage } from './profile-learning'
@@ -72,11 +72,15 @@ function App() {
   const [online, setOnline] = useState(navigator.onLine)
   const [plan, setPlan] = useLocal('plan', emptyPlan)
   const [receipts, setReceipts] = useLocal('receipts', noReceipts)
-  const [followed, setFollowed] = useLocal('followed', noIds)
+  const [savedPeople, setSavedPeople] = useLocal('followed', noIds)
   const [savedStories, setSavedStories] = useLocal('stories', noIds)
-  const [completed, setCompleted] = useLocal('learning', noIds)
+  const [legacyProgress] = useState<Record<string, ExerciseStatus>>(() => {
+    const legacy = readLocal('learning', noIds)
+    return Object.fromEntries(Array.isArray(legacy) ? legacy.filter(id => typeof id === 'string').map(id => [id, 'attempted']) : [])
+  })
+  const [outcomes, setOutcomes] = useLocal('learning-outcomes', legacyProgress)
   const [notice, setNotice] = useState('')
-  const feed = useStoryFeed(online, location === '/' || location === '/desk' || location === '/stories' || Boolean(person || mate || storyId))
+  const feed = useStoryFeed(online, location === '/' || location === '/desk' || location === '/stories' || Boolean(person?.race.year === 2027 || mate || storyId))
 
   useEffect(() => {
     const handlePopstate = () => {
@@ -164,16 +168,17 @@ function App() {
   function clearLocalData() {
     setPlan(emptyPlan)
     setReceipts([])
-    setFollowed([])
+    setSavedPeople([])
     setSavedStories([])
-    setCompleted([])
+    setOutcomes({})
+    writeLocal('learning', [])
     setNotice('Your locally saved data was cleared from this browser.')
   }
 
-  function toggleFollow(id: string) {
+  function togglePerson(id: string) {
     if (!identities[id]) return
-    if (!setFollowed(followed.includes(id) ? followed.filter(item => item !== id) : [...followed, id])) {
-      setNotice('This browser couldn’t save your following across visits.')
+    if (!setSavedPeople(savedPeople.includes(id) ? savedPeople.filter(item => item !== id) : [...savedPeople, id])) {
+      setNotice('This browser couldn’t save your watchlist across visits.')
     }
   }
 
@@ -183,15 +188,17 @@ function App() {
     }
   }
 
-  function complete(id: string) {
-    if (!completed.includes(id) && !setCompleted([...completed, id])) {
+  function recordAttempt(id: string, correct: boolean) {
+    const next = correct ? 'correct' : 'attempted'
+    if (outcomes[id] === 'correct' || outcomes[id] === next) return
+    if (!setOutcomes({ ...outcomes, [id]: next })) {
       setNotice('This browser couldn’t save your learning progress across visits.')
     }
   }
 
-  const follows = { followed, toggleFollow }
+  const watchlist = { savedPeople, togglePerson }
   const saves = { savedStories, toggleStory }
-  const progress = { completed, complete }
+  const progress = { outcomes, recordAttempt }
   const planProps = { plan, updatePlan }
   return <>
     <a href="#main" className="skip-link">Skip to content</a>
@@ -213,16 +220,16 @@ function App() {
     {notice && <div className="connection-bar" role="status">{notice}<button className="link-button" onClick={() => setNotice('')}>Dismiss</button></div>}
     <main id="main" key={url} tabIndex={-1} className="screen">
       {location === '/' && <HomePage feed={feed} />}
-      {location === '/discover' && <DiscoverPage follows={follows} {...planProps} />}
+      {location === '/discover' && <DiscoverPage watchlist={watchlist} {...planProps} />}
       {location === '/stories' && <UpdatesPage feed={feed} />}
       {storyId && <StoryPage id={storyId} feed={feed} saves={saves} progress={progress} />}
       {location === '/learn' && <LearnPage {...progress} />}
       {lesson && <LessonPage lesson={lesson} {...progress} />}
-      {location === '/desk' && <DeskPage {...{ follows, saves, progress, plan, receipts, feed }} />}
-      {mate && <RunningMatePage person={mate} follows={follows} feed={feed} />}
+      {location === '/desk' && <DeskPage {...{ watchlist, saves, progress, plan, receipts, feed }} />}
+      {mate && <RunningMatePage person={mate} watchlist={watchlist} feed={feed} />}
       {location === '/elections' && <Explorer {...planProps} />}
       {race && <RacePage race={race} {...planProps} />}
-      {person && <CandidatePage person={person} follows={follows} feed={feed} {...planProps} />}
+      {person && <CandidatePage person={person} watchlist={watchlist} feed={feed} {...planProps} />}
       {comparison && <Compare race={comparison} />}
       {location === '/my-ballot' && <Ballot plan={plan} updatePlan={updatePlan} />}
       {(location === '/parties' || party) && <Parties party={party} {...planProps} />}
@@ -260,13 +267,13 @@ function Privacy({ clear }: { clear: () => void }) {
     <h1>Your information, your choice.</h1>
     <div className="panel prose">
       <h2>Election preparation</h2>
-      <p>Follows, saved stories, learning progress, candidate bookmarks, comparisons, checklist progress, notes, polling-unit details and reminders stay in this browser. MataLens has no account system or tracking analytics. Anyone with access to this browser profile can see locally saved information.</p>
+      <p>Saved people, saved stories, learning progress, candidate bookmarks, comparisons, checklist progress, notes, polling-unit details and reminders stay in this browser. MataLens has no account system or tracking analytics. Anyone with access to this browser profile can see locally saved information.</p>
       <h2>Civic Camera</h2>
       <p>MataLens stores the original photo and report details in private storage for review. Originals may contain camera metadata, including location. The preview shown with your receipt strips that metadata. Leave out personal information, use public location details, and remove identifying details before uploading.</p>
       <p>Reports have a 30-day retention period from submission. Withdrawal removes the photo and clears the description and location from the active database. A minimal receipt record remains until expiry. Hosted operators must apply the same retention policy to backups and any private review copies.</p>
       <p>Keep the receipt code or link private. Anyone with it can open or withdraw your report. Lost receipt codes cannot be recovered by MataLens. Uploads and receipt requests are limited by network address in memory to reduce abuse.</p>
       <h2>Browser storage</h2>
-      <p>Clearing your data here removes your reading list, follows, learning progress, election preparation and saved receipt codes from this browser. Download any receipt you want to keep. To withdraw a report, open it from My Actions before clearing your data.</p>
+      <p>Clearing your data here removes your reading list, watchlist, learning progress, election preparation and saved receipt codes from this browser. Download any receipt you want to keep. To withdraw a report, open it from My Actions before clearing your data.</p>
       {confirm ? <div className="button-row"><button className="button danger" onClick={() => { clear(); setConfirm(false) }}>Confirm clear</button><button className="button button-secondary" onClick={() => setConfirm(false)}>Cancel</button></div> : <button className="button button-secondary" onClick={() => setConfirm(true)}>Clear saved browser data</button>}
     </div>
   </section>
