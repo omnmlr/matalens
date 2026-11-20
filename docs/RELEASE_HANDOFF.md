@@ -1,5 +1,7 @@
 # MataLens hackathon release
 
+The [2027 election guide release](ELECTION_GUIDE_RELEASE.md) supersedes this editorial briefing release. The original deployment record and design handoff are retained below.
+
 The release branch combines Chisom’s frontend at `09c63a5` with the reviewed backend at `f2b9208`. The application package was built from `6ab00e9803908b828c951723edb0eb1aabf614ff`. [Release branch](https://github.com/omnmlr/matalens/tree/release/matalens-hackathon) · [Application commit](https://github.com/omnmlr/matalens/commit/6ab00e9803908b828c951723edb0eb1aabf614ff)
 
 ## Production deployment

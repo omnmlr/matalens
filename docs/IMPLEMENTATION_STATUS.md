@@ -1,5 +1,7 @@
 # Implementation status
 
+The current release uses the 2027 election guide as its entry point, gives the 2023 national results a separate archive, and treats saved candidates as a browser-only watchlist. [Release verification and screenshots](ELECTION_GUIDE_RELEASE.md)
+
 The product overhaul builds on `035c5c8` on `codex/matalens-first-release`. The application remains guest-first. [Election data and source ledger](ELECTION_DATA.md) · [Browser captures and review](VISUAL_REVIEW.md)
 
 | Capability | Status | Evidence and boundary |
