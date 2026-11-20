@@ -1,40 +1,57 @@
 import { createRoot } from 'react-dom/client'
 import { useEffect, useLayoutEffect, useState } from 'react'
-import { Camera, ChevronRight, ClipboardList, BookOpen, Moon, ShieldCheck, Sun, Vote, WifiOff } from 'lucide-react'
+import { BookOpen, ChevronRight, Compass, Home, Library, Moon, ShieldCheck, Sun, WifiOff } from 'lucide-react'
 import '@fontsource-variable/manrope'
 import './styles.css'
 import './civic.css'
+import './editorial.css'
 import { HomePage } from './home'
 import { Election, Practice, Sources } from './election'
 import { CameraPage, MyActions } from './camera'
 import { Brand, External } from './ui'
-import { candidatePath, contests, contestPath, partyNames, partyPath, rights, roster } from './catalogue'
+import { candidatePath, contests, contestPath, identities, partyNames, partyPath, rights, roster } from './catalogue'
 import { links } from './content'
 import { Ballot, CandidatePage, Compare, Explorer, RacePage } from './explorer'
 import { Parties, PartyPractice } from './parties'
 import { RightsPage } from './rights'
 import { ResultsPage } from './results'
+import { DiscoverPage } from './discover'
+import { DeskPage } from './desk'
+import { LearnPage, LessonPage } from './learning'
+import { lessonPath, lessons } from './learning-data'
+import { mateRoutes } from './people'
+import { RunningMatePage } from './profile-learning'
+import { storyIdPattern } from './stories'
+import { StoryPage, UpdatesPage, useStoryFeed } from './story-ui'
 import { emptyPlan, readLocal, useLocal, writeLocal, type Plan, type ReceiptEntry } from './state'
 
 const nav = [
-  { href: '/elections', label: 'Elections', icon: Vote },
-  { href: '/rights', label: 'Rights', icon: BookOpen },
-  { href: '/camera', label: 'Civic Camera', icon: Camera },
-  { href: '/actions', label: 'My Actions', icon: ClipboardList },
+  { href: '/', label: 'Home', icon: Home },
+  { href: '/discover', label: 'Discover', icon: Compass },
+  { href: '/learn', label: 'Learn', icon: BookOpen },
+  { href: '/desk', label: 'My Desk', icon: Library },
 ]
+const lessonRoutes = new Map(lessons.map(lesson => [lessonPath(lesson.id), lesson]))
 const raceRoutes = new Map(contests.map(race => [contestPath(race), race]))
 const compareRoutes = new Map(contests.map(race => [contestPath(race) + '/compare', race]))
 const candidateRoutes = new Map(roster.map(person => [candidatePath(person.id), person]))
 const paths = new Set([
-  '/', ...nav.map(item => item.href), '/election', '/practice', '/sources', '/privacy', '/my-ballot',
+  ...nav.map(item => item.href), '/elections', '/rights', '/camera', '/actions', '/stories', '/election', '/practice', '/sources', '/privacy', '/my-ballot',
   '/parties', '/parties/practice', '/results', '/corrections', '/help',
-  ...raceRoutes.keys(), ...compareRoutes.keys(), ...candidateRoutes.keys(),
+  ...raceRoutes.keys(), ...compareRoutes.keys(), ...candidateRoutes.keys(), ...mateRoutes.keys(), ...lessonRoutes.keys(),
   ...Object.keys(partyNames).map(partyPath),
   ...rights.map(right => '/rights/' + right.slug),
 ])
 const currentUrl = () => window.location.pathname + window.location.search
-const electionPaths = ['/election', '/my-ballot', '/parties', '/results']
+const electionPaths = ['/election', '/my-ballot', '/parties', '/results', '/elections']
+const getStoryId = (path: string) => {
+  if (!path.startsWith('/stories/')) return undefined
+  const id = path.slice('/stories/'.length)
+  return id.length <= 120 && storyIdPattern.test(id) ? id : undefined
+}
+const knownPath = (path: string) => paths.has(path) || Boolean(getStoryId(path))
 const noReceipts: ReceiptEntry[] = []
+const noIds: string[] = []
 
 function App() {
   const [url, setUrl] = useState(currentUrl)
@@ -43,14 +60,23 @@ function App() {
   const comparison = compareRoutes.get(location)
   const person = candidateRoutes.get(location)
   const party = Object.keys(partyNames).find(code => partyPath(code) === location)
+  const mate = mateRoutes.get(location)
+  const lesson = lessonRoutes.get(location)
+  const storyId = getStoryId(location)
   const activeSection = (href: string) => location.startsWith(href + '/') ||
-    (href === '/elections' && electionPaths.includes(location)) || (href === '/elections' && location.startsWith('/parties/')) ||
-    (href === '/rights' && location === '/practice')
+    (href === '/discover' && (electionPaths.includes(location) || Boolean(race || comparison || person || party || mate))) ||
+    (href === '/learn' && (location.startsWith('/rights') || location === '/practice' || location === '/parties/practice')) ||
+    (href === '/desk' && ['/actions', '/camera'].includes(location)) ||
+    (href === '/' && (location === '/stories' || Boolean(storyId)))
   const [theme, setTheme] = useState(() => readLocal('theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
   const [online, setOnline] = useState(navigator.onLine)
   const [plan, setPlan] = useLocal('plan', emptyPlan)
   const [receipts, setReceipts] = useLocal('receipts', noReceipts)
+  const [followed, setFollowed] = useLocal('followed', noIds)
+  const [savedStories, setSavedStories] = useLocal('stories', noIds)
+  const [completed, setCompleted] = useLocal('learning', noIds)
   const [notice, setNotice] = useState('')
+  const feed = useStoryFeed(online, location === '/' || location === '/desk' || location === '/stories' || Boolean(person || mate || storyId))
 
   useEffect(() => {
     const handlePopstate = () => {
@@ -63,7 +89,7 @@ function App() {
       const link = (event.target as Element).closest<HTMLAnchorElement>('a[href]')
       if (!link || link.target || link.hasAttribute('download')) return
       const url = new URL(link.href)
-      if (url.origin !== window.location.origin || !paths.has(url.pathname)) return
+      if (url.origin !== window.location.origin || !knownPath(url.pathname)) return
       if (url.pathname === window.location.pathname && url.search === window.location.search && url.hash) return
       event.preventDefault()
       if (window.location.href === url.href) {
@@ -107,7 +133,7 @@ function App() {
 
   useEffect(() => {
     const name = document.querySelector('main h1')?.textContent ?? 'MataLens'
-    document.title = location === '/' ? 'MataLens · Your civic companion' : `${name} · MataLens`
+    document.title = location === '/' ? 'MataLens · The Nigeria briefing' : `${name} · MataLens`
     if (window.location.hash && !window.location.hash.startsWith('#receipt=')) {
       const target = document.getElementById(window.location.hash.slice(1))
       if (target) requestAnimationFrame(() => target.scrollIntoView())
@@ -138,9 +164,34 @@ function App() {
   function clearLocalData() {
     setPlan(emptyPlan)
     setReceipts([])
-    setNotice('Preparation and saved receipts were cleared from this browser.')
+    setFollowed([])
+    setSavedStories([])
+    setCompleted([])
+    setNotice('Your locally saved data was cleared from this browser.')
   }
 
+  function toggleFollow(id: string) {
+    if (!identities[id]) return
+    if (!setFollowed(followed.includes(id) ? followed.filter(item => item !== id) : [...followed, id])) {
+      setNotice('This browser couldn’t save your following across visits.')
+    }
+  }
+
+  function toggleStory(id: string) {
+    if (!setSavedStories(savedStories.includes(id) ? savedStories.filter(item => item !== id) : [...savedStories, id])) {
+      setNotice('This browser couldn’t save your reading list across visits.')
+    }
+  }
+
+  function complete(id: string) {
+    if (!completed.includes(id) && !setCompleted([...completed, id])) {
+      setNotice('This browser couldn’t save your learning progress across visits.')
+    }
+  }
+
+  const follows = { followed, toggleFollow }
+  const saves = { savedStories, toggleStory }
+  const progress = { completed, complete }
   const planProps = { plan, updatePlan }
   return <>
     <a href="#main" className="skip-link">Skip to content</a>
@@ -161,10 +212,17 @@ function App() {
     {!online && <div className="connection-bar"><WifiOff size={15} /> You’re offline. Saved guides and plans still work.</div>}
     {notice && <div className="connection-bar" role="status">{notice}<button className="link-button" onClick={() => setNotice('')}>Dismiss</button></div>}
     <main id="main" key={url} tabIndex={-1} className="screen">
-      {location === '/' && <HomePage {...planProps} />}
+      {location === '/' && <HomePage feed={feed} follows={follows} progress={progress} />}
+      {location === '/discover' && <DiscoverPage follows={follows} {...planProps} />}
+      {location === '/stories' && <UpdatesPage feed={feed} />}
+      {storyId && <StoryPage id={storyId} feed={feed} saves={saves} progress={progress} />}
+      {location === '/learn' && <LearnPage {...progress} />}
+      {lesson && <LessonPage lesson={lesson} {...progress} />}
+      {location === '/desk' && <DeskPage {...{ follows, saves, progress, plan, receipts, feed }} />}
+      {mate && <RunningMatePage person={mate} follows={follows} feed={feed} />}
       {location === '/elections' && <Explorer {...planProps} />}
       {race && <RacePage race={race} {...planProps} />}
-      {person && <CandidatePage person={person} plan={plan} updatePlan={updatePlan} />}
+      {person && <CandidatePage person={person} follows={follows} feed={feed} {...planProps} />}
       {comparison && <Compare race={comparison} />}
       {location === '/my-ballot' && <Ballot plan={plan} updatePlan={updatePlan} />}
       {(location === '/parties' || party) && <Parties party={party} {...planProps} />}
@@ -180,12 +238,12 @@ function App() {
       {location === '/actions' && <MyActions plan={plan} receipts={receipts} remember={rememberReceipt} forget={forgetReceipt} />}
       {location === '/sources' && <Sources />}
       {location === '/privacy' && <Privacy clear={clearLocalData} />}
-      {!paths.has(location) && <section className="wrap standard-page"><p className="eyebrow">MataLens</p><h1>Page unavailable</h1><p>Return home to find election guides, practice and Civic Camera.</p><a className="button" href="/">Go home <ChevronRight size={17} /></a></section>}
+      {!knownPath(location) && <section className="wrap standard-page"><p className="eyebrow">MataLens</p><h1>Page unavailable</h1><p>Return home to find election guides, practice and Civic Camera.</p><a className="button" href="/">Go home <ChevronRight size={17} /></a></section>}
     </main>
     <footer className="site-footer">
       <div className="wrap footer-inner">
         <div><Brand /><p>An independent civic project for Nigeria.</p></div>
-        <nav aria-label="Footer"><a href="/results">Results</a><a href="/parties">Parties</a><a href="/sources">Sources & updates</a><a href="/corrections">Corrections</a><a href="/privacy">Privacy</a><a href="/help">Help</a></nav>
+        <nav aria-label="Footer"><a href="/elections">Elections</a><a href="/rights">Voting rights</a><a href="/camera">Civic Camera</a><a href="/sources">Sources</a><a href="/corrections">Corrections</a><a href="/privacy">Privacy</a><a href="/help">Help</a></nav>
       </div>
     </footer>
     <nav className="mobile-nav" aria-label="Main navigation">
@@ -201,14 +259,14 @@ function Privacy({ clear }: { clear: () => void }) {
     <h1>Your information, your choice.</h1>
     <div className="panel prose">
       <h2>Election preparation</h2>
-      <p>Candidate bookmarks, comparisons, checklist progress, notes, polling-unit details and reminders stay in this browser. MataLens has no account system or tracking analytics. Anyone with access to this browser profile can see locally saved information.</p>
+      <p>Follows, saved stories, learning progress, candidate bookmarks, comparisons, checklist progress, notes, polling-unit details and reminders stay in this browser. MataLens has no account system or tracking analytics. Anyone with access to this browser profile can see locally saved information.</p>
       <h2>Civic Camera</h2>
       <p>MataLens stores the original photo and report details in private storage for review. Originals may contain camera metadata, including location. The preview shown with your receipt strips that metadata. Leave out personal information, use public location details, and remove identifying details before uploading.</p>
       <p>Reports have a 30-day retention period from submission. Withdrawal removes the photo and clears the description and location from the active database. A minimal receipt record remains until expiry. Hosted operators must apply the same retention policy to backups and any private review copies.</p>
       <p>Keep the receipt code or link private. Anyone with it can open or withdraw your report. Lost receipt codes cannot be recovered by MataLens. Uploads and receipt requests are limited by network address in memory to reduce abuse.</p>
       <h2>Browser storage</h2>
-      <p>Clearing your browser data here removes local preparation and saved receipt codes. Download any receipt you want to keep. To withdraw a report, open it from My Actions before clearing your data.</p>
-      {confirm ? <div className="button-row"><button className="button danger" onClick={() => { clear(); setConfirm(false) }}>Confirm clear</button><button className="button button-secondary" onClick={() => setConfirm(false)}>Cancel</button></div> : <button className="button button-secondary" onClick={() => setConfirm(true)}>Clear preparation and receipts</button>}
+      <p>Clearing your data here removes your reading list, follows, learning progress, election preparation and saved receipt codes from this browser. Download any receipt you want to keep. To withdraw a report, open it from My Actions before clearing your data.</p>
+      {confirm ? <div className="button-row"><button className="button danger" onClick={() => { clear(); setConfirm(false) }}>Confirm clear</button><button className="button button-secondary" onClick={() => setConfirm(false)}>Cancel</button></div> : <button className="button button-secondary" onClick={() => setConfirm(true)}>Clear saved browser data</button>}
     </div>
   </section>
 }

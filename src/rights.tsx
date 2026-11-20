@@ -68,7 +68,7 @@ export function RightsFeature() {
 
   return <section className="rights-feature" aria-labelledby="featured-right">
     <div className="wrap rights-layout">
-      <div className="rights-intro"><ShieldCheck size={23} aria-hidden="true" /><p className="kicker">Your rights at the polls</p><h2 id="featured-right">Know your rights.</h2><p>Prepare for situations that can come up on election day, with guidance grounded in the Electoral Act.</p><a className="text-link" href="/rights">Browse all rights guides <ArrowRight size={16} /></a></div>
+      <div className="rights-intro"><ShieldCheck size={23} aria-hidden="true" /><p className="kicker">Your rights at the polls</p><h2 id="featured-right">Know your rights.</h2><p>Prepare for situations that can come up on election day, with guidance grounded in the Electoral Act.</p><a className="text-link" href="#rights-guides">Browse all rights guides <ArrowRight size={16} /></a></div>
       <div className="rights-carousel" ref={carousel} role="group" aria-label="Voting rights reminders"
         onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
         onFocus={() => setFocused(true)} onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false) }}>
@@ -95,9 +95,9 @@ export function RightsPage({ slug }: { slug?: string }) {
   const [query, setQuery] = useQueryField('q')
   const [topic, setTopic] = useQueryField('topic')
   const filtered = rights.filter(item => (!topic || item.topic === topic) && matchWords([item.slug, item.topic, item.title, item.summary, item.situation, item.concern, item.action, ...item.steps].join(' '), query))
-  return <section className="wrap standard-page rights-page">
+  return <><section className="wrap standard-page rights-page">
     {right && <a className="text-link back-link" href="/rights"><ArrowLeft size={16} /> All rights guides</a>}
-    <div className="catalogue-title"><p className="kicker">{right?.topic ?? 'Voting guidance / Nigeria'}</p><h1>{right?.title ?? 'Know your rights'}</h1><p>{right?.summary ?? 'Practical advice for common situations at INEC-administered elections.'}</p></div>
+    <div className="catalogue-title" id="rights-guides"><p className="kicker">{right?.topic ?? 'Voting guidance / Nigeria'}</p><h1>{right?.title ?? 'Know your rights'}</h1><p>{right?.summary ?? 'Practical advice for common situations at INEC-administered elections.'}</p></div>
     <div className="record-grid">
       <div>
         {right ? <RightAdvice right={right} /> : <>
@@ -110,5 +110,5 @@ export function RightsPage({ slug }: { slug?: string }) {
       <aside className="source-rail"><h2>Official guidance</h2><p>These guides cover INEC-administered elections. Check the relevant election authority for other polls.</p><External href={actLink}>Electoral Act 2026{right && ' · ' + right.section}</External><External href={links.guidelines}>INEC election guidelines</External><External href={contactLink}>Contact INEC</External><p>Reviewed <time dateTime="2026-11-20">{nigeriaDate('2026-11-20')}</time></p><a href="/election#polling-unit" className="text-link">Prepare to vote <ArrowRight size={15} /></a></aside>
     </div>
     <div className="rights-handoff"><div><h2>Document an issue safely</h2><p>Civic Camera gives you a private MataLens receipt. For official assistance, use the election authority’s contact information.</p></div><ActionLink href="/camera" secondary>Open Civic Camera</ActionLink></div>
-  </section>
+  </section>{!right && <RightsFeature />}</>
 }

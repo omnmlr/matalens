@@ -1,9 +1,8 @@
-import { candidatePath, roster } from './catalogue'
 import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from 'react'
 import { ArrowLeft, ArrowRight, Camera, Check, CircleAlert, ClipboardList, Copy, Download, FileCheck2, FileImage, KeyRound, Landmark, LockKeyhole, MapPin, Upload, X } from 'lucide-react'
-import { steps } from './content'
-import { codeFromInput, downloadFile, downloadReminder, hasSavedPlan, newReceiptCode, nigeriaDate, receiptCodePattern, receiptRequest, ReceiptRequestError, type Plan, type ReceiptEntry, type Report } from './state'
+import { codeFromInput, downloadFile, newReceiptCode, nigeriaDate, receiptCodePattern, receiptRequest, ReceiptRequestError, type Plan, type ReceiptEntry, type Report } from './state'
 import { ActionLink, CheckRow, PageTitle } from './ui'
+import { PreparationPanel } from './preparation'
 
 const categories = ['Road or pavement', 'Drainage or flooding', 'Public facility', 'Waste or sanitation', 'Other community issue']
 const fileTypes = ['image/jpeg', 'image/png', 'image/webp']
@@ -322,8 +321,6 @@ export function MyActions({ plan, receipts, remember, forget }: { plan: Plan; re
   const [error, setError] = useState('')
   const lock = useRef(false)
   const panel = useRef<HTMLElement>(null)
-  const savedCandidates = roster.filter(item => plan.candidates.includes(item.id))
-  const hasPlan = hasSavedPlan(plan)
 
   async function openReceipt(input: string) {
     if (lock.current) return
@@ -386,17 +383,7 @@ export function MyActions({ plan, receipts, remember, forget }: { plan: Plan; re
         </section>}
       </div>
       <aside className="side-column" aria-label="Saved preparation">
-        <section className="panel">
-          <div className="panel-heading"><span className="card-icon mint"><ClipboardList size={22} /></span><div><h2>My preparation</h2><p>Private to this browser</p></div></div>
-          {hasPlan ? <div className="saved-plan">
-            <p>{plan.checklist.length} of {steps.length} checklist steps done{plan.practiced ? ' · Rehearsal completed' : ''}</p>
-            {(plan.state || plan.lga || plan.pollingUnit) && <div><h3>My polling plan</h3><p>{[plan.state, plan.lga, plan.pollingUnit].filter(Boolean).join(' · ')}</p></div>}
-            {plan.notes && <div><h3>My notes</h3><p>{plan.notes}</p></div>}
-            {savedCandidates.length > 0 && <div><h3>Candidate bookmarks</h3><ul>{savedCandidates.map(candidate => <li key={candidate.id}><a className="text-link" href={candidatePath(candidate.id)}>{candidate.name} · {candidate.party}</a></li>)}</ul></div>}
-            {plan.reminder && <div><h3>Personal reminder</h3><p>{nigeriaDate(plan.reminder)}</p><button className="link-button" onClick={() => downloadReminder(plan.reminder, 'Election preparation', 'Open MataLens to review your private preparation.')}>Export to calendar <Download size={15} /></button></div>}
-          </div> : <p>Save a polling plan, bookmark a candidate or check off a step in My Election to see it here.</p>}
-          <ActionLink href={plan.ballot?.place ? "/my-ballot" : "/election#polling-plan"} secondary>{plan.ballot?.place ? "Continue My Ballot" : hasPlan ? "Continue my plan" : "Make a private plan"}</ActionLink>
-        </section>
+        <PreparationPanel plan={plan} />
         <section className="panel soft-panel"><h2>Have something to report?</h2><p>Start with a photo of a community issue or a publicly posted result sheet.</p><ActionLink href="/camera" secondary>Open Civic Camera</ActionLink></section>
       </aside>
     </div>

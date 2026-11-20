@@ -3,6 +3,8 @@ import { ArrowRight, Bookmark, ChevronDown, GitCompareArrows, Search, UserRound 
 import { candidatePath, candidateStatus, findCandidates, offices, partyNames, partyPath, publicRecords, sources, type Candidate } from './catalogue'
 import type { PlanProps } from './explorer'
 import { External } from './ui'
+import { FollowButton } from './follow'
+import type { Follows } from './people'
 
 export function useQueryField(key: string, fallback = '') {
   const [value, setValue] = useState(() => new URLSearchParams(window.location.search).get(key) ?? fallback)
@@ -41,7 +43,7 @@ function Disclosure({ person, children }: { person: Candidate; children: ReactNo
   </details>
 }
 
-export function CandidateRows({ people, withRace = false, plan, updatePlan }: { people: Candidate[]; withRace?: boolean } & Partial<PlanProps>) {
+export function CandidateRows({ people, withRace = false, plan, updatePlan, follows }: { people: Candidate[]; withRace?: boolean; follows?: Follows } & Partial<PlanProps>) {
   const [notice, setNotice] = useState('')
   return <><p className="sr-only" role="status">{notice}</p><ul className="directory-rows registry-list">
     {people.map(person => {
@@ -58,6 +60,7 @@ export function CandidateRows({ people, withRace = false, plan, updatePlan }: { 
             {person.qualification && <p><strong>Qualifications listed by INEC</strong> {person.qualification}</p>}
             {record && <p>{record.fact} <External href={record.source}>Read the record</External></p>}
             <div className="inline-actions">
+              {follows && <FollowButton id={person.personId} {...follows} />}
               <a className="text-link" href={candidatePath(person.id)}>View full profile <ArrowRight size={15} /></a>
               {plan && updatePlan && <button className="link-button" aria-pressed={saved} type="button" onClick={() => {
                 const stored = updatePlan({ candidates: saved ? plan.candidates.filter(id => id !== person.id) : [...new Set([...plan.candidates, person.id])] })
@@ -74,7 +77,7 @@ export function CandidateRows({ people, withRace = false, plan, updatePlan }: { 
   </ul></>
 }
 
-export function CandidateSearch({ people, query, update, withRace, plan, updatePlan }: { people: Candidate[]; query: string; update: (query: string) => void; withRace?: boolean } & Partial<PlanProps>) {
+export function CandidateSearch({ people, query, update, withRace, plan, updatePlan, follows }: { people: Candidate[]; query: string; update: (query: string) => void; withRace?: boolean; follows?: Follows } & Partial<PlanProps>) {
   const queryKey = window.location.pathname + window.location.search
   const [shown, setShown] = useState(() => history.state?.directoryLimit?.url === queryKey ? Number(history.state.directoryLimit.shown) : 25)
   const search = useRef<HTMLInputElement>(null)
@@ -87,7 +90,7 @@ export function CandidateSearch({ people, query, update, withRace, plan, updateP
   return <>
     <SearchField label="Candidate or party search" value={query} update={value => { update(value); setShown(25) }} placeholder="Name, party or running mate" inputRef={search} />
     <p className="directory-caption" role="status">{matches.length} of {people.length} candidate records · Alphabetical by name</p>
-    {matches.length > 0 ? <CandidateRows people={matches.slice(0, shown)} withRace={withRace} plan={plan} updatePlan={updatePlan} /> : <div className="directory-note">
+    {matches.length > 0 ? <CandidateRows people={matches.slice(0, shown)} withRace={withRace} plan={plan} updatePlan={updatePlan} follows={follows} /> : <div className="directory-note">
       <p>No published candidates match this search.</p><button className="link-button" type="button" onClick={() => { update(''); search.current?.focus() }}>Clear search</button>
     </div>}
     {matches.length > shown && <button type="button" className="button button-secondary more-results" onClick={showMore}>Show {Math.min(25, matches.length - shown)} more candidates</button>}

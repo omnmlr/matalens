@@ -5,6 +5,10 @@ import { dates, links, states } from './content'
 import { CandidateSearch, Portrait, useQueryField } from './directory'
 import { nigeriaDate, type Plan } from './state'
 import { ActionLink, External } from './ui'
+import { FollowButton } from './follow'
+import { personPath, type Follows } from './people'
+import { ProfileLearning, PublicRecordList } from './profile-learning'
+import type { StoryFeed } from './story-ui'
 
 export type PlanProps = { plan: Plan; updatePlan: (value: Partial<Plan>) => boolean }
 
@@ -105,7 +109,7 @@ export function RacePage({ race, ...props }: { race: Contest } & PlanProps) {
   </section>
 }
 
-export function CandidatePage({ person, plan, updatePlan }: { person: Candidate } & PlanProps) {
+export function CandidatePage({ person, plan, updatePlan, follows, feed }: { person: Candidate; follows: Follows; feed: StoryFeed } & PlanProps) {
   const [feedback, setFeedback] = useState('')
   const [undo, setUndo] = useState(false)
   const saved = plan.candidates.includes(person.id)
@@ -133,10 +137,10 @@ export function CandidatePage({ person, plan, updatePlan }: { person: Candidate 
     }
   }
 
-  return <article className="wrap standard-page profile-page">
+  return <article className="wrap standard-page profile-page editorial-page">
     <a className="text-link back-link" href={contestPath(race)}><ArrowLeft size={16} /> {race.label}</a>
-    <div className="profile-masthead"><Portrait person={person} large /><div className="catalogue-title"><p className="kicker">{race.year} / {offices[race.office].label} / {race.state ?? 'Nigeria'}</p><h1>{person.name}</h1><a className="text-link" href={partyPath(person.party)}>{partyNames[person.party]} ({person.party}) <ArrowRight size={15} /></a></div></div>
-    <div className="record-grid">
+    <div className="profile-masthead editorial-profile-head"><Portrait person={person} large /><div className="catalogue-title editorial-title"><p className="editorial-kicker">Politician profile · {race.year} · {offices[race.office].label}</p><h1>{person.name}</h1><a className="text-link" href={partyPath(person.party)}>{partyNames[person.party]} ({person.party}) <ArrowRight size={15} /></a></div><FollowButton id={person.personId} {...follows} /></div>
+    <div className="record-grid profile-grid">
       <div>
         <div className="button-row candidate-actions">
           <button className="button" aria-pressed={saved} onClick={() => { setSaved(!saved); setUndo(true) }}><Bookmark size={17} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save privately'}</button>
@@ -144,18 +148,28 @@ export function CandidatePage({ person, plan, updatePlan }: { person: Candidate 
           <a className="text-link" href={contestPath(race) + '/compare'} data-compare-id={person.id}><GitCompareArrows size={17} /> Compare in this race</a>
         </div>
         <div className="record-feedback"><p role="status">{feedback}</p>{undo && <button className="link-button" onClick={() => { setSaved(!saved); setUndo(false) }}>Undo</button>}</div>
-        {person.mate && <section className="ticket-summary"><div><p className="kicker">On the ticket</p><h2>Running mate</h2><strong>{person.mate.name}</strong></div><details><summary>Ticket details</summary>{person.mateQualification && <p>Qualifications listed by INEC: {person.mateQualification}</p>}{mateRecord && <p>{mateRecord.fact} <External href={mateRecord.source}>{mateRecord.label}</External></p>}{mateHistory.map(item => <p key={item.id}><a className="text-link" href={candidatePath(item.id)}>{item.race.label} · {item.party} <ArrowRight size={15} /></a></p>)}<External href={source.url}>{source.label} · row {person.mateNumber}</External></details></section>}
-        <section className="record-section"><h2>{race.status === 'declared' ? 'Archived candidacy' : 'Official candidacy'}</h2>
+        <section className="record-section profile-section"><h2>Biography</h2>
+          {records.length ? <PublicRecordList records={records.slice(0, 1)} /> : <p>The verified candidacy below is the biographical record currently available for this profile.</p>}
+        </section>
+        {person.mate && <section className="ticket-summary"><div><p className="kicker">On the ticket</p><h2>Running mate</h2><strong><a className="text-link" href={personPath(person.mate.id)}>{person.mate.name} <ArrowRight size={15} aria-hidden="true" /></a></strong></div><details><summary>Ticket details</summary>{person.mateQualification && <p>Qualifications listed by INEC: {person.mateQualification}</p>}{mateRecord && <p>{mateRecord.fact} <External href={mateRecord.source}>{mateRecord.label}</External></p>}{mateHistory.map(item => <p key={item.id}><a className="text-link" href={candidatePath(item.id)}>{item.race.label} · {item.party} <ArrowRight size={15} /></a></p>)}<External href={source.url}>{source.label} · row {person.mateNumber}</External></details></section>}
+        <section className="record-section profile-section"><p className="editorial-kicker">Verified election record</p><h2>{race.status === 'declared' ? 'Archived candidacy' : 'Official candidacy'}</h2>
           <dl><div><dt>Name on INEC record</dt><dd>{person.listedName}</dd></div><div><dt>Office</dt><dd>{offices[race.office].label}</dd></div><div><dt>Electoral area</dt><dd>{constituency(race)}</dd></div><div><dt>Listing status</dt><dd>{candidateStatus(race)}</dd></div>
           {person.age && <div><dt>Age on the list</dt><dd>{person.age}</dd></div>}
           <div><dt>Qualifications as listed</dt><dd>{person.qualification || 'Unavailable in this record'}</dd></div>
           {voteCount !== undefined && <div><dt>Official votes</dt><dd><a className="text-link" href="/results">{voteCount.toLocaleString('en-NG')} votes <ArrowRight size={15} /></a></dd></div>}</dl>
         </section>
-        {history.length > 0 && <section className="record-section"><h2>Election history</h2><ul className="history-list">{history.map(record => <li key={record.id}><a className="text-link" href={candidatePath(record.id)}>{record.race.label} · {record.party} <ArrowRight size={15} /></a></li>)}</ul></section>}
-        {statements.length > 0 && <section className="record-section"><h2>Published campaign statements</h2><ul className="field-updates">{statements.map(item => <li key={item.source}><p><time dateTime={item.date}>{nigeriaDate(item.date)}</time></p><div>{item.fact}</div><External href={item.source}>{item.label}</External></li>)}</ul></section>}
-        <section className="record-section"><h2>Public record</h2>
-          {records.length ? <ul className="field-updates">{records.map(item => <li key={item.source}><p><time dateTime={item.date}>{item.date.length === 10 ? nigeriaDate(item.date) : item.date}</time></p><div>{item.fact}</div><External href={item.source}>{item.label}</External></li>)}</ul> : <p>Additional biography and public service records are unavailable in this profile.</p>}
+        <section className="record-section profile-section"><h2>Election affiliations</h2><ul className="history-list">
+          <li><strong>{race.year} · {person.party}</strong> · {race.label}</li>
+          {history.map(record => <li key={record.id}><a className="text-link" href={candidatePath(record.id)}>{record.race.label} · {record.party} <ArrowRight size={15} /></a></li>)}
+        </ul></section>
+        <section className="record-section profile-section"><h2>Public records</h2>
+          <a className="text-link" href={voteCount !== undefined ? '/results' : contestPath(race)}>{voteCount !== undefined ? 'Read the national declaration' : 'Inspect the official contest record'} <ArrowRight size={15} /></a>
+          {records.length > 1 && <PublicRecordList records={records.slice(1)} />}
         </section>
+        <section className="record-section profile-section"><h2>Attributed claims</h2>
+          {statements.length ? <PublicRecordList records={statements} /> : <p>There are no sourced campaign statements in this profile yet.</p>}
+        </section>
+        <ProfileLearning id={person.personId} feed={feed} />
       </div>
       <aside className="source-rail" aria-label="Record coverage">
         <h2>Record sources</h2><External href={source.url}>{source.label} · row {person.listingNumber}</External>
