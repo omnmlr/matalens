@@ -2,78 +2,120 @@
 
 **See what matters. Know what to do next.**
 
-MataLens is an independent, mobile-first civic companion for Nigeria and a side project for the AIESEC hackathon. Guests can explore sourced election records, look up official guidance, practise election procedures, save a private plan, and document a community issue or public result sheet with a photo.
+**MataLens is a civic information and participation platform built to make Nigerian public life easier to understand and act on.** It brings political updates, election records, voter education, personal preparation and community reporting into one mobile-friendly experience — without requiring an account.
 
-## Run locally
+**[Explore MataLens](https://matalens.vercel.app)** · **[View the application code](https://github.com/omnmlr/matalens/tree/release/matalens-hackathon)**
 
-Use Node.js 24 or later and npm.
+Built for the **AIESEC Innovation Hackathon**.
 
-```sh
+## The problem
+
+Following Nigerian politics can mean jumping between news articles, election notices, candidate lists and social media posts, then trying to work out what is reliable and what it means for you. Even practical questions — who is contesting a particular election, how voting works, or how to document a civic problem — can require several disconnected services.
+
+MataLens is designed to connect those pieces. Instead of simply displaying information, it helps people **discover, understand, prepare and participate**, with clear context and an obvious next step.
+
+## What we built
+
+### 1. A political briefing that explains the news
+
+The homepage presents a curated briefing about developments in Nigerian public life. Each reviewed story provides context, explains why an event matters and links to the material behind it. Stories can also include timelines, comparisons and quick knowledge checks where supported.
+
+Users can **follow politicians** and see related updates in their personal space. Following is for organizing information, not endorsing a candidate; these preferences remain in the browser.
+
+This is a small, reviewed collection of stories, **not a claim of continuous, real-time news coverage**.
+
+### 2. Election discovery and candidate exploration
+
+The **Discover** and election sections let users navigate available races by election year, office and location. They can:
+
+- Explore covered presidential and state-level contests.
+- Read candidate and party records with clear election context.
+- Compare candidates competing in the same race.
+- Explore running mates and related political identities.
+- Consult the archived **2023 presidential declaration** separately from information about upcoming elections.
+
+Election coverage is intentionally bounded by the records included in the project; it is not a complete national database of every contest or polling unit.
+
+### 3. Civic learning that people can actually use
+
+**Learn** turns complex civic topics into short, approachable lessons and interactive questions. The platform includes:
+
+- Voting-process rehearsal and election-day preparation.
+- Guides to ballot secrecy, voter assistance, intimidation, vote buying and polling-unit procedures.
+- Party and candidate recognition practice.
+- A daily question and explanations that help users understand their answers.
+
+The goal is practical civic literacy, not merely memorizing political names.
+
+### 4. A personal civic desk
+
+**My Desk** helps people keep track of what matters to them. Users can save stories, follow political figures, revisit relevant updates and continue their election preparation.
+
+The app also supports private browser-saved bookmarks, a preparation checklist, notes and a downloadable calendar event for reminders. These personal choices are stored on the user's device rather than requiring a political-preference account.
+
+### 5. Civic Camera: evidence with accountability
+
+**Civic Camera** supports two kinds of submissions:
+
+- **Public result sheets:** Photograph a publicly posted election result sheet and provide its polling-unit context.
+- **Community issues:** Document problems such as damaged roads, flooding, waste or neglected public facilities with a photo and description.
+
+In the standalone application with private storage enabled, a submission goes through photo review and explicit consent, then receives a **private receipt**. That receipt lets the person check its status, reopen a protected preview or withdraw the report. Reports have a limited retention period.
+
+**Hosted-demo limitation:** The public Vercel build displays the Civic Camera experience but does **not** currently accept photos or retrieve private receipts, because that deployment has no persistent private evidence store. The standalone server implements these workflows, and the repository includes tests for them.
+
+MataLens does not automatically count votes from photographs, certify election outcomes or send submissions to INEC or other government agencies.
+
+## A five-minute tour for judges
+
+1. **[Open the homepage](https://matalens.vercel.app)** to see the briefing and explore a political story, its context and supporting material.
+2. **[Visit Discover](https://matalens.vercel.app/discover)** to browse election records, open a candidate profile or compare candidates in a covered race.
+3. **[Try Learn](https://matalens.vercel.app/learn)** to answer a civic question and see the explanation.
+4. **[Open My Desk](https://matalens.vercel.app/desk)** to see how followed people, saved items and personal preparation come together.
+5. **[Explore Civic Camera](https://matalens.vercel.app/camera)** to understand the two reporting flows and their privacy boundaries. The hosted demo does not enable photo intake.
+
+**No sign-up is required** for the browsing, learning or personal-preparation experience.
+
+## Why it matters
+
+MataLens is built around a simple idea: **better participation starts with clearer information and practical tools**.
+
+Its value is in bringing together activities that usually feel disconnected — understanding a political development, checking who is contesting an election, learning one's rights, preparing to vote and documenting a public issue — in a coherent, accessible product.
+
+The platform is designed to be **nonpartisan, privacy-conscious and explicit about evidence**. Public election records, personal preparation, editorial briefings and user-submitted photos are treated as different kinds of information. Unreviewed community evidence is never presented as an official election result.
+
+MataLens is an independent project, **not an INEC or government service**, and it does not provide official voter registration, accreditation or certified results.
+
+## How it works
+
+The application uses **React, TypeScript and Vite** for its responsive interface, with a **Node.js/Express** server for its API. A reviewed political-briefing edition is served through the app's story endpoints. The standalone Civic Camera backend uses **SQLite and private file storage** for temporary evidence and receipt tracking.
+
+The app is guest-first, offers light and dark themes and can reopen selected previously loaded material offline after its service worker is installed. Fresh updates, external official links and reporting services still require a connection.
+
+### Run the implementation locally
+
+Requires **Node.js 24 or later** and npm.
+
+```bash
+git clone --branch release/matalens-hackathon https://github.com/omnmlr/matalens.git
+cd matalens
 npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. Vite serves the app and proxies the API to port 3001. With image sanitization available, development enables guest photo intake and stores reports in a private `.matalens/` SQLite directory. Use synthetic or non-sensitive photos for local testing. `MATALENS_ENABLE_UPLOADS=0` disables intake while leaving saved receipts retrievable.
+Open **http://localhost:5173**. In local development, the standalone server can accept test photo submissions when its private storage and image-processing requirements are available. Use non-sensitive test photos, not personal documents or real ballots.
 
-On Windows, use an NTFS path for persistent Camera storage. The app applies a private ACL when it creates the directory and verifies existing storage before opening it. If an earlier run created an unprotected `.matalens` directory, point new development reports at a new path under your profile:
+To run project checks:
 
-```powershell
-$env:MATALENS_DATA_DIR = Join-Path $env:LOCALAPPDATA 'MataLens\private-reports'
-npm run dev
-```
-
-Keep existing report data in place until an administrator verifies its ACL.
-
-```sh
+```bash
 npm test
-npm run data:check
 npm run typecheck
 npm run build
 npm run test:browser
 ```
 
-Browser tests use the system Chromium if available. Otherwise run `npx playwright install chromium` first. The suite serves the built app against an ephemeral test database and writes screenshots to `test-results/screenshots/`. Use `npm run build && npm start` to exercise the installable, offline-capable build on port 3000.
+The browser-test command requires Chromium or a Playwright browser installation.
 
-## What works
+---
 
-- **Elections** covers both presidential rosters and selected contests in Edo, Lagos and Oyo. Guests can filter by year, office and geography, read or compare sourced profiles, and look up the full 2023 national presidential declaration. My Ballot, bookmarks, checklists, notes and reminders stay in the browser. Open a downloaded calendar event in your calendar app to set an alert.
-- **Rights and practice** cover ballot secrecy, voting assistance, polling units, intimidation and vote buying. Learn through voting rehearsal, symbol clues and candidate-to-party practice. The built app can reopen guides and plans offline after the service worker has installed. INEC links, new submissions and receipt retrieval use the network.
-- **Civic Camera and My Actions** accept an original image with consent and factual context, preserve it privately, and issue a 256-bit bearer receipt. Download or copy the receipt to reopen the report in another browser. Guests can check status, view a metadata-stripped preview and withdraw the evidence. Reports are received by MataLens for review.
-
-## Political news API
-
-The same app serves a reviewed political briefing at `/api/stories`, with source links, catalogue identities and learning questions. The [news desk guide](docs/NEWS_INTELLIGENCE.md) covers collection, review, API use and integration with the political-learning frontend.
-
-## Run a hosted pilot
-
-See the [production runbook](docs/RELEASE_RUNBOOK.md) for API routing, build and runtime configuration, and the bundled reviewed edition. Use the [integration checklist](docs/INTEGRATION_CHECKLIST.md) for release verification.
-
-`npm start` serves the built client and API from the same origin. New intake requires `MATALENS_ENABLE_UPLOADS=1`, a private `MATALENS_DATA_DIR` and an HTTPS `MATALENS_ORIGIN`. See [.env.example](.env.example).
-
-| Variable | Purpose |
-| --- | --- |
-| `MATALENS_ENABLE_UPLOADS=1` | Enable guest intake deliberately |
-| `MATALENS_DATA_DIR` | Dedicated persistent directory outside `public/` and `dist/`, with mode `0700` on POSIX or a protected NTFS ACL on Windows |
-| `MATALENS_ORIGIN` | Exact HTTPS public origin, without a path or trailing slash |
-| `MATALENS_HOST`, `MATALENS_PORT` | Listener settings, defaulting to `127.0.0.1:3000` |
-| `MATALENS_TRUST_LOOPBACK_PROXY=1` | Use only with a trusted loopback reverse proxy that overwrites client IP headers |
-
-Use a single Node process with TLS termination, an encrypted private volume, and restricted operator access. Run behind a proxy with request-body limits, no request-body or Authorization logging and the same 30-day retention rules for any backup or private review copy. Keep the listener reachable only through the trusted proxy. Validate the deployment setup and assign an operator before accepting public evidence.
-
-SQLite initializes its two tables at startup. It stores evidence and receipt records in a transaction with the original image digest and a one-way receipt-code hash. A retry with the same code returns the original case. Images are bounded by type, byte size and pixel count, with allowed decoders, strict decoding, network rate limits, a hidden spam field and concurrent upload limits. Stored evidence is capped at 512 MiB. Rate limits are in-memory and local to the process.
-
-Use these commands from a trusted terminal. Review photos as private evidence and decline those that contain identifiable people, private documents, marked ballots, unsafe content or spam. The photo command creates a private temporary review copy that the operator must remove after review.
-
-```sh
-npm run moderate -- queue
-npm run moderate -- photo <case-id> <private-preview.webp>
-npm run moderate -- reviewed <case-id>
-npm run moderate -- declined <case-id>
-```
-
-“Reviewed by MataLens” records a moderation decision. No government or partner receives case data through this app. Withdrawal and decline remove the photo, description and location from active storage. A minimal status record and all remaining cases expire 30 days from submission. Lost receipt links or codes cannot be recovered.
-
-## Project notes
-
-- [Agent instructions](AGENTS.md), [vision](VISION.md), [product](PRODUCT.md), [design](DESIGN.md)
-- [Implementation plan](docs/IMPLEMENTATION_PLAN.md), [capability and test evidence](docs/IMPLEMENTATION_STATUS.md), [election data and sources](docs/ELECTION_DATA.md), [visual review](docs/VISUAL_REVIEW.md), [reference research](docs/REFERENCE_RESEARCH.md)
+**MataLens — See what matters. Know what to do next.**
