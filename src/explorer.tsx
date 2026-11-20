@@ -1,86 +1,103 @@
 import { useState } from 'react'
-import { ArrowLeft, ArrowRight, Bookmark, CalendarDays, ExternalLink, FileText, GitCompareArrows, MapPin, Share2 } from 'lucide-react'
-import { candidatePath, catalogueRace as race, comparePath, findCandidates, partyPath, publicRecords, racePath, roster, type Candidate } from './catalogue'
-import { dates, links, partyNames, states } from './content'
-import { CandidateRows, DirectoryFinder } from './directory'
-import { daysUntilNigeria, nigeriaDate, type Plan } from './state'
+import { ArrowLeft, ArrowRight, Bookmark, CalendarDays, CircleAlert, ExternalLink, FileText, GitCompareArrows, MapPin, Share2, Vote } from 'lucide-react'
+import { campaignStatements, candidatePath, candidateStatus, constituency, contests, contestPath, declaration, offices, partyNames, partyPath, photoReferences, presidential, publicRecords, raceStatus, roster, rosterFor, scopeLabel, sources, type Candidate, type Contest } from './catalogue'
+import { dates, links, states } from './content'
+import { CandidateSearch, Portrait, useQueryField } from './directory'
+import { nigeriaDate, type Plan } from './state'
 import { ActionLink, External } from './ui'
 
 export type PlanProps = { plan: Plan; updatePlan: (value: Partial<Plan>) => boolean }
 
-const officeOptions = ['President', 'Senate', 'House of Representatives', 'Governor', 'State House of Assembly']
-
-function ElectionLinks({ ballot = true }: { ballot?: boolean }) {
+function ElectionLinks() {
   return <nav className="record-nav" aria-label="Election tools">
-    {ballot && <a href="/my-ballot"><MapPin size={18} aria-hidden="true" /> My Ballot</a>}
+    <a href="/my-ballot"><MapPin size={17} aria-hidden="true" /> My Ballot</a>
     <a href="/parties"><FileText size={17} aria-hidden="true" /> Parties</a>
     <a href="/results"><CalendarDays size={17} aria-hidden="true" /> Results archive</a>
-    <a href="/election#polling-unit"><MapPin size={17} aria-hidden="true" /> Polling-unit guidance</a>
+    <a href="/election#polling-unit"><Vote size={17} aria-hidden="true" /> Polling-unit guidance</a>
   </nav>
 }
 
-export function Explorer() {
-  const initial = new URLSearchParams(window.location.search)
-  const [year, setYear] = useState(initial.get('year') === '2023' ? '2023' : '2027')
-  const [office, setOffice] = useState(initial.get('office') ?? '')
-  const archived = year === '2023'
-  const available = !office || office === race.office
+export function ContestList({ races }: { races: Contest[] }) {
+  return <ul className="contest-list">{races.map(race => <li key={race.id}><a href={contestPath(race)}>
+    <span><small>{offices[race.office].label} · {race.state ?? 'National'}</small><strong>{race.label}</strong></span>
+    <span className="contest-list-meta"><time dateTime={race.date}>{nigeriaDate(race.date)}</time><small>{rosterFor(race).length} candidates · {raceStatus(race)}</small></span>
+    <ArrowRight size={17} aria-hidden="true" />
+  </a></li>)}</ul>
+}
 
-  function updateFilter(key: 'year' | 'office', value: string) {
-    const url = new URL(window.location.href)
-    if (value) url.searchParams.set(key, value)
-    else url.searchParams.delete(key)
-    history.replaceState(history.state, '', url)
-    if (key === 'year') setYear(value)
-    else setOffice(value)
-  }
+export function ElectionCalendar() {
+  return <div className="calendar-list">{dates.map(item => {
+    const day = nigeriaDate(item.date, { day: 'numeric' })
+    const month = nigeriaDate(item.date, { month: 'short' })
+    return <article key={item.date}><time dateTime={item.date}><strong>{day}</strong><span>{month} 2027</span></time><div><h3><a href={`/elections?year=2027&date=${item.date}`}>{item.title}</a></h3><p>{item.scope}</p></div><ArrowRight size={16} aria-hidden="true" /></article>
+  })}</div>
+}
 
-  return <section className="wrap standard-page">
-    <div className="catalogue-title"><p className="kicker">Nigeria · Election records</p><h1>Explore elections</h1><p>Find published races, read the INEC candidate list and prepare for your own ballot.</p></div>
+export function Explorer(props: PlanProps) {
+  const [year, setYear] = useQueryField('year')
+  const [date, setDate] = useQueryField('date')
+  const [office, setOffice] = useQueryField('office')
+  const [state, setState] = useQueryField('place')
+  const [district, setDistrict] = useQueryField('district')
+  const [query, setQuery] = useQueryField('q')
+  const [view, setView] = useQueryField('view', new URLSearchParams(location.search).has('q') ? 'candidates' : 'contests')
+  const filtered = contests.filter(race => (!year || String(race.year) === year) && (!date || race.date === date) && (!office || offices[race.office].label === office) && (!state || state === 'National' && !race.state || race.state === state))
+  const districts = filtered.filter(race => ['district', 'federal constituency', 'state constituency'].includes(offices[race.office].scope))
+  const visible = district ? filtered.filter(race => race.id === district) : filtered
+  const people = roster.filter(person => visible.some(race => race.id === person.contestId))
+  function reset() { setYear(''); setDate(''); setOffice(''); setState(''); setDistrict(''); setQuery('') }
+  return <section className="wrap standard-page explorer-page">
+    <div className="catalogue-title"><p className="kicker">Election records / Nigeria</p><h1>Explore elections</h1><p>Find a contest, open the official candidate list and see who is standing for office.</p></div>
     <ElectionLinks />
-    <div className="catalogue-filters">
-      <label className="directory-label">Election year<select value={year} onChange={event => updateFilter('year', event.target.value)}><option>2027</option><option>2023</option></select></label>
-      <label className="directory-label">Office<select value={office} onChange={event => updateFilter('office', event.target.value)}><option value="">All offices</option>{officeOptions.map(value => <option key={value}>{value}</option>)}</select></label>
+    <div className="catalogue-filters explorer-filters">
+      <label className="directory-label">Election year<select value={year} onChange={event => { setYear(event.target.value); setDate(''); setDistrict('') }}><option value="">All years</option><option>2027</option><option>2023</option></select></label>
+      <label className="directory-label">Office<select value={office} onChange={event => { setOffice(event.target.value); setDistrict('') }}><option value="">All offices</option>{Object.values(offices).map(value => <option key={value.label}>{value.label}</option>)}</select></label>
+      <label className="directory-label">Geography<select value={state} onChange={event => { setState(event.target.value); setDistrict('') }}><option value="">All places</option><option>National</option>{states.map(place => <option key={place}>{place}</option>)}</select></label>
+      {year !== '2023' && <label className="directory-label">Election date<select value={date} onChange={event => { setDate(event.target.value); setDistrict('') }}><option value="">All dates</option>{dates.map(item => <option key={item.date} value={item.date}>{nigeriaDate(item.date)}</option>)}</select></label>}
+      {districts.length > 0 && <label className="directory-label">District or constituency<select value={district} onChange={event => setDistrict(event.target.value)}><option value="">All in view</option>{districts.map(race => <option key={race.id} value={race.id}>{race.label} · {offices[race.office].label}</option>)}</select></label>}
     </div>
-    {archived ? <div className="directory-note">
-      <h2>{!office || office === 'President' ? '2023 presidential election' : 'No archived records for this office'}</h2>
-      <p>MataLens’ results archive covers the 2023 presidential declaration.</p><ActionLink href="/results">Open results archive</ActionLink>
-    </div> : available ? <DirectoryFinder explorer /> : <div className="directory-note"><h2>{office}</h2><p>MataLens hasn’t published candidate records for this office yet.</p><External href={links.updates}>Find official publications at INEC</External></div>}
-    {!archived && <section className="catalogue-schedule">
-      <div className="field-section-head"><h2>Election dates</h2><External href={links.calendar}>INEC calendar</External></div>
-      {dates.map(item => {
-        const days = daysUntilNigeria(item.date)
-        return <article key={item.date}><time dateTime={item.date}>{nigeriaDate(item.date)}</time><div><h3>{item.title}</h3><p>{item.scope}</p></div><small>{days > 0 ? 'Scheduled' : days === 0 ? 'Scheduled for today' : 'Scheduled date passed'}</small></article>
-      })}
-    </section>}
+    <div className="record-grid">
+      <div>
+        <div className="directory-modes view-tabs" role="group" aria-label="Election explorer view">
+          <button type="button" aria-pressed={view !== 'candidates'} onClick={() => setView('contests')}>Contests</button>
+          <button type="button" aria-pressed={view === 'candidates'} onClick={() => setView('candidates')}>Candidates</button>
+        </div>
+        {visible.length ? view === 'candidates' ? <CandidateSearch people={people} query={query} update={setQuery} withRace {...props} /> : <>
+          <p className="directory-caption" role="status">{visible.length} published {visible.length === 1 ? 'contest' : 'contests'}</p><ContestList races={visible} />
+        </> : <div className="directory-note" role="status">
+          <h2>No published records for this selection</h2><p>Try All offices or check INEC’s lists. You can still explore the nationwide presidential election.</p>
+          <div className="inline-actions"><button className="link-button" onClick={reset}>Reset filters</button><a className="text-link" href={contestPath(presidential)}>Open presidential roster <ArrowRight size={16} /></a></div>
+        </div>}
+      </div>
+      <aside className="source-rail"><h2>About this coverage</h2><p>National presidential records and selected contests in Edo, Lagos and Oyo. District and constituency boundaries determine which ballot applies.</p><External href={links.allHouse}>INEC National Assembly lists</External><External href={links.assembly}>INEC State Assembly lists</External><External href={links.polling}>Find your polling unit</External></aside>
+    </div>
   </section>
 }
 
-export function RacePage() {
-  const [query, setQuery] = useState(() => new URLSearchParams(window.location.search).get('q') ?? '')
-  const matches = findCandidates(query)
-
-  function updateSearch(value: string) {
-    setQuery(value)
-    const url = new URL(window.location.href)
-    if (value) url.searchParams.set('q', value)
-    else url.searchParams.delete('q')
-    history.replaceState(history.state, '', url)
-  }
+export function RacePage({ race, ...props }: { race: Contest } & PlanProps) {
+  const [query, setQuery] = useQueryField('q')
+  const entries = rosterFor(race)
+  const source = sources[race.listingSourceId]
   return <section className="wrap standard-page">
     <a className="text-link back-link" href="/elections"><ArrowLeft size={16} /> All elections</a>
-    <div className="catalogue-title"><p className="kicker">{race.year} · {race.state}</p><h1>{race.constituency}</h1><p>{race.office} · <time dateTime={race.date}>{nigeriaDate(race.date, { dateStyle: 'long' })}</time></p></div>
+    <div className="race-masthead">
+      <div className="catalogue-title"><p className="kicker">{race.year} / {scopeLabel(race)}{race.state && ` · ${race.state}`}</p><h1>{race.label}</h1><p>{offices[race.office].label} · <time dateTime={race.date}>{nigeriaDate(race.date, { dateStyle: 'long' })}</time> · {raceStatus(race)}</p></div>
+      <div className="race-count"><strong>{entries.length}</strong><span>{race.office === 'president' && race.year === 2027 ? 'Named tickets' : 'Named candidates'}</span></div>
+    </div>
+    {race.notes.length > 0 && <details className="race-listing-note"><summary><CircleAlert size={17} aria-hidden="true" /> Why the INEC list shows {entries.length + 1} party entries</summary>{race.notes.map(note => <p key={note}>{note}</p>)}<External href={source.url}>Read the INEC final list</External></details>}
     <div className="record-grid">
       <div>
-        <div className="field-section-head"><h2>Candidate register</h2><a className="text-link" href={comparePath}><GitCompareArrows size={16} /> Compare candidates</a></div>
-        <label className="directory-label race-search">Search by name or party<input type="search" value={query} onChange={event => updateSearch(event.target.value)} maxLength={120} /></label>
-        <p className="directory-caption" role="status">{matches.length} of {roster.length} candidates · Alphabetical by name</p>
-        {matches.length ? <CandidateRows people={matches} /> : <div className="directory-note"><p>No published candidates match.</p><button className="link-button" type="button" onClick={() => updateSearch('')}>Clear search</button></div>}
+        <div className="field-section-head"><h2>Candidate register</h2><a className="text-link" href={contestPath(race) + '/compare'}><GitCompareArrows size={16} /> Compare candidates</a></div>
+        <CandidateSearch people={entries} query={query} update={setQuery} {...props} />
       </div>
       <aside className="source-rail" aria-label="Coverage and preparation">
-        <h2>Official listing</h2><p>Surulere I, Lagos. Check INEC for the latest amendments and other constituencies.</p>
-        <External href={race.source.href}>INEC list · page {race.source.page}, rows 171–178</External>
-        <p>Source checked <time dateTime={race.source.checked}>{nigeriaDate(race.source.checked)}</time></p>
+        <h2>Official candidate list</h2>
+        <External href={source.url}>{source.label}</External>
+        {race.sourceId !== race.listingSourceId && <External href={sources[race.sourceId].url}>INEC national declaration</External>}
+        {race.publisherPage && <External href={race.publisherPage}>INEC publication and updates</External>}
+        {source.published && <p>Published {source.published.length === 10 ? nigeriaDate(source.published) : source.published}</p>}
+        <p>Source reviewed <time dateTime={source.reviewed}>{nigeriaDate(source.reviewed)}</time></p>
+        {race.office === 'president' && <a className="text-link" href="/results">2023 presidential results <ArrowRight size={16} /></a>}
         <a className="text-link" href="/my-ballot">Start My Ballot <ArrowRight size={16} /></a>
         <a className="text-link" href="/election#polling-unit">Prepare for election day <ArrowRight size={16} /></a>
       </aside>
@@ -91,124 +108,122 @@ export function RacePage() {
 export function CandidatePage({ person, plan, updatePlan }: { person: Candidate } & PlanProps) {
   const [feedback, setFeedback] = useState('')
   const [undo, setUndo] = useState(false)
-  const [previous, setPrevious] = useState(false)
   const saved = plan.candidates.includes(person.id)
-  const row = person.id.split('-').at(-1)
-  const records = publicRecords[person.id]
+  const race = person.race
+  const source = sources[race.listingSourceId]
+  const history = roster.filter(record => record.personId === person.personId && record.id !== person.id)
+  const mateHistory = roster.filter(record => record.personId === person.mateId)
+  const mateRecord = person.mateId ? publicRecords[person.mateId]?.[0] : null
+  const records = publicRecords[person.personId] ?? publicRecords[person.id] ?? []
+  const portrait = photoReferences[person.personId]
+  const statements = campaignStatements[person.id] ?? []
+  const voteCount = declaration.entries.find(entry => entry.candidateId === person.id)?.votes
 
   function setSaved(next: boolean) {
     const stored = updatePlan({ candidates: next ? [...new Set([...plan.candidates, person.id])] : plan.candidates.filter(id => id !== person.id) })
-    setFeedback(stored ? next ? 'Saved on this device.' : 'Bookmark removed.' : next ? 'Saved for this visit.' : 'Bookmark removed for this visit.')
+    setFeedback(next ? stored ? 'Saved on this device.' : 'Saved for this visit.' : 'Bookmark removed.')
   }
-
   async function share() {
-    const url = new URL(candidatePath(person.id), window.location.origin).href
     setUndo(false)
     try {
-      await navigator.clipboard.writeText(url)
+      await navigator.clipboard.writeText(new URL(candidatePath(person.id), window.location.origin).href)
       setFeedback('Public candidate link copied.')
     } catch {
       setFeedback('Copy the public link from your address bar.')
     }
   }
 
-  return <article className="wrap standard-page">
-    <a className="text-link back-link" href={racePath}><ArrowLeft size={16} /> {race.constituency}</a>
-    <div className="catalogue-title"><p className="kicker">{race.office} · {race.state}</p><h1>{person.name}</h1><a className="text-link" href={partyPath(person.party)}>{partyNames[person.party]} ({person.party}) <ArrowRight size={15} /></a></div>
+  return <article className="wrap standard-page profile-page">
+    <a className="text-link back-link" href={contestPath(race)}><ArrowLeft size={16} /> {race.label}</a>
+    <div className="profile-masthead"><Portrait person={person} large /><div className="catalogue-title"><p className="kicker">{race.year} / {offices[race.office].label} / {race.state ?? 'Nigeria'}</p><h1>{person.name}</h1><a className="text-link" href={partyPath(person.party)}>{partyNames[person.party]} ({person.party}) <ArrowRight size={15} /></a></div></div>
     <div className="record-grid">
       <div>
         <div className="button-row candidate-actions">
-          <button className="button" aria-pressed={saved} onClick={() => { setPrevious(saved); setSaved(!saved); setUndo(true) }}><Bookmark size={17} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save privately'}</button>
+          <button className="button" aria-pressed={saved} onClick={() => { setSaved(!saved); setUndo(true) }}><Bookmark size={17} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save privately'}</button>
           <button className="button button-secondary" onClick={() => void share()}><Share2 size={17} /> Copy public link</button>
-          <a className="text-link" href={comparePath}><GitCompareArrows size={17} /> Compare in this race</a>
+          <a className="text-link" href={contestPath(race) + '/compare'} data-compare-id={person.id}><GitCompareArrows size={17} /> Compare in this race</a>
         </div>
-        <div className="record-feedback"><p role="status">{feedback}</p>{undo && <button className="link-button" onClick={() => { setSaved(previous); setUndo(false) }}>Undo</button>}</div>
-        <section className="record-section"><h2>Current candidacy</h2>
-          <External href={race.source.href}>INEC list · row {row}</External>
-          <dl><div><dt>Office</dt><dd>{race.office}</dd></div><div><dt>Constituency</dt><dd>{race.constituency}, {race.state}</dd></div><div><dt>Listing status</dt><dd>Listed by INEC</dd></div><div><dt>Age on the list</dt><dd>{person.age}</dd></div><div><dt>Qualifications as listed</dt><dd>{person.qualification}</dd></div></dl>
+        <div className="record-feedback"><p role="status">{feedback}</p>{undo && <button className="link-button" onClick={() => { setSaved(!saved); setUndo(false) }}>Undo</button>}</div>
+        {person.mate && <section className="ticket-summary"><div><p className="kicker">On the ticket</p><h2>Running mate</h2><strong>{person.mate.name}</strong></div><details><summary>Ticket details</summary>{person.mateQualification && <p>Qualifications listed by INEC: {person.mateQualification}</p>}{mateRecord && <p>{mateRecord.fact} <External href={mateRecord.source}>{mateRecord.label}</External></p>}{mateHistory.map(item => <p key={item.id}><a className="text-link" href={candidatePath(item.id)}>{item.race.label} · {item.party} <ArrowRight size={15} /></a></p>)}<External href={source.url}>{source.label} · row {person.mateNumber}</External></details></section>}
+        <section className="record-section"><h2>{race.status === 'declared' ? 'Archived candidacy' : 'Official candidacy'}</h2>
+          <dl><div><dt>Name on INEC record</dt><dd>{person.listedName}</dd></div><div><dt>Office</dt><dd>{offices[race.office].label}</dd></div><div><dt>Electoral area</dt><dd>{constituency(race)}</dd></div><div><dt>Listing status</dt><dd>{candidateStatus(race)}</dd></div>
+          {person.age && <div><dt>Age on the list</dt><dd>{person.age}</dd></div>}
+          <div><dt>Qualifications as listed</dt><dd>{person.qualification || 'Unavailable in this record'}</dd></div>
+          {voteCount !== undefined && <div><dt>Official votes</dt><dd><a className="text-link" href="/results">{voteCount.toLocaleString('en-NG')} votes <ArrowRight size={15} /></a></dd></div>}</dl>
         </section>
-        {records && <section className="record-section"><h2>Legislative record</h2>
-          <ul className="field-updates">{records.map(item => <li key={item.date}><p><time dateTime={item.date}>{nigeriaDate(item.date)}</time></p><div>{item.fact}</div><External href={item.source}>{item.label}</External></li>)}</ul>
-        </section>}
+        {history.length > 0 && <section className="record-section"><h2>Election history</h2><ul className="history-list">{history.map(record => <li key={record.id}><a className="text-link" href={candidatePath(record.id)}>{record.race.label} · {record.party} <ArrowRight size={15} /></a></li>)}</ul></section>}
+        {statements.length > 0 && <section className="record-section"><h2>Published campaign statements</h2><ul className="field-updates">{statements.map(item => <li key={item.source}><p><time dateTime={item.date}>{nigeriaDate(item.date)}</time></p><div>{item.fact}</div><External href={item.source}>{item.label}</External></li>)}</ul></section>}
+        <section className="record-section"><h2>Public record</h2>
+          {records.length ? <ul className="field-updates">{records.map(item => <li key={item.source}><p><time dateTime={item.date}>{item.date.length === 10 ? nigeriaDate(item.date) : item.date}</time></p><div>{item.fact}</div><External href={item.source}>{item.label}</External></li>)}</ul> : <p>Additional biography and public service records are unavailable in this profile.</p>}
+        </section>
       </div>
       <aside className="source-rail" aria-label="Record coverage">
-        <h2>Record coverage</h2><p>{records ? "This profile covers the official candidate listing and the public proceedings cited here." : "This profile covers the official candidate listing for Surulere I."}</p>
-        <External href={race.source.href}>{race.source.label} · page {race.source.page}</External>
-        <p>Source checked <time dateTime={race.source.checked}>{nigeriaDate(race.source.checked)}</time></p>
+        <h2>Record sources</h2><External href={source.url}>{source.label} · row {person.listingNumber}</External>
+        {race.sourceId !== race.listingSourceId && <External href={sources[race.sourceId].url}>INEC national declaration</External>}
+        {portrait && <><External href={portrait.href}>View a licensed photograph</External><p>{portrait.credit}</p></>}
+        <p>Qualifications are transcribed from the official record. Source reviewed <time dateTime={source.reviewed}>{nigeriaDate(source.reviewed)}</time>.</p>
         <a className="text-link" href={`/corrections?record=${encodeURIComponent(person.id)}`}>Flag a factual error <ArrowRight size={16} /></a>
       </aside>
     </div>
   </article>
 }
 
-const articles = [
-  { label: 'Party', get: (item: Candidate) => `${partyNames[item.party]} (${item.party})` },
-  { label: 'Listing status', get: () => 'Listed by INEC' },
-  { label: 'Qualifications as listed', get: (item: Candidate) => item.qualification },
-]
-
-export function Compare() {
-  const [first, setFirst] = useState('')
-  const [second, setSecond] = useState('')
-  const selected = roster.filter(person => [first, second].includes(person.id))
+export function Compare({ race }: { race: Contest }) {
+  const [first, setFirst] = useState<string>(() => history.state?.comparison?.first ?? '')
+  const [second, setSecond] = useState<string>(() => history.state?.comparison?.second ?? '')
+  function setComparison(key: 'first' | 'second', value: string) {
+    history.replaceState({ ...history.state, comparison: { first, second, [key]: value } }, '')
+    if (key === 'first') setFirst(value)
+    else setSecond(value)
+  }
+  const people = rosterFor(race)
+  const selected = people.filter(item => item.id === first || item.id === second)
+  const fields: { label: string; value: (person: Candidate) => string }[] = [
+    { label: 'Party', value: item => partyNames[item.party] },
+    { label: 'Listing status', value: item => candidateStatus(item.race) },
+    { label: 'Qualifications', value: item => item.qualification || 'Unavailable' },
+    ...(people.some(item => item.mate) ? [{ label: 'Running mate', value: (item: Candidate) => item.mate?.name ?? 'Unavailable' }] : []),
+  ]
   return <section className="wrap standard-page">
-    <a className="text-link back-link" href={racePath}><ArrowLeft size={16} /> {race.constituency} candidate register</a>
-    <div className="catalogue-title"><p className="kicker">{race.constituency} · {race.office}</p><h1>Compare candidates</h1><p>Choose two candidates from this race to read the same published fields side by side.</p></div>
-    <div className="catalogue-filters">
-      <label className="directory-label">First candidate<select value={first} onChange={event => setFirst(event.target.value)}><option value="">Choose a candidate</option>{roster.map(person => <option key={person.id} value={person.id} disabled={person.id === second}>{person.name}</option>)}</select></label>
-      <label className="directory-label">Second candidate<select value={second} onChange={event => setSecond(event.target.value)}><option value="">Choose a candidate</option>{roster.map(person => <option key={person.id} value={person.id} disabled={person.id === first}>{person.name}</option>)}</select></label>
-    </div>
-    <p role="status" className="directory-caption">{selected.length === 2 ? 'Two records · Alphabetical by name' : 'Choose two distinct candidates to start.'}</p>
+    <a className="text-link back-link" href={contestPath(race)}><ArrowLeft size={16} /> {race.label}</a>
+    <div className="catalogue-title"><p className="kicker">{race.label} / {offices[race.office].label}</p><h1>Compare candidates</h1><p>Choose two people in this race to read the same official fields side by side.</p></div>
+    <div className="catalogue-filters">{([
+      { key: 'first', value: first, other: second, title: 'First candidate' },
+      { key: 'second', value: second, other: first, title: 'Second candidate' },
+    ] as const).map(({ key, value, other, title }) => <label className="directory-label" key={key}>{title}<select value={value} onChange={event => setComparison(key, event.target.value)}><option value="">Choose a candidate</option>{people.map(person => <option key={person.id} value={person.id} disabled={person.id === other}>{person.name}</option>)}</select></label>)}</div>
+    <p className="directory-caption" role="status">{selected.length === 2 ? 'Two records · Alphabetical by name' : 'Choose two distinct candidates to start.'}</p>
     {selected.length === 2 && <div className="compare-records">
-      {articles.map(field => <section key={field.label}><h2>{field.label}</h2>
-        {selected.map(person => <div key={person.id}><a className="text-link" href={candidatePath(person.id)}>{person.name}</a><p>{field.get(person)}</p><External href={race.source.href}>INEC row {person.id.split('-').at(-1)}</External></div>)}
-      </section>)}
+      {fields.map(field => <section key={field.label}><h2>{field.label}</h2>{selected.map(person => <div key={person.id}><a className="text-link" href={candidatePath(person.id)}>{person.name}</a><p>{field.value(person)}</p><External href={sources[race.listingSourceId].url}>INEC row {person.listingNumber}</External></div>)}</section>)}
     </div>}
-  </section>
-}
-
-export function Parties({ party }: { party?: string }) {
-  const [query, setQuery] = useState('')
-  const records = Object.entries(partyNames).sort(([, first], [, second]) => first.localeCompare(second, 'en-NG'))
-  const shown = records.filter(([code, name]) => `${code} ${name}`.toLowerCase().includes(query.toLowerCase().trim()))
-  return <section className="wrap standard-page">
-    {party && <a className="text-link back-link" href="/parties"><ArrowLeft size={16} /> All parties</a>}
-    <div className="catalogue-title"><p className="kicker">Reviewed candidate records</p><h1>{party ? partyNames[party] : 'Political parties'}</h1><p>{party ? `${party} · ${race.constituency}, ${race.state}` : 'Browse the parties named in MataLens’ reviewed candidate register.'}</p></div>
-    <div className="record-grid">
-      <div>
-        {party ? <><div className="field-section-head"><h2>Published candidates</h2><a className="text-link" href={racePath}>Open race <ArrowRight size={16} /></a></div><CandidateRows people={roster.filter(item => item.party === party)} /></> : <>
-          <label className="directory-label race-search">Party name or abbreviation<input type="search" value={query} onChange={event => setQuery(event.target.value)} /></label>
-          <p className="directory-caption" role="status">{shown.length} parties in these records</p>
-          <ul className="directory-rows">{shown.map(([code, name]) => <li key={code}><a href={partyPath(code)}><span className="directory-code">{code}</span><strong>{name}</strong><ArrowRight size={16} aria-hidden="true" /></a></li>)}</ul>
-        </>}
-      </div>
-      <aside className="source-rail" aria-label="Party source"><h2>Official sources</h2><External href={links.parties}>Open INEC party register</External><External href={links.race}>Open constituency listing</External><p>This directory covers parties listed for {race.constituency}.</p></aside>
-    </div>
   </section>
 }
 
 export function Ballot({ plan, updatePlan }: PlanProps) {
   const place = plan.ballot?.place ?? ''
   const stage = plan.ballot?.stage ?? 'place'
-  const hasCoverage = place === race.state
+  const localRaces = contests.filter(race => race.year === 2027 && race.state === place)
+  const [specific, setSpecific] = useState('')
   function go(nextPlace: string, nextStage: 'place' | 'race') {
+    setSpecific('')
     updatePlan({ ballot: { place: nextPlace, stage: nextStage } })
     requestAnimationFrame(() => document.getElementById('ballot-step')?.focus())
   }
-
   return <section className="wrap standard-page ballot-page">
     <a className="text-link back-link" href="/elections"><ArrowLeft size={16} /> All elections</a>
-    <div className="catalogue-title"><p className="kicker">Private preparation</p><h1>My Ballot</h1><p>Find a race you can research and make a plan for election day. Your progress stays on this device.</p></div>
-    <section className="guide-callout">
+    <div className="catalogue-title"><p className="kicker">Private preparation</p><h1>My Ballot</h1><p>Find the records you need and make an election-day plan. Your progress stays on this device.</p></div>
+    <section className="guide-callout ballot-step">
       <p className="kicker">Step {stage === 'place' ? '1' : '2'} of 2</p>
       {stage === 'place' ? <>
         <h2 id="ballot-step" tabIndex={-1}>Where do you vote?</h2>
         <label className="directory-label">State or FCT<select value={place} onChange={event => updatePlan({ ballot: { place: event.target.value, stage: 'place' } })}><option value="">Choose a state or FCT</option>{states.map(state => <option key={state}>{state}</option>)}</select></label>
         <div className="button-row"><button className="button" disabled={!place} onClick={() => go(place, 'race')}>Continue <ArrowRight size={16} /></button><a className="text-link" href="/election#polling-unit">I’m not sure <ExternalLink size={16} /></a></div>
       </> : <>
-        <h2 id="ballot-step" tabIndex={-1}>{place}</h2>
-        {hasCoverage ? <><p>One covered race in Lagos. Use INEC’s official finder to confirm that the constituency applies to you.</p><ActionLink href={racePath}>View Surulere I candidates</ActionLink></> : <><p>MataLens hasn’t published candidate records for this area yet.</p><External href={links.allHouse}>See official candidate lists at INEC</External></>}
+        <h2 id="ballot-step" tabIndex={-1}>Your 2027 election research · {place}</h2>
+        <p>Confirm your polling unit and electoral areas with INEC before choosing a local contest.</p>
         <button className="link-button ballot-back" onClick={() => go(place, 'place')}><ArrowLeft size={16} /> Change place</button>
+        {!!localRaces.length && <label className="directory-label race-search">Find a covered local contest<select value={specific} onChange={event => setSpecific(event.target.value)}><option value="">All covered contests</option>{localRaces.map(race => <option key={race.id} value={race.id}>{race.label} · {offices[race.office].label}</option>)}</select></label>}
+        {!localRaces.length && <p>MataLens has yet to publish local rosters for {place}. <External href={links.allHouse}>Check official lists</External></p>}
+        <ContestList races={[presidential, ...localRaces.filter(race => !specific || race.id === specific)]} />
       </>}
     </section>
     <div className="button-row ballot-actions"><ActionLink href="/election#polling-plan" secondary>Make my plan</ActionLink><a className="text-link" href="/actions">Finish later <ArrowRight size={16} /></a></div>

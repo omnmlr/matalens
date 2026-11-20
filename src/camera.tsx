@@ -1,7 +1,7 @@
-import { candidatePath } from './catalogue'
+import { candidatePath, roster } from './catalogue'
 import { useEffect, useEffectEvent, useRef, useState, type FormEvent } from 'react'
 import { ArrowLeft, ArrowRight, Camera, Check, CircleAlert, ClipboardList, Copy, Download, FileCheck2, FileImage, KeyRound, Landmark, LockKeyhole, MapPin, Upload, X } from 'lucide-react'
-import { candidates, steps } from './content'
+import { steps } from './content'
 import { codeFromInput, downloadFile, downloadReminder, hasSavedPlan, newReceiptCode, nigeriaDate, receiptCodePattern, receiptRequest, ReceiptRequestError, type Plan, type ReceiptEntry, type Report } from './state'
 import { ActionLink, CheckRow, PageTitle } from './ui'
 
@@ -196,8 +196,9 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
     {review ? <div className="task-heading"><Camera size={19} /><h1>Civic Camera</h1></div> :
       <PageTitle eyebrow="PRIVATE CIVIC REPORTS" title="Civic Camera" icon={Camera}>Document a community issue or publicly posted result sheet. Receive a private receipt.</PageTitle>}
     <ol className="camera-progress" aria-label="Report progress">
-      <li data-done={Boolean(review)} aria-current={!review ? 'step' : undefined}><span>{review ? <Check size={14} /> : '1'}</span> Report details</li>
+      <li data-done={Boolean(review)} aria-current={!review ? 'step' : undefined}><span>{review ? <Check size={14} /> : '1'}</span> Photo and context</li>
       <li aria-current={review ? 'step' : undefined}><span>2</span> Review and send</li>
+      <li><span>3</span> Private receipt</li>
     </ol>
     <div className="page-grid camera-grid">
       <form className="camera-form" onSubmit={submit}>
@@ -206,7 +207,7 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
           {online && intake === 'unreachable' && <button className="link-button" type="button" onClick={() => setRetry(retry + 1)}>Check again</button>}
         </div>}
         <div hidden={Boolean(review)}>
-          <section className="form-section">
+          <section className="form-section camera-stage">
             <h2 ref={detailsHeading} tabIndex={-1}>What are you documenting?</h2>
             <fieldset className="type-picker">
               <legend className="sr-only">Report type</legend>
@@ -214,7 +215,7 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
               <label className={kind === 'result' ? 'chosen' : ''}><input type="radio" name="reportType" checked={kind === 'result'} onChange={() => chooseKind('result')} /><Landmark size={20} /><span><strong>Public result sheet</strong><small>Posted polling-unit results</small></span></label>
             </fieldset>
           </section>
-          <section className="form-section">
+          <section className="form-section camera-stage">
             <h2>Add one photo</h2>
             {kind === 'result' ? <p className="inline-notice"><CircleAlert size={17} />Only photograph a publicly posted result sheet where it’s lawful and safe. Keep marked ballots and private documents out of the frame.</p> : <p>Photograph the issue safely. Keep faces, number plates and private details out of the frame.</p>}
             {file ? <figure className="photo-preview">
@@ -233,7 +234,7 @@ export function CameraPage({ online, remember, forget }: { online: boolean } & R
               </div>
             </div>}
           </section>
-          <section className="form-section">
+          <section className="form-section camera-stage">
             <h2>Add context</h2>
             <div className="field-stack" key={kind}>
               {kind === 'community' && <label>Category<select defaultValue="" name="category" required><option value="" disabled>Choose a category</option>{categories.map(category => <option key={category}>{category}</option>)}</select></label>}
@@ -321,7 +322,7 @@ export function MyActions({ plan, receipts, remember, forget }: { plan: Plan; re
   const [error, setError] = useState('')
   const lock = useRef(false)
   const panel = useRef<HTMLElement>(null)
-  const savedCandidates = candidates.filter(item => plan.candidates.includes(item.id))
+  const savedCandidates = roster.filter(item => plan.candidates.includes(item.id))
   const hasPlan = hasSavedPlan(plan)
 
   async function openReceipt(input: string) {

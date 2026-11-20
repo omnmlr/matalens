@@ -3,13 +3,15 @@ import { useEffect, useLayoutEffect, useState } from 'react'
 import { Camera, ChevronRight, ClipboardList, BookOpen, Moon, ShieldCheck, Sun, Vote, WifiOff } from 'lucide-react'
 import '@fontsource-variable/manrope'
 import './styles.css'
+import './civic.css'
 import { HomePage } from './home'
 import { Election, Practice, Sources } from './election'
 import { CameraPage, MyActions } from './camera'
 import { Brand, External } from './ui'
-import { candidatePath, comparePath, partyPath, racePath, rights, roster } from './catalogue'
-import { links, partyNames } from './content'
-import { Ballot, CandidatePage, Compare, Explorer, Parties, RacePage } from './explorer'
+import { candidatePath, contests, contestPath, partyNames, partyPath, rights, roster } from './catalogue'
+import { links } from './content'
+import { Ballot, CandidatePage, Compare, Explorer, RacePage } from './explorer'
+import { Parties, PartyPractice } from './parties'
 import { RightsPage } from './rights'
 import { ResultsPage } from './results'
 import { emptyPlan, readLocal, useLocal, writeLocal, type Plan, type ReceiptEntry } from './state'
@@ -20,10 +22,13 @@ const nav = [
   { href: '/camera', label: 'Civic Camera', icon: Camera },
   { href: '/actions', label: 'My Actions', icon: ClipboardList },
 ]
+const raceRoutes = new Map(contests.map(race => [contestPath(race), race]))
+const compareRoutes = new Map(contests.map(race => [contestPath(race) + '/compare', race]))
+const candidateRoutes = new Map(roster.map(person => [candidatePath(person.id), person]))
 const paths = new Set([
   '/', ...nav.map(item => item.href), '/election', '/practice', '/sources', '/privacy', '/my-ballot',
-  '/parties', '/results', '/corrections', '/help', racePath, comparePath,
-  ...roster.map(person => candidatePath(person.id)),
+  '/parties', '/parties/practice', '/results', '/corrections', '/help',
+  ...raceRoutes.keys(), ...compareRoutes.keys(), ...candidateRoutes.keys(),
   ...Object.keys(partyNames).map(partyPath),
   ...rights.map(right => '/rights/' + right.slug),
 ])
@@ -34,7 +39,9 @@ const noReceipts: ReceiptEntry[] = []
 function App() {
   const [url, setUrl] = useState(currentUrl)
   const location = url.split('?')[0]
-  const person = roster.find(candidate => candidatePath(candidate.id) === location)
+  const race = raceRoutes.get(location)
+  const comparison = compareRoutes.get(location)
+  const person = candidateRoutes.get(location)
   const party = Object.keys(partyNames).find(code => partyPath(code) === location)
   const activeSection = (href: string) => location.startsWith(href + '/') ||
     (href === '/elections' && electionPaths.includes(location)) || (href === '/elections' && location.startsWith('/parties/')) ||
@@ -64,7 +71,7 @@ function App() {
         return
       }
       history.replaceState({ ...history.state, scroll: window.scrollY }, '')
-      history.pushState(null, '', url)
+      history.pushState(link.dataset.compareId ? { comparison: { first: link.dataset.compareId } } : null, '', url)
       setUrl(currentUrl())
       requestAnimationFrame(() => {
         const target = url.hash ? document.getElementById(url.hash.slice(1)) : document.querySelector<HTMLElement>('main h1')
@@ -109,7 +116,7 @@ function App() {
 
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = theme
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0B1913' : '#F8FAF6')
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0b1d16' : '#f8f8f0')
     writeLocal('theme', theme)
   }, [theme])
 
@@ -134,6 +141,7 @@ function App() {
     setNotice('Preparation and saved receipts were cleared from this browser.')
   }
 
+  const planProps = { plan, updatePlan }
   return <>
     <a href="#main" className="skip-link">Skip to content</a>
     <header className="site-header">
@@ -143,7 +151,7 @@ function App() {
           {nav.map(item => <a key={item.href} href={item.href} aria-current={location === item.href ? 'page' : undefined} data-active={activeSection(item.href) || undefined}>{item.label}</a>)}
         </nav>
         <div className="header-right">
-          <span className="country">Nigeria</span>
+          <span className="country"><span className="flag" aria-hidden="true" /> Nigeria</span>
           <button className="theme-toggle" aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
             {theme === 'dark' ? <Sun size={19} /> : <Moon size={18} />}
           </button>
@@ -153,13 +161,14 @@ function App() {
     {!online && <div className="connection-bar"><WifiOff size={15} /> You’re offline. Saved guides and plans still work.</div>}
     {notice && <div className="connection-bar" role="status">{notice}<button className="link-button" onClick={() => setNotice('')}>Dismiss</button></div>}
     <main id="main" key={url} tabIndex={-1} className="screen">
-      {location === '/' && <HomePage plan={plan} />}
-      {location === '/elections' && <Explorer />}
-      {location === racePath && <RacePage />}
+      {location === '/' && <HomePage {...planProps} />}
+      {location === '/elections' && <Explorer {...planProps} />}
+      {race && <RacePage race={race} {...planProps} />}
       {person && <CandidatePage person={person} plan={plan} updatePlan={updatePlan} />}
-      {location === comparePath && <Compare />}
+      {comparison && <Compare race={comparison} />}
       {location === '/my-ballot' && <Ballot plan={plan} updatePlan={updatePlan} />}
-      {(location === '/parties' || party) && <Parties party={party} />}
+      {(location === '/parties' || party) && <Parties party={party} {...planProps} />}
+      {location === '/parties/practice' && <PartyPractice />}
       {location === '/results' && <ResultsPage />}
       {location === '/rights' && <RightsPage />}
       {location.startsWith('/rights/') && paths.has(location) && <RightsPage slug={location.split('/').at(-1)} />}
@@ -176,7 +185,7 @@ function App() {
     <footer className="site-footer">
       <div className="wrap footer-inner">
         <div><Brand /><p>An independent civic project for Nigeria.</p></div>
-        <nav aria-label="Footer"><a href="/sources">Sources & updates</a><a href="/corrections">Corrections</a><a href="/privacy">Privacy</a><a href="/help">Help</a></nav>
+        <nav aria-label="Footer"><a href="/results">Results</a><a href="/parties">Parties</a><a href="/sources">Sources & updates</a><a href="/corrections">Corrections</a><a href="/privacy">Privacy</a><a href="/help">Help</a></nav>
       </div>
     </footer>
     <nav className="mobile-nav" aria-label="Main navigation">
@@ -192,7 +201,7 @@ function Privacy({ clear }: { clear: () => void }) {
     <h1>Your information, your choice.</h1>
     <div className="panel prose">
       <h2>Election preparation</h2>
-      <p>Candidate bookmarks, checklist progress, notes, polling-unit details and reminders stay in this browser. MataLens has no account system or tracking analytics. Anyone with access to this browser profile can see locally saved information.</p>
+      <p>Candidate bookmarks, comparisons, checklist progress, notes, polling-unit details and reminders stay in this browser. MataLens has no account system or tracking analytics. Anyone with access to this browser profile can see locally saved information.</p>
       <h2>Civic Camera</h2>
       <p>MataLens stores the original photo and report details in private storage for review. Originals may contain camera metadata, including location. The preview shown with your receipt strips that metadata. Leave out personal information, use public location details, and remove identifying details before uploading.</p>
       <p>Reports have a 30-day retention period from submission. Withdrawal removes the photo and clears the description and location from the active database. A minimal receipt record remains until expiry. Hosted operators must apply the same retention policy to backups and any private review copies.</p>

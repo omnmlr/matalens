@@ -1,27 +1,24 @@
 # Implementation status
 
-The implementation branch began with `main` at `8ebe734`. The Field Guide adds a working home directory, sourced records and a rights guide while retaining the existing guest-reporting contract. Browser tests run against local SQLite with synthetic fixtures. [Field Guide captures and verification](FIELD_GUIDE_REVIEW.md)
+The product overhaul builds on `035c5c8` on `codex/matalens-first-release`. The application remains guest-first. [Election data and source ledger](ELECTION_DATA.md) · [Browser captures and review](VISUAL_REVIEW.md)
 
-| Capability | Status | Evidence and limits |
+| Capability | Status | Evidence and boundary |
 | --- | --- | --- |
-| Guest access | Working | Fresh Chromium contexts open or deep-link to every core page. No authentication screens or identity fields. |
-| Official voting guides and dates | Working | Current schedule and procedural links sourced to INEC. The app presents both general-election dates and countdowns. INEC runs the official polling-unit and voter-status lookups. |
-| Candidate exploration | Working for one covered race | Eight Surulere I entries from INEC’s Lagos PDF, with a place/name directory, individual profiles, party records, same-race comparison, source links and private bookmarks. One profile includes dated legislative proceedings. Other areas go to official sources. Further profiles and photos require sourcing and licensing. |
-| Official results | Working for one historic contest | All 18 rows from INEC’s 2023 presidential declaration. Polling-unit sheets and private reports have separate destinations. |
-| Rights and corrections | Partially working | Three source-linked rights guides. Correction notes can be copied locally. Delivery needs a verified monitored destination. Rights content awaits independent domain review before public release. |
-| Private preparation | Working | Browser tests resume My Ballot and exercise a state, LGA, polling-unit note, checklist, candidate bookmark and reminder, a calendar export and an offline reopening. The flow makes no write requests. Reminders require the user to import the event for calendar alerts. |
-| Practice | Working | Polling-day rehearsal with immediate feedback and a score, plus a candidate-to-party-abbreviation exercise covering the local race. Sources are linked. |
-| Guest Civic Camera | Working | Mobile browser completes both report types through photo selection, preview, explicit review and a real image upload using synthetic fixtures. API tests confirm content and size safeguards, independent evidence storage and retry deduplication. |
-| Receipt, follow-up and withdrawal | Working | Browser test retries after a simulated connection interruption, downloads the receipt, reloads My Actions, and opens the report in a fresh session using the receipt link. It loads the private preview then withdraws the report. API tests confirm restart persistence, moderation status, evidence removal and expiry. |
-| Responsive theme and accessibility | Working | Inspected Chromium screenshots at desktop and mobile, including 320 px and both themes. Tested keyboard navigation, theme persistence, reflow and axe WCAG A/AA rules. Physical handset camera capture and a participant usability study remain unverified. |
-| Offline and installation | Partially working | Service worker precaches the built app and self-hosted assets. Chromium reloads a saved plan offline. Camera submissions and receipt lookups require connectivity. Browser installation on physical handsets remains unverified. |
-| Hosted photo intake and moderation | External dependency | The production entry point disables new uploads by default. A hosted pilot needs HTTPS, private encrypted persistent storage and a staffed moderation process. Local moderation CLI, abuse controls and retention exist. |
-| Maps, public reports, AI assistance, authority routing, OCR | Not implemented | The current product has an official INEC handoff, a text-only location field and private manual intake. |
-| Reference tools | External dependency | Managed tool discovery did not expose REA. The locally configured CLI subprocess exposed 229 tools and handled a successful audit invocation. [Reference design audit](REFERENCE_DESIGN_AUDIT.md) |
+| Presidential discovery | Working | First action on Home opens the official 2027 roster. INEC names 18 tickets. The Accord court-order entry has no names. The 2023 nomination list and results have separate source references. |
+| Election catalogue | Working for published coverage | 248 candidacies in 22 contests, 21 parties and 70 attached running mates. Year, date, office, state, district and constituency filters reflect the indexed source records. Local coverage is selected contests in Edo, Lagos and Oyo. An unsupported region gets an official handoff. |
+| Candidate profiles and comparison | Partially working | Every indexed candidate has a shareable sourced profile and an expandable directory row. Profiles can show a ticket, listed qualifications, declared votes and linked election history. The same-race comparison stays in the browser. Selected profiles have supplementary public records. Wider biography, policy, legislative and photo coverage needs source review and media clearance. |
+| Political parties and recognition | Partially working | Twenty-one searchable party records link to their contests. Recognition includes illustrated symbol clues and candidate-to-party drills from the official 2027 presidential list. Official logo artwork and photo-identification exercises remain dependent on licensed, retrievable media. |
+| Results | Working for one declaration | All 18 national candidate totals from INEC’s 2023 declaration, with the declared winner, 24,025,940 valid votes and 939,278 rejected votes. IReV and private Civic Camera evidence have separate roles. State breakdowns and additional historic contests are outside the present archive. |
+| Rights education | Working | Five searchable guides and a homepage carousel with pause, keyboard navigation, reduced-motion support and expandable scenarios. Sources include the Electoral Act 2026 and official INEC links. Legal text should receive an independent domain review before public launch. |
+| Private preparation | Working | State-based My Ballot resume, candidate bookmarks, checklist, free-text LGA and polling-unit notes, voting rehearsal and calendar export. Exact ballot-to-polling-unit mapping is an external dependency. Guests confirm their electoral areas with INEC. |
+| Offline and installation | Partially working | The service worker pre-caches the production assets. Tested offline reopening of the saved voting plan after installation. Official site handoffs, new uploads and receipt retrieval require a connection. Physical-device installation remains unverified. |
+| Civic Camera and My Actions | Working in the local test deployment | Both report types reach the private storage API. Browser tests cover upload validation, preview, review, interruption and retry, recoverable receipt, metadata-stripped view and withdrawal. Handler, moderation and retention use the existing server implementation. |
+| Corrections and integrations | External dependency | The correction page generates a copyable factual note. A monitored correction channel, government submission and hosted intake operations require verified destinations and operating arrangements. |
+| Photos, data expansion and maps | External dependency | Media and VotersDesk CSV access are documented in the data ledger. Geographic boundaries, nationwide nominations, additional results and the ability to match a polling unit to the exact ballot require further verified source data. |
+| Responsive interaction and access | Working in Chromium testing | Verified narrow layout, both themes, keyboard controls, search and browser Back. See screenshot and test evidence. Human usability and physical Android/iOS coverage remain unverified. |
 
-## Verification
+## Verification commands
 
-- `npm test` runs three API integration tests.
-- `npm run build` typechecks, creates production assets and builds the offline cache manifest.
-- `npm run test:browser` runs four Chromium end-to-end tests and saves screenshots to `test-results/screenshots/`.
-- `npm audit --omit=dev --audit-level=high` reports zero runtime dependency advisories. The full audit flags a Picomatch advisory in the Vite development toolchain. MataLens does not pass user-supplied glob patterns to that toolchain.
+- `npm run build` checks catalogue drift, typechecks, creates the compiled app and builds the offline cache manifest.
+- `npm test` exercises the report API and real storage with temporary fixtures.
+- `npm run test:browser` walks local elections, education, preparation and report journeys against the built app using Chromium.

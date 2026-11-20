@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from 'react'
 import { ArrowLeft, ArrowRight, ArrowUpRight, Bookmark, CalendarDays, Check, ChevronDown, CircleCheck, FileText, Fingerprint, GraduationCap, Landmark, ListChecks, LockKeyhole, MapPin, ScanLine, Search, Vote } from 'lucide-react'
 import { candidates, dates, links, partyNames, procedures, race, recognition, reviewed, states, steps, updates } from './content'
+import { contestPath, presidential } from './catalogue'
 import { daysUntilNigeria, downloadReminder, nigeriaDate, type Plan } from './state'
 import { ActionLink, CheckRow, External, PageTitle } from './ui'
 
@@ -14,9 +15,9 @@ export function Election({ plan, updatePlan }: PlanProps) {
       <a href="#polling-unit"><MapPin size={17} /> Polling unit</a>
       <a href="#polling-plan"><ListChecks size={17} /> My plan</a>
     </nav>
+    <div className="prep-jump"><a className="text-link" href={contestPath(presidential)}>Presidential candidates <ArrowRight size={16} /></a><a className="text-link" href="/my-ballot">Find my other contests <ArrowRight size={16} /></a></div>
     <div className="page-grid election-grid">
       <div className="main-column">
-        <CandidateRace plan={plan} updatePlan={updatePlan} />
         <section className="editorial-section" id="polling-unit">
           <div className="section-head"><div><p className="eyebrow">Official guidance</p><h2>Find your polling unit</h2></div><MapPin className="section-icon" size={24} /></div>
           <p>Look up where you’re registered to vote. You can bring the public polling-unit name or code back to your private plan.</p>
@@ -27,6 +28,7 @@ export function Election({ plan, updatePlan }: PlanProps) {
           </div>
         </section>
         <PollingPlan plan={plan} updatePlan={updatePlan} />
+        <CandidateRace plan={plan} updatePlan={updatePlan} />
       </div>
       <aside className="side-column election-sidebar" aria-label="Election dates and preparation">
         <section className="rail-section" id="election-dates">
@@ -145,7 +147,7 @@ function CandidateRace({ plan, updatePlan }: PlanProps) {
       })}
     </ul>
     {!matches.length && <div className="empty-inline"><p>No candidates match that search.</p><button className="link-button" type="button" onClick={clearSearch}>Clear search</button></div>}
-    <div className="roster-footer" id="coverage"><p><LockKeyhole size={15} /> Bookmarks stay in this browser.</p><p>MataLens currently covers one constituency. <External href={links.allHouse}>Find other House of Representatives lists</External></p><p><External href={links.parties}>INEC political party register</External></p></div>
+    <div className="roster-footer" id="coverage"><p><LockKeyhole size={15} /> Bookmarks stay in this browser.</p><p>This register covers Surulere I. <External href={links.allHouse}>Find other House of Representatives lists</External></p><p><a className="text-link" href="/elections">Explore more published contests</a></p></div>
   </section>
 }
 
@@ -194,6 +196,7 @@ export function Practice({ complete }: { complete: () => void }) {
       <button className="journey-card mint" onClick={() => restart('procedures')}><span className="card-icon"><Vote size={23} /></span><span className="card-arrow"><ArrowUpRight size={20} /></span><h2>Election day</h2><p>Four everyday decisions, from finding your unit to casting your ballot.</p><span className="card-link">Start rehearsal <ArrowRight size={16} /></span></button>
       <button className="journey-card sand" onClick={() => restart('recognition')}><span className="card-icon"><Landmark size={23} /></span><span className="card-arrow"><ArrowUpRight size={20} /></span><h2>Read a candidate list</h2><p>Match all eight Surulere I candidates to the abbreviations on the INEC list.</p><span className="card-link">Start recognition <ArrowRight size={16} /></span></button>
     </div>}
+    {!mode && <div className="prep-jump"><a className="text-link" href="/parties/practice">Practise party symbols and presidential tickets <ArrowRight size={16} /></a></div>}
     {mode && <div className="practice-shell">
       <button className="link-button practice-back" onClick={() => restart(null)}><ArrowLeft size={16} /> All exercises</button>
       {finished ? <div className="panel success-panel"><span className="success-icon"><CircleCheck size={29} /></span><p className="eyebrow">EXERCISE COMPLETE</p><h2 tabIndex={-1} ref={heading}>You got {score} of {questions.length} right.</h2><p>Revisit the source or go through the exercise again at your pace.</p><div className="button-row"><button className="button" onClick={() => restart(mode)}>Try again <ArrowRight size={17} /></button><External href={source}>Read the INEC source</External></div></div> : <form className="panel quiz-panel" onSubmit={check}>

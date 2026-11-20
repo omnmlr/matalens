@@ -1,98 +1,95 @@
-import { useRef, useState, type FormEvent } from 'react'
-import { ArrowRight, Search } from 'lucide-react'
-import { candidatePath, catalogueRace, findCandidates, racePath, roster, type Candidate } from './catalogue'
-import { links, partyNames, states } from './content'
+import { useRef, useState, type ReactNode } from 'react'
+import { ArrowRight, Bookmark, ChevronDown, GitCompareArrows, Search, UserRound } from 'lucide-react'
+import { candidatePath, candidateStatus, findCandidates, offices, partyNames, partyPath, publicRecords, sources, type Candidate } from './catalogue'
+import type { PlanProps } from './explorer'
 import { External } from './ui'
 
-export function CandidateRows({ people, withRace = false }: { people: Candidate[]; withRace?: boolean }) {
-  return <ul className="directory-rows">
-    {people.map(person => <li key={person.id}>
-      <a href={candidatePath(person.id)}>
-        <span className="directory-code" title={partyNames[person.party]}>{person.party}</span>
-        <span><strong>{person.name}</strong><small>{withRace ? `${partyNames[person.party]} · ${catalogueRace.constituency}` : partyNames[person.party]}</small></span>
-        <ArrowRight size={17} aria-hidden="true" />
-      </a>
-    </li>)}
-  </ul>
+export function useQueryField(key: string, fallback = '') {
+  const [value, setValue] = useState(() => new URLSearchParams(window.location.search).get(key) ?? fallback)
+  return [value, (next: string) => {
+    const url = new URL(window.location.href)
+    if (next && next !== fallback) url.searchParams.set(key, next)
+    else url.searchParams.delete(key)
+    history.replaceState(history.state, '', url)
+    setValue(next)
+  }] as const
 }
 
-export function DirectoryFinder({ explorer = false }: { explorer?: boolean }) {
-  const initial = new URLSearchParams(window.location.search)
-  const previous = history.state?.homeFinder
-  const [mode, setMode] = useState<'place' | 'name'>(() => (explorer ? initial.has('q') : previous?.mode === 'name') ? 'name' : 'place')
-  const [place, setPlace] = useState<string>(() => (explorer ? initial.get('place') : previous?.place) ?? '')
-  const [input, setInput] = useState<string>(() => (explorer ? initial.get('q') : previous?.input) ?? '')
-  const [query, setQuery] = useState(input.trim())
-  const searchField = useRef<HTMLInputElement>(null)
-  const uncovered = place !== '' && place !== catalogueRace.state
-  const isSearch = mode === 'name' && Boolean(query)
-  const matches = isSearch ? findCandidates(query, explorer) : roster
-  const shown = explorer ? matches : matches.slice(0, 3)
+export function SearchField({ label, value, update, placeholder, inputRef }: { label: string; value: string; update: (value: string) => void; placeholder?: string; inputRef?: React.Ref<HTMLInputElement> }) {
+  return <label className="directory-label search-field">{label}<span><Search aria-hidden="true" size={18} /><input ref={inputRef} type="search" value={value} onChange={event => update(event.target.value)} placeholder={placeholder} maxLength={120} /></span></label>
+}
 
-  function saveFilters(nextMode: typeof mode, nextPlace: string, nextQuery: string) {
-    if (!explorer) {
-      history.replaceState({ ...history.state, homeFinder: { mode: nextMode, place: nextPlace, input: nextQuery } }, '')
-      return
-    }
-    const url = new URL(window.location.href)
-    url.searchParams.delete('q')
-    url.searchParams.delete('place')
-    if (nextMode === 'name') url.searchParams.set('q', nextQuery)
-    else if (nextPlace) url.searchParams.set('place', nextPlace)
-    window.history.replaceState(window.history.state, '', url)
+export function Portrait({ person, large = false }: { person: Candidate; large?: boolean }) {
+  return <span className={`portrait ${large ? 'portrait-large' : ''}`} aria-hidden="true"><UserRound strokeWidth={1.35} size={large ? 54 : 20} /></span>
+}
+
+function Disclosure({ person, children }: { person: Candidate; children: ReactNode }) {
+  const url = window.location.pathname + window.location.search
+  const entry = history.state?.openRows
+  const [open, setOpen] = useState(() => Boolean(entry?.url === url && entry.ids.includes(person.id)))
+  function handleToggle(event: React.SyntheticEvent<HTMLDetailsElement>) {
+    const next = event.currentTarget.open
+    if (next === open) return
+    setOpen(next)
+    const state = history.state?.openRows
+    const ids: string[] = state?.url === url ? state.ids : []
+    history.replaceState({ ...history.state, openRows: { url, ids: next ? [...new Set([...ids, person.id])] : ids.filter(id => id !== person.id) } }, '')
   }
+  return <details className="registry-disclosure" open={open} onToggle={handleToggle}>
+    <summary><span className="party-mark">{person.party}</span><span><strong>{person.name}</strong><small>{partyNames[person.party]} · {person.race.year}</small></span><ChevronDown size={19} aria-hidden="true" /></summary>
+    {children}
+  </details>
+}
 
-  function selectMode(nextMode: typeof mode) {
-    setMode(nextMode)
-    saveFilters(nextMode, place, query)
-  }
-
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setQuery(input.trim())
-    saveFilters('name', place, input.trim())
-  }
-
-  return <div className="field-directory">
-    <div className="directory-form">
-      <h3>Find a race</h3>
-      <div className="directory-modes" role="group" aria-label="Find a race by place or name">
-        <button type="button" aria-pressed={mode === 'place'} onClick={() => selectMode('place')}>By place</button>
-        <button type="button" aria-pressed={mode === 'name'} onClick={() => selectMode('name')}>By name</button>
-      </div>
-      {mode === 'place' ? <label className="directory-label">State or FCT
-        <select value={place} onChange={event => { setPlace(event.target.value); saveFilters('place', event.target.value, query) }}>
-          <option value="">All covered places</option>
-          {states.map(state => <option key={state}>{state}</option>)}
-        </select>
-      </label> : <form className="directory-search" onSubmit={submit}>
-        <label className="directory-label">{explorer ? 'Candidate, party, office or place' : 'Candidate or party name'}
-          <input ref={searchField} type="search" value={input} onChange={event => setInput(event.target.value)} maxLength={120} />
-        </label>
-        <button className="button" type="submit"><Search size={17} aria-hidden="true" /> Search</button>
-      </form>}
-      <p>Search the records MataLens has published.</p>
-      <External href={links.allHouse}>Browse INEC candidate lists</External>
-    </div>
-    <div className="directory-results">
-      <p className="sr-only" role="status">{mode === 'place' && uncovered ? `No records published for ${place}.` : `${matches.length} candidate records available.`}</p>
-      {mode === 'place' && uncovered ? <div className="directory-note">
-        <h3>{place}</h3><p>MataLens hasn’t published candidate records for this area yet.</p>
-        <External href={links.allHouse}>Check official lists at INEC</External>
-        <button className="link-button" type="button" onClick={() => { setPlace(''); saveFilters('place', '', query) }}>Browse covered races <ArrowRight size={16} /></button>
-      </div> : <>
-        <div className="directory-result-head">
-          <div><p className="kicker">{isSearch ? 'Published records' : `${catalogueRace.state} · ${catalogueRace.office}`}</p>
-            <h3>{isSearch ? 'Search results' : catalogueRace.constituency}</h3></div>
-          {isSearch ? <span>{matches.length} {matches.length === 1 ? 'match' : 'matches'}</span> : <External href={links.race}>INEC candidate list</External>}
+export function CandidateRows({ people, withRace = false, plan, updatePlan }: { people: Candidate[]; withRace?: boolean } & Partial<PlanProps>) {
+  const [notice, setNotice] = useState('')
+  return <><p className="sr-only" role="status">{notice}</p><ul className="directory-rows registry-list">
+    {people.map(person => {
+      const source = sources[person.race.listingSourceId]
+      const saved = !!plan?.candidates.includes(person.id)
+      const record = publicRecords[person.personId]?.[0] ?? publicRecords[person.id]?.[0]
+      return <li key={person.id}><Disclosure person={person}>
+        <div className="candidate-preview">
+          <Portrait person={person} />
+          <div>
+            <p className="kicker">{candidateStatus(person.race)}{withRace && ` · ${person.race.label}`}</p>
+            <p>{offices[person.race.office].label} · {person.race.state ?? 'Nationwide'}</p>
+            {person.mate && <p><strong>Running mate</strong> {person.mate.name}</p>}
+            {person.qualification && <p><strong>Qualifications listed by INEC</strong> {person.qualification}</p>}
+            {record && <p>{record.fact} <External href={record.source}>Read the record</External></p>}
+            <div className="inline-actions">
+              <a className="text-link" href={candidatePath(person.id)}>View full profile <ArrowRight size={15} /></a>
+              {plan && updatePlan && <button className="link-button" aria-pressed={saved} type="button" onClick={() => {
+                const stored = updatePlan({ candidates: saved ? plan.candidates.filter(id => id !== person.id) : [...new Set([...plan.candidates, person.id])] })
+                setNotice(saved ? `${person.name}: bookmark removed.` : `${person.name}: ${stored ? 'saved on this device' : 'saved for this visit'}.`)
+              }}><Bookmark size={16} fill={saved ? 'currentColor' : 'none'} /> {saved ? 'Saved' : 'Save privately'}</button>}
+              <a className="text-link" href={`/elections/${person.race.id}/compare`} data-compare-id={person.id}><GitCompareArrows size={16} /> Compare</a>
+              <a className="text-link" href={partyPath(person.party)}>Party record</a>
+            </div>
+            <External href={source.url}>{source.label} · row {person.listingNumber}</External>
+          </div>
         </div>
-        {shown.length > 0 ? <CandidateRows people={shown} withRace={isSearch} /> : <div className="directory-note">
-          <p>No published candidates match that search.</p>
-          <button className="link-button" type="button" onClick={() => { setInput(''); setQuery(''); saveFilters('name', place, ''); searchField.current?.focus() }}>Clear search</button>
-        </div>}
-        {!isSearch && <a className="text-link" href={racePath}>See all {roster.length} candidates <ArrowRight size={16} /></a>}
-        {isSearch && !explorer && matches.length > shown.length && <a className="text-link" href={`/elections?q=${encodeURIComponent(query)}`}>See all {matches.length} matches <ArrowRight size={16} /></a>}
-      </>}
-    </div>
-  </div>
+      </Disclosure></li>
+    })}
+  </ul></>
+}
+
+export function CandidateSearch({ people, query, update, withRace, plan, updatePlan }: { people: Candidate[]; query: string; update: (query: string) => void; withRace?: boolean } & Partial<PlanProps>) {
+  const queryKey = window.location.pathname + window.location.search
+  const [shown, setShown] = useState(() => history.state?.directoryLimit?.url === queryKey ? Number(history.state.directoryLimit.shown) : 25)
+  const search = useRef<HTMLInputElement>(null)
+  function showMore() {
+    const next = shown + 25
+    setShown(next)
+    history.replaceState({ ...history.state, directoryLimit: { url: queryKey, shown: next } }, '')
+  }
+  const matches = findCandidates(query, people)
+  return <>
+    <SearchField label="Candidate or party search" value={query} update={value => { update(value); setShown(25) }} placeholder="Name, party or running mate" inputRef={search} />
+    <p className="directory-caption" role="status">{matches.length} of {people.length} candidate records · Alphabetical by name</p>
+    {matches.length > 0 ? <CandidateRows people={matches.slice(0, shown)} withRace={withRace} plan={plan} updatePlan={updatePlan} /> : <div className="directory-note">
+      <p>No published candidates match this search.</p><button className="link-button" type="button" onClick={() => { update(''); search.current?.focus() }}>Clear search</button>
+    </div>}
+    {matches.length > shown && <button type="button" className="button button-secondary more-results" onClick={showMore}>Show {Math.min(25, matches.length - shown)} more candidates</button>}
+  </>
 }

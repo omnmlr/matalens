@@ -1,4 +1,4 @@
-export const reviewed = '2026-11-18'
+export const reviewed = '2026-11-20'
 export const links = {
   calendar: 'https://www.inecnigeria.org/elections/calendar',
   education: 'https://www.inecnigeria.org/voters/education',
@@ -11,6 +11,7 @@ export const links = {
   parties: 'https://www.inecnigeria.org/parties',
   allHouse: 'https://www.inecnigeria.org/press/updated-list-of-candidates-for-jan-2027-national-assembly-elections',
   assembly: 'https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-state-houses-of-assembly-elections',
+  presidential: 'https://www.inecnigeria.org/press/updated-list-of-candidates-for-2027-presidential-election',
   mock: 'https://inecnigeria.org/press/inec-sets-28th-november-2026-for-nationwide-mock-accreditation-exercise',
 }
 export const dates = [
@@ -49,6 +50,7 @@ export const candidates = [
 export const updates = [
   { title: 'Updated State House of Assembly candidate lists', date: '2026-11-14', href: links.assembly, detail: 'INEC published final lists by state for the 2027 State House of Assembly elections.' },
   { title: 'Mock accreditation announced for 28 November', date: '2026-11-13', href: links.mock, detail: 'INEC announced a nationwide exercise to test accreditation and electronic result transmission. See the notice for context.' },
+  { title: 'INEC publishes the final presidential candidate list', date: '2026-10-31', href: links.presidential, detail: 'The source records 18 named tickets and one party entry with no nominees listed.' },
 ]
 
 export type Question = { prompt: string; options: string[]; correct: number; explanation: string }
