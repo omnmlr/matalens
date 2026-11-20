@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 144" role="img" aria-labelledby="title">
+  <title id="title">Discover, read, check sources, practise</title>
+  <g fill="#FFFEF8" stroke="#A0B4A2">
+    <rect x="8" y="24" width="244" height="96" rx="12"/>
+    <rect x="296" y="24" width="224" height="96" rx="12"/>
+    <rect x="564" y="24" width="264" height="96" rx="12"/>
+    <rect x="872" y="24" width="240" height="96" rx="12" fill="#155B41" stroke="#155B41"/>
+  </g>
+  <path d="M263 72h21m-7-7 7 7-7 7m254-7h21m-7-7 7 7-7 7m294-7h21m-7-7 7 7-7 7" fill="none" stroke="#155B41" stroke-width="2"/>
+  <g fill="#162A21" text-anchor="middle" font-family="Manrope, Segoe UI, Arial, sans-serif" font-size="23" font-weight="650">
+    <text x="130" y="81">Discover</text><text x="408" y="81">Read</text><text x="696" y="81">Check sources</text><text x="992" y="81" fill="#FFFFFF">Practise</text>
+  </g>
+</svg>
