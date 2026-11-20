@@ -1,16 +1,19 @@
 import assert from 'node:assert/strict'
+import { execFile } from 'node:child_process'
 import { createHash, randomBytes } from 'node:crypto'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { chmod, mkdir, mkdtemp, rm, stat } from 'node:fs/promises'
 import { once } from 'node:events'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
+import { promisify } from 'node:util'
 import sharp from 'sharp'
 import { createApp } from '../server/app.mjs'
-import { expireReports, retentionDays, setStatus } from '../server/store.mjs'
+import { expireReports, openStore, retentionDays, setStatus } from '../server/store.mjs'
 import { maxBytes } from '../server/upload.mjs'
 
-const photo = await sharp({ create: { width: 20, height: 20, channels: 3, background: 'forestgreen' } }).jpeg().toBuffer()
+const photo = await sharp({ create: { width: 20, height: 20, channels: 3, background: 'forestgreen' } })
+  .withExif({ IFD0: { Artist: 'Synthetic test fixture' } }).jpeg().toBuffer()
 const receipt = () => randomBytes(32).toString('hex')
 
 async function service(t, options = {}) {
@@ -46,7 +49,8 @@ function recover(origin, code, path = '/api/receipt', method = 'GET') {
 }
 
 test('guest submission survives restart and keeps the evidence private', async t => {
-  const directory = await mkdtemp(join(tmpdir(), 'matalens-api-'))
+  const root = await mkdtemp(join(tmpdir(), 'matalens-api-'))
+  const directory = join(root, 'private-reports')
   try {
     const first = await service(t, { directory })
     const code = receipt()
@@ -61,6 +65,7 @@ test('guest submission survives restart and keeps the evidence private', async t
     assert.equal(row.receipt_hash, createHash('sha256').update(code).digest('hex'))
     const evidence = first.db.prepare('SELECT original, sha256 FROM evidence WHERE report_id = ?').get(report.id)
     assert.deepEqual(Buffer.from(evidence.original), photo)
+    assert.ok((await sharp(photo).metadata()).exif)
     assert.equal(evidence.sha256, createHash('sha256').update(photo).digest('hex'))
     assert.equal((await recover(first.origin, report.id)).status, 401)
     assert.equal((await recover(first.origin, receipt())).status, 404)
@@ -87,7 +92,7 @@ test('guest submission survives restart and keeps the evidence private', async t
     assert.equal(restarted.db.prepare('SELECT count(*) AS count FROM evidence').get().count, 0)
     await restarted.close()
   } finally {
-    await rm(directory, { recursive: true, force: true })
+    await rm(root, { recursive: true, force: true })
   }
 })
 
@@ -124,4 +129,65 @@ test('origin, media, size, consent and network abuse safeguards reject invalid u
   assert.equal(limited.status, 429)
   assert.ok(Number(limited.headers.get('retry-after')) > 0)
   assert.equal(db.prepare('SELECT count(*) AS count FROM reports').get().count, 0)
+})
+
+
+test('persistent report storage refuses a directory with unverified permissions', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'matalens-permissions-'))
+  try {
+    const privateParent = join(root, 'private-parent')
+    openStore(privateParent).close()
+    const unverified = join(privateParent, 'unverified')
+    await mkdir(unverified)
+    if (process.platform !== 'win32') await chmod(unverified, 0o755)
+    assert.throws(() => openStore(unverified), /private (directory|Windows storage)/)
+    await assert.rejects(stat(join(unverified, 'cases.sqlite')), { code: 'ENOENT' })
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('unavailable image sanitization closes uploads and leaves reviewed stories online', async () => {
+  await promisify(execFile)(process.execPath, ['--input-type=module', '-e', `
+    import assert from 'node:assert/strict'
+    import { once } from 'node:events'
+    import { registerHooks } from 'node:module'
+    registerHooks({
+      resolve(name, context, nextResolve) {
+        if (name === 'sharp') throw new Error('Simulated native dependency loading failure')
+        return nextResolve(name, context)
+      },
+    })
+    const { createApp } = await import('./server/app.mjs')
+    const service = createApp({ uploadsEnabled: true })
+    const server = service.app.listen(0, '127.0.0.1')
+    await once(server, 'listening')
+    const origin = 'http://127.0.0.1:' + server.address().port
+    try {
+      const intake = await fetch(origin + '/api/intake')
+      assert.equal((await intake.json()).uploadsEnabled, false)
+      assert.equal(service.uploadsEnabled, false)
+      const reviewed = await fetch(origin + '/api/stories')
+      assert.equal(reviewed.status, 200)
+      assert.equal((await reviewed.json()).length, 5)
+      const data = new FormData()
+      data.set('kind', 'community')
+      data.set('category', 'Road or pavement')
+      data.set('description', 'Synthetic test for disabled image processing.')
+      data.set('consent', 'yes')
+      const image = Buffer.from('${photo.toString('base64')}', 'base64')
+      data.set('photo', new Blob([image], { type: 'image/jpeg' }), 'fixture.jpg')
+      const submit = await fetch(origin + '/api/reports', {
+        method: 'POST',
+        headers: { Origin: origin, Authorization: 'Bearer ' + 'a'.repeat(64) },
+        body: data,
+      })
+      assert.equal(submit.status, 503)
+      assert.equal(service.db.prepare('SELECT count(*) AS count FROM reports').get().count, 0)
+      assert.equal(service.db.prepare('SELECT count(*) AS count FROM evidence').get().count, 0)
+    } finally {
+      await new Promise(resolve => server.close(resolve))
+      service.close()
+    }
+  `], { cwd: new URL('../', import.meta.url), timeout: 15_000 })
 })

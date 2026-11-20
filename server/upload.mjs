@@ -1,14 +1,24 @@
 import Busboy from 'busboy'
-import sharp from 'sharp'
 
 export const maxBytes = 8 * 1024 * 1024
 export const categories = ['Road or pavement', 'Drainage or flooding', 'Public facility', 'Waste or sanitation', 'Other community issue']
 const formats = { 'image/jpeg': 'jpeg', 'image/png': 'png', 'image/webp': 'webp' }
 const inputPixelLimit = 25_000_000
 
-// Keep untrusted input away from decoders outside the intake formats.
-sharp.block({ operation: ['VipsForeignLoad'] })
-sharp.unblock({ operation: ['VipsForeignLoadJpegBuffer', 'VipsForeignLoadPngBuffer', 'VipsForeignLoadWebpBuffer'] })
+let sharp
+try {
+  const { default: processor } = await import('sharp')
+  // Keep untrusted input away from decoders outside the intake formats.
+  processor.block({ operation: ['VipsForeignLoad'] })
+  processor.unblock({ operation: ['VipsForeignLoadJpegBuffer', 'VipsForeignLoadPngBuffer', 'VipsForeignLoadWebpBuffer'] })
+  if (!Object.values(formats).every(format => processor.format[format]?.input.buffer) || !processor.format.webp?.output.buffer) {
+    throw new Error('Required image capabilities are unavailable.')
+  }
+  sharp = processor
+} catch {
+  console.warn('MataLens photo intake is disabled because image sanitization is unavailable.')
+}
+export const imageSanitizationAvailable = Boolean(sharp)
 const fieldsAllowed = new Set(['kind', 'category', 'description', 'location', 'consent', 'website'])
 
 export class RequestError extends Error {
@@ -85,6 +95,7 @@ export function readUpload(request) {
 }
 
 export async function validateUpload({ fields, mime, original }) {
+  if (!sharp) throw new RequestError(503, 'Photo intake is unavailable on this copy of MataLens.')
   const { kind, category, description = '', location = '', consent, website } = fields
   if (website || consent !== 'yes') {
     throw new RequestError(400, 'Confirm that the photo is safe to share.')

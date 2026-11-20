@@ -13,7 +13,16 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:5173`. Vite serves the app and proxies the API to port 3001. Guest photo intake is enabled in development, where reports persist in a private `.matalens/` SQLite directory. Use synthetic or non-sensitive photos for local testing. `MATALENS_ENABLE_UPLOADS=0` disables intake while leaving saved receipts retrievable.
+Open `http://localhost:5173`. Vite serves the app and proxies the API to port 3001. With image sanitization available, development enables guest photo intake and stores reports in a private `.matalens/` SQLite directory. Use synthetic or non-sensitive photos for local testing. `MATALENS_ENABLE_UPLOADS=0` disables intake while leaving saved receipts retrievable.
+
+On Windows, use an NTFS path for persistent Camera storage. The app applies a private ACL when it creates the directory and verifies existing storage before opening it. If an earlier run created an unprotected `.matalens` directory, point new development reports at a new path under your profile:
+
+```powershell
+$env:MATALENS_DATA_DIR = Join-Path $env:LOCALAPPDATA 'MataLens\private-reports'
+npm run dev
+```
+
+Keep existing report data in place until an administrator verifies its ACL.
 
 ```sh
 npm test
@@ -31,14 +40,20 @@ Browser tests use the system Chromium if available. Otherwise run `npx playwrigh
 - **Rights and practice** cover ballot secrecy, voting assistance, polling units, intimidation and vote buying. Learn through voting rehearsal, symbol clues and candidate-to-party practice. The built app can reopen guides and plans offline after the service worker has installed. INEC links, new submissions and receipt retrieval use the network.
 - **Civic Camera and My Actions** accept an original image with consent and factual context, preserve it privately, and issue a 256-bit bearer receipt. Download or copy the receipt to reopen the report in another browser. Guests can check status, view a metadata-stripped preview and withdraw the evidence. Reports are received by MataLens for review.
 
+## Political news API
+
+The same app serves a reviewed political briefing at `/api/stories`, with source links, catalogue identities and learning questions. The [news desk guide](docs/NEWS_INTELLIGENCE.md) covers collection, review, API use and integration with the political-learning frontend.
+
 ## Run a hosted pilot
 
-`npm start` serves the built client and API from the same origin. New intake stays disabled until all of these variables are supplied. See [.env.example](.env.example).
+See the [production runbook](docs/RELEASE_RUNBOOK.md) for API routing, build and runtime configuration, and the bundled reviewed edition. Use the [integration checklist](docs/INTEGRATION_CHECKLIST.md) for release verification.
+
+`npm start` serves the built client and API from the same origin. New intake requires `MATALENS_ENABLE_UPLOADS=1`, a private `MATALENS_DATA_DIR` and an HTTPS `MATALENS_ORIGIN`. See [.env.example](.env.example).
 
 | Variable | Purpose |
 | --- | --- |
 | `MATALENS_ENABLE_UPLOADS=1` | Enable guest intake deliberately |
-| `MATALENS_DATA_DIR` | Dedicated persistent directory with mode `0700`, outside `public/` and `dist/` |
+| `MATALENS_DATA_DIR` | Dedicated persistent directory outside `public/` and `dist/`, with mode `0700` on POSIX or a protected NTFS ACL on Windows |
 | `MATALENS_ORIGIN` | Exact HTTPS public origin, without a path or trailing slash |
 | `MATALENS_HOST`, `MATALENS_PORT` | Listener settings, defaulting to `127.0.0.1:3000` |
 | `MATALENS_TRUST_LOOPBACK_PROXY=1` | Use only with a trusted loopback reverse proxy that overwrites client IP headers |
