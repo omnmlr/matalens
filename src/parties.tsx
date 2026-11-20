@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { ArrowLeft, ArrowRight, Bird, BrushCleaning, Check, CircleCheck, Flag, Handshake, Star, Umbrella, UsersRound } from 'lucide-react'
 import { contests, contestPath, matchWords, parties, partyNames, partyPath, presidential, roster, rosterFor, sources } from './catalogue'
-import { CandidateRows, SearchField, useQueryField } from './directory'
+import { CandidateRows, SearchField, useElectionYear, useQueryField } from './directory'
 import { ContestList, type PlanProps } from './explorer'
 import { ActionLink, External } from './ui'
 
@@ -103,27 +103,35 @@ export function PartyPractice() {
 
 export function Parties({ party, ...props }: { party?: string } & PlanProps) {
   const [query, setQuery] = useQueryField('q')
-  const records = Object.values(parties).sort((a, b) => a.name.localeCompare(b.name, 'en-NG'))
+  const [year] = useElectionYear()
+  const cycleRecords = roster.filter(record => record.race.year === year)
+  const partyCodes = new Set(cycleRecords.map(record => record.party))
+  const cycleQuery = year === 2023 ? '?year=2023' : ''
+  const records = Object.values(parties).filter(record => partyCodes.has(record.code)).sort((a, b) => a.name.localeCompare(b.name, 'en-NG'))
   const shown = records.filter(record => matchWords(record.code + ' ' + record.name, query))
-  const people = party ? roster.filter(item => item.party === party) : []
+  const people = party ? cycleRecords.filter(item => item.party === party) : []
   const symbol = symbols.find(item => item.party === party)
   const Symbol = symbol?.icon
   return <section className="wrap standard-page party-page">
-    {party && <a className="text-link back-link" href="/parties"><ArrowLeft size={16} /> All parties</a>}
-    <div className="catalogue-title"><p className="kicker">{party ? `${party} / Party record` : 'Political parties / Nigeria'}</p><h1>{party ? partyNames[party] : 'Political parties'}</h1><p>{party ? 'Explore the party’s candidates and contests by election year.' : 'Learn party names and abbreviations, and see which candidates INEC lists for each party.'}</p></div>
+    {party && <a className="text-link back-link" href={'/parties' + cycleQuery}><ArrowLeft size={16} /> {year} parties</a>}
+    <div className="catalogue-title"><p className="kicker">{party ? `${party} · ${year} Election records` : `${year} Election records`}</p><h1>{party ? partyNames[party] : 'Political parties'}</h1><p>{party ? 'Explore the party’s candidates and contests by election year.' : 'Learn party names and abbreviations, and see which candidates INEC lists for each party.'}</p></div>
+    <nav className="cycle-links" aria-label="Party record cycle">
+      <a className="text-link" href={party ? partyPath(party) : '/parties'} aria-current={year === 2027 ? 'page' : undefined}>2027 elections</a>
+      <a className="text-link" href={(party ? partyPath(party) : '/parties') + '?year=2023'} aria-current={year === 2023 ? 'page' : undefined}>2023 archive</a>
+    </nav>
     {!party && <div className="party-directory-actions"><ActionLink href="/parties/practice">Start Know Your Party</ActionLink><External href={sources.register.url}>INEC party register</External></div>}
     <div className="record-grid">
       <div>
         {party ? <>
-          <h2>Published candidates</h2><p className="directory-caption">{people.length} records · Election-specific party listings</p><CandidateRows people={people} withRace {...props} />
-          <section className="record-section"><h2>Contests in this catalogue</h2><ContestList races={contests.filter(race => people.some(person => person.contestId === race.id))} /></section>
+          <h2>{year} candidate records</h2>{people.length ? <CandidateRows people={people} withRace {...props} /> : <p>MataLens has no candidate listing for this party in the selected election cycle.</p>}
+          {people.length > 0 && <section className="record-section"><h2>Contests in this catalogue</h2><ContestList races={contests.filter(race => people.some(person => person.contestId === race.id))} /></section>}
         </> : <>
           <SearchField label="Party name or abbreviation" value={query} update={setQuery} placeholder="e.g. Labour Party" />
           <p className="directory-caption" role="status">{shown.length} {shown.length === 1 ? 'party' : 'parties'} in these records</p>
           <ul className="party-directory">{shown.map(record => {
             const item = symbols.find(symbol => symbol.party === record.code)
             const Icon = item?.icon
-            return <li key={record.code}><a href={partyPath(record.code)}><span className="party-mark">{Icon ? <Icon size={23} aria-hidden="true" /> : record.code}</span><span><strong>{record.name}</strong><small>{record.code}{item && ` · Symbol clue: ${item.label.toLowerCase()}`}</small></span><ArrowRight size={16} aria-hidden="true" /></a></li>
+            return <li key={record.code}><a href={partyPath(record.code) + cycleQuery}><span className="party-mark">{Icon ? <Icon size={23} aria-hidden="true" /> : record.code}</span><span><strong>{record.name}</strong><small>{record.code}{item && ` · Symbol clue: ${item.label.toLowerCase()}`}</small></span><ArrowRight size={16} aria-hidden="true" /></a></li>
           })}</ul>
           {!shown.length && <div className="directory-note"><p>No parties match this search.</p><button className="link-button" type="button" onClick={() => setQuery('')}>Clear search</button></div>}
         </>}
@@ -134,7 +142,7 @@ export function Parties({ party, ...props }: { party?: string } & PlanProps) {
         {symbol?.registered && <p>INEC records a registration date of {symbol.registered}.</p>}
         {symbol && <External href={symbol.source ?? symbolSource}>Source for the symbol</External>}
         {party ? <><ActionLink href="/parties/practice" secondary>Try party practice</ActionLink><External href={sources.register.url}>INEC party register</External></> : <p>Party names and abbreviations link to the elections in which they appear in the MataLens catalogue.</p>}
-        <a className="text-link" href={contestPath(presidential)}>Presidential candidates <ArrowRight size={16} /></a>
+        <a className="text-link" href={year === 2023 ? '/archive' : contestPath(presidential)}>{year === 2023 ? '2023 Election Archive' : '2027 presidential candidates'} <ArrowRight size={16} /></a>
       </aside>
     </div>
   </section>

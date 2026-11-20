@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { ArrowLeft, ArrowRight, BookOpen, Check, ChevronDown } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react'
 import { External } from './ui'
 import { lessonPath, lessons, type Lesson } from './learning-data'
 import type { StoryQuiz, StorySource } from './story-contract'
@@ -38,21 +38,6 @@ export function QuickCheck({ quiz, sources, done, complete }: {
   </form>
 }
 
-export function DailyLesson({ lesson, ...progress }: { lesson: Lesson } & Progress) {
-  return <section className="daily-section" aria-labelledby="daily-title">
-    <div className="daily-heading">
-      <BookOpen size={22} strokeWidth={1.5} aria-hidden="true" />
-      <p className="editorial-kicker">Daily question</p>
-      <h2 id="daily-title">{lesson.title}</h2>
-      <a className="text-link" href={lessonPath(lesson.id)}>Read the lesson <ArrowRight size={15} aria-hidden="true" /></a>
-    </div>
-    <details className="editorial-details daily-details">
-      <summary>Try the question <ChevronDown size={18} aria-hidden="true" /></summary>
-      <QuickCheck quiz={lesson.quiz} sources={lesson.sources} done={progress.completed.includes(lesson.id)} complete={() => progress.complete(lesson.id)} />
-    </details>
-  </section>
-}
-
 export function LearnPage({ completed }: Progress) {
   return <section className="wrap standard-page editorial-page">
     <div className="catalogue-title editorial-title"><p className="editorial-kicker">Learn</p><h1>Understand the process.</h1><p>Short lessons on reading political records, understanding policy and preparing to vote.</p></div>
@@ -80,6 +65,6 @@ export function LessonPage({ lesson, ...progress }: { lesson: Lesson } & Progres
       <QuickCheck quiz={lesson.quiz} sources={lesson.sources} done={progress.completed.includes(lesson.id)} complete={() => progress.complete(lesson.id)} />
       <div className="lesson-sources"><h2>Read the source</h2>{lesson.sources.map(source => <External key={source.id} href={source.url}>{source.title}</External>)}</div>
     </section>
-    <a className="text-link lesson-return" href="/#following">Return to your briefing <ArrowRight size={16} aria-hidden="true" /></a>
+    <a className="text-link lesson-return" href="/elections">Back to 2027 Elections <ArrowRight size={16} aria-hidden="true" /></a>
   </article>
 }

@@ -19,7 +19,7 @@ export function DeskPage({ follows, saves, progress, plan, receipts, feed }: {
     <div className="desk-grid">
       <div>
         <section className="desk-section">
-          <div className="editorial-section-head"><h2>Following</h2><a className="text-link" href="/#following">Your briefing <ArrowRight size={16} aria-hidden="true" /></a></div>
+          <div className="editorial-section-head"><h2>Following</h2><a className="text-link" href="/discover">Browse candidates <ArrowRight size={16} aria-hidden="true" /></a></div>
           <FollowedPeople {...follows} />
         </section>
         <section className="desk-section">
@@ -43,8 +43,8 @@ export function DeskPage({ follows, saves, progress, plan, receipts, feed }: {
       <aside className="desk-side" aria-label="Private civic tools">
         <PreparationPanel plan={plan} />
         <section className="panel desk-camera">
-          <h2>Civic Camera</h2><p>Document a community issue or a publicly displayed result sheet.</p>
-          <a className="text-link" href="/camera"><Camera size={17} aria-hidden="true" /> Start a report</a>
+          <h2>Civic Camera</h2><p>Review photo intake availability and private evidence guidance.</p>
+          <a className="text-link" href="/camera"><Camera size={17} aria-hidden="true" /> Open Civic Camera</a>
           <a className="text-link" href="/actions"><FileCheck2 size={17} aria-hidden="true" /> {receipts.length ? `Open saved receipts (${receipts.length})` : 'Open or recover receipts'}</a>
         </section>
       </aside>

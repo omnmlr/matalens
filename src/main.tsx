@@ -1,11 +1,13 @@
 import { createRoot } from 'react-dom/client'
 import { useEffect, useLayoutEffect, useState } from 'react'
-import { BookOpen, ChevronRight, Compass, Home, Library, Moon, ShieldCheck, Sun, WifiOff } from 'lucide-react'
+import { CalendarDays, ChevronRight, FileSearch, Home, Library, Moon, ShieldCheck, Sun, WifiOff } from 'lucide-react'
 import '@fontsource-variable/manrope'
 import './styles.css'
 import './civic.css'
 import './editorial.css'
+import './guide.css'
 import { HomePage } from './home'
+import { ElectionArchive } from './archive'
 import { Election, Practice, Sources } from './election'
 import { CameraPage, MyActions } from './camera'
 import { Brand, External } from './ui'
@@ -27,8 +29,8 @@ import { emptyPlan, readLocal, useLocal, writeLocal, type Plan, type ReceiptEntr
 
 const nav = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/discover', label: 'Discover', icon: Compass },
-  { href: '/learn', label: 'Learn', icon: BookOpen },
+  { href: '/elections', label: '2027 Elections', mobileLabel: 'Elections', icon: CalendarDays },
+  { href: '/stories', label: 'Developments', icon: FileSearch },
   { href: '/desk', label: 'My Desk', icon: Library },
 ]
 const lessonRoutes = new Map(lessons.map(lesson => [lessonPath(lesson.id), lesson]))
@@ -37,13 +39,13 @@ const compareRoutes = new Map(contests.map(race => [contestPath(race) + '/compar
 const candidateRoutes = new Map(roster.map(person => [candidatePath(person.id), person]))
 const paths = new Set([
   ...nav.map(item => item.href), '/elections', '/rights', '/camera', '/actions', '/stories', '/election', '/practice', '/sources', '/privacy', '/my-ballot',
-  '/parties', '/parties/practice', '/results', '/corrections', '/help',
+  '/parties', '/parties/practice', '/results', '/archive', '/discover', '/learn', '/corrections', '/help',
   ...raceRoutes.keys(), ...compareRoutes.keys(), ...candidateRoutes.keys(), ...mateRoutes.keys(), ...lessonRoutes.keys(),
   ...Object.keys(partyNames).map(partyPath),
   ...rights.map(right => '/rights/' + right.slug),
 ])
 const currentUrl = () => window.location.pathname + window.location.search
-const electionPaths = ['/election', '/my-ballot', '/parties', '/results', '/elections']
+const electionPaths = ['/election', '/my-ballot', '/parties', '/results', '/discover', '/archive']
 const getStoryId = (path: string) => {
   if (!path.startsWith('/stories/')) return undefined
   const id = path.slice('/stories/'.length)
@@ -64,10 +66,8 @@ function App() {
   const lesson = lessonRoutes.get(location)
   const storyId = getStoryId(location)
   const activeSection = (href: string) => location.startsWith(href + '/') ||
-    (href === '/discover' && (electionPaths.includes(location) || Boolean(race || comparison || person || party || mate))) ||
-    (href === '/learn' && (location.startsWith('/rights') || location === '/practice' || location === '/parties/practice')) ||
-    (href === '/desk' && ['/actions', '/camera'].includes(location)) ||
-    (href === '/' && (location === '/stories' || Boolean(storyId)))
+    (href === '/elections' && (electionPaths.includes(location) || Boolean(race || comparison || person || party || mate))) ||
+    (href === '/desk' && ['/actions', '/camera'].includes(location))
   const [theme, setTheme] = useState(() => readLocal('theme', matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
   const [online, setOnline] = useState(navigator.onLine)
   const [plan, setPlan] = useLocal('plan', emptyPlan)
@@ -133,7 +133,7 @@ function App() {
 
   useEffect(() => {
     const name = document.querySelector('main h1')?.textContent ?? 'MataLens'
-    document.title = location === '/' ? 'MataLens · The Nigeria briefing' : `${name} · MataLens`
+    document.title = location === '/' ? 'MataLens · Nigeria’s 2027 election guide' : `${name} · MataLens`
     if (window.location.hash && !window.location.hash.startsWith('#receipt=')) {
       const target = document.getElementById(window.location.hash.slice(1))
       if (target) requestAnimationFrame(() => target.scrollIntoView())
@@ -212,7 +212,7 @@ function App() {
     {!online && <div className="connection-bar"><WifiOff size={15} /> You’re offline. Saved guides and plans still work.</div>}
     {notice && <div className="connection-bar" role="status">{notice}<button className="link-button" onClick={() => setNotice('')}>Dismiss</button></div>}
     <main id="main" key={url} tabIndex={-1} className="screen">
-      {location === '/' && <HomePage feed={feed} follows={follows} progress={progress} />}
+      {location === '/' && <HomePage feed={feed} />}
       {location === '/discover' && <DiscoverPage follows={follows} {...planProps} />}
       {location === '/stories' && <UpdatesPage feed={feed} />}
       {storyId && <StoryPage id={storyId} feed={feed} saves={saves} progress={progress} />}
@@ -227,6 +227,7 @@ function App() {
       {location === '/my-ballot' && <Ballot plan={plan} updatePlan={updatePlan} />}
       {(location === '/parties' || party) && <Parties party={party} {...planProps} />}
       {location === '/parties/practice' && <PartyPractice />}
+      {location === '/archive' && <ElectionArchive />}
       {location === '/results' && <ResultsPage />}
       {location === '/rights' && <RightsPage />}
       {location.startsWith('/rights/') && paths.has(location) && <RightsPage slug={location.split('/').at(-1)} />}
@@ -243,11 +244,11 @@ function App() {
     <footer className="site-footer">
       <div className="wrap footer-inner">
         <div><Brand /><p>An independent civic project for Nigeria.</p></div>
-        <nav aria-label="Footer"><a href="/elections">Elections</a><a href="/rights">Voting rights</a><a href="/camera">Civic Camera</a><a href="/sources">Sources</a><a href="/corrections">Corrections</a><a href="/privacy">Privacy</a><a href="/help">Help</a></nav>
+        <nav aria-label="Footer"><a href="/archive">2023 Archive</a><a href="/learn">Civic learning</a><a href="/rights">Voting rights</a><a href="/camera">Civic Camera</a><a href="/sources">Sources</a><a href="/corrections">Corrections</a><a href="/privacy">Privacy</a><a href="/help">Help</a></nav>
       </div>
     </footer>
     <nav className="mobile-nav" aria-label="Main navigation">
-      {nav.map(({ href, label, icon: Icon }) => <a key={href} href={href} aria-current={location === href ? 'page' : undefined} data-active={activeSection(href) || undefined}><Icon size={20} strokeWidth={1.8} /><span>{label}</span></a>)}
+      {nav.map(({ href, label, mobileLabel, icon: Icon }) => <a key={href} href={href} aria-current={location === href ? 'page' : undefined} data-active={activeSection(href) || undefined}><Icon size={20} strokeWidth={1.8} /><span>{mobileLabel ?? label}</span></a>)}
     </nav>
   </>
 }

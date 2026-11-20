@@ -17,6 +17,11 @@ export function useQueryField(key: string, fallback = '') {
   }] as const
 }
 
+export function useElectionYear() {
+  const [year, setYear] = useQueryField('year', '2027')
+  return [year === '2023' ? 2023 : 2027, setYear] as const
+}
+
 export function SearchField({ label, value, update, placeholder, inputRef }: { label: string; value: string; update: (value: string) => void; placeholder?: string; inputRef?: React.Ref<HTMLInputElement> }) {
   return <label className="directory-label search-field">{label}<span><Search aria-hidden="true" size={18} /><input ref={inputRef} type="search" value={value} onChange={event => update(event.target.value)} placeholder={placeholder} maxLength={120} /></span></label>
 }

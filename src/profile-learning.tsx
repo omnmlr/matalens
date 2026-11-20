@@ -48,12 +48,15 @@ export function ProfileLearning({ id, feed }: { id: string; feed: StoryFeed }) {
 export function RunningMatePage({ person, follows, feed }: {
   person: { id: string; name: string }; follows: Follows; feed: StoryFeed
 }) {
-  const tickets = ticketsByMate.get(person.id) ?? []
+  const allTickets = ticketsByMate.get(person.id) ?? []
+  const selectedYear = new URLSearchParams(window.location.search).get('year') === '2023' ? 2023 : allTickets[0]?.race.year
+  const tickets = allTickets.filter(ticket => ticket.race.year === selectedYear)
+  const cycleQuery = selectedYear === 2023 ? '?year=2023' : ''
   const records = publicRecords[person.id] ?? []
   return <article className="wrap standard-page profile-page editorial-page">
-    <a className="text-link back-link" href="/discover"><ArrowLeft size={16} aria-hidden="true" /> Discover people</a>
+    <a className="text-link back-link" href={'/discover' + cycleQuery}><ArrowLeft size={16} aria-hidden="true" /> Discover people</a>
     <div className="profile-masthead editorial-profile-head"><span className="portrait portrait-large" aria-hidden="true"><UserRound strokeWidth={1.35} size={54} /></span>
-      <div className="catalogue-title editorial-title"><p className="editorial-kicker">Politician profile</p><h1>{person.name}</h1><p>Running mate · {tickets.map(ticket => ticket.race.year).join(' / ')}</p></div>
+      <div className="catalogue-title editorial-title"><p className="editorial-kicker">{selectedYear === 2023 ? '2023 Election Archive' : '2027 Elections'}</p><h1>{person.name}</h1><p>{selectedYear} · Running mate</p></div>
       <FollowButton id={person.id} {...follows} />
     </div>
     <div className="record-grid">
@@ -65,11 +68,12 @@ export function RunningMatePage({ person, follows, feed }: {
           <ul className="profile-evidence">{tickets.map(ticket => {
             const source = sources[ticket.race.listingSourceId]
             return <li key={ticket.id}><p className="story-meta"><span>{ticket.race.year}</span><span>INEC listing</span></p>
-              <p><a className="text-link" href={partyPath(ticket.party)}>{partyNames[ticket.party]} ({ticket.party})</a></p>
+              <p><a className="text-link" href={partyPath(ticket.party) + cycleQuery}>{partyNames[ticket.party]} ({ticket.party})</a></p>
               <p><a className="text-link" href={candidatePath(ticket.id)}>Running mate to {ticket.name} <ArrowRight size={15} aria-hidden="true" /></a></p>
               <External href={source.url}>{source.label} · row {ticket.mateNumber}</External>
             </li>
           })}</ul>
+          {allTickets.some(ticket => ticket.race.year !== selectedYear) && <a className="text-link" href={window.location.pathname + (selectedYear === 2023 ? '' : '?year=2023')}>See {selectedYear === 2023 ? 2027 : 2023} ticket records <ArrowRight size={15} aria-hidden="true" /></a>}
         </section>
         <section className="record-section profile-section"><h2>Attributed claims</h2><p>There are no sourced campaign statements in this profile yet.</p></section>
         <ProfileLearning id={person.id} feed={feed} />

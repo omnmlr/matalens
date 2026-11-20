@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ArrowLeft, ArrowRight, Bookmark, CalendarDays, CircleAlert, ExternalLink, FileText, GitCompareArrows, MapPin, Share2, Vote } from 'lucide-react'
 import { campaignStatements, candidatePath, candidateStatus, constituency, contests, contestPath, declaration, offices, partyNames, partyPath, photoReferences, presidential, publicRecords, raceStatus, roster, rosterFor, scopeLabel, sources, type Candidate, type Contest } from './catalogue'
 import { dates, links, states } from './content'
-import { CandidateSearch, Portrait, useQueryField } from './directory'
+import { CandidateSearch, Portrait, useElectionYear, useQueryField } from './directory'
 import { nigeriaDate, type Plan } from './state'
 import { ActionLink, External } from './ui'
 import { FollowButton } from './follow'
@@ -12,11 +12,12 @@ import type { StoryFeed } from './story-ui'
 
 export type PlanProps = { plan: Plan; updatePlan: (value: Partial<Plan>) => boolean }
 
-function ElectionLinks() {
+function ElectionLinks({ year }: { year: number }) {
+  if (year === 2023) return <nav className="record-nav" aria-label="Election archive links"><a href="/archive"><FileText size={17} aria-hidden="true" /> 2023 Election Archive</a><a href="/results"><CalendarDays size={17} aria-hidden="true" /> Official 2023 results</a><a href="/elections">2027 Elections</a></nav>
   return <nav className="record-nav" aria-label="Election tools">
     <a href="/my-ballot"><MapPin size={17} aria-hidden="true" /> My Ballot</a>
-    <a href="/parties"><FileText size={17} aria-hidden="true" /> Parties</a>
-    <a href="/results"><CalendarDays size={17} aria-hidden="true" /> Results archive</a>
+    <a href="/discover"><FileText size={17} aria-hidden="true" /> Find candidates and parties</a>
+    <a href="/archive"><CalendarDays size={17} aria-hidden="true" /> 2023 Archive</a>
     <a href="/election#polling-unit"><Vote size={17} aria-hidden="true" /> Polling-unit guidance</a>
   </nav>
 }
@@ -38,26 +39,26 @@ export function ElectionCalendar() {
 }
 
 export function Explorer(props: PlanProps) {
-  const [year, setYear] = useQueryField('year')
+  const [year, setYear] = useElectionYear()
   const [date, setDate] = useQueryField('date')
   const [office, setOffice] = useQueryField('office')
   const [state, setState] = useQueryField('place')
   const [district, setDistrict] = useQueryField('district')
   const [query, setQuery] = useQueryField('q')
   const [view, setView] = useQueryField('view', new URLSearchParams(location.search).has('q') ? 'candidates' : 'contests')
-  const filtered = contests.filter(race => (!year || String(race.year) === year) && (!date || race.date === date) && (!office || offices[race.office].label === office) && (!state || state === 'National' && !race.state || race.state === state))
+  const filtered = contests.filter(race => race.year === year && (year === 2023 || !date || race.date === date) && (!office || offices[race.office].label === office) && (!state || state === 'National' && !race.state || race.state === state))
   const districts = filtered.filter(race => ['district', 'federal constituency', 'state constituency'].includes(offices[race.office].scope))
   const visible = district ? filtered.filter(race => race.id === district) : filtered
   const people = roster.filter(person => visible.some(race => race.id === person.contestId))
-  function reset() { setYear(''); setDate(''); setOffice(''); setState(''); setDistrict(''); setQuery('') }
+  function reset() { setDate(''); setOffice(''); setState(''); setDistrict(''); setQuery('') }
   return <section className="wrap standard-page explorer-page">
-    <div className="catalogue-title"><p className="kicker">Election records / Nigeria</p><h1>Explore elections</h1><p>Find a contest, open the official candidate list and see who is standing for office.</p></div>
-    <ElectionLinks />
+    <div className="catalogue-title"><p className="kicker">{year === 2023 ? 'Historical records' : 'Upcoming contests · Nigeria'}</p><h1>{year === 2023 ? '2023 election records' : '2027 Elections'}</h1><p>{year === 2023 ? 'Browse the archived presidential contest and its candidates.' : 'Find a contest, see who’s standing and open the official candidate list.'}</p></div>
+    <ElectionLinks year={year} />
     <div className="catalogue-filters explorer-filters">
-      <label className="directory-label">Election year<select value={year} onChange={event => { setYear(event.target.value); setDate(''); setDistrict('') }}><option value="">All years</option><option>2027</option><option>2023</option></select></label>
+      <label className="directory-label">Election year<select value={year} onChange={event => { setYear(event.target.value); setDate(''); setDistrict('') }}><option value="2027">2027 elections</option><option value="2023">2023 archive</option></select></label>
       <label className="directory-label">Office<select value={office} onChange={event => { setOffice(event.target.value); setDistrict('') }}><option value="">All offices</option>{Object.values(offices).map(value => <option key={value.label}>{value.label}</option>)}</select></label>
       <label className="directory-label">Geography<select value={state} onChange={event => { setState(event.target.value); setDistrict('') }}><option value="">All places</option><option>National</option>{states.map(place => <option key={place}>{place}</option>)}</select></label>
-      {year !== '2023' && <label className="directory-label">Election date<select value={date} onChange={event => { setDate(event.target.value); setDistrict('') }}><option value="">All dates</option>{dates.map(item => <option key={item.date} value={item.date}>{nigeriaDate(item.date)}</option>)}</select></label>}
+      {year === 2027 && <label className="directory-label">Election date<select value={date} onChange={event => { setDate(event.target.value); setDistrict('') }}><option value="">All dates</option>{dates.map(item => <option key={item.date} value={item.date}>{nigeriaDate(item.date)}</option>)}</select></label>}
       {districts.length > 0 && <label className="directory-label">District or constituency<select value={district} onChange={event => setDistrict(event.target.value)}><option value="">All in view</option>{districts.map(race => <option key={race.id} value={race.id}>{race.label} · {offices[race.office].label}</option>)}</select></label>}
     </div>
     <div className="record-grid">
@@ -69,11 +70,11 @@ export function Explorer(props: PlanProps) {
         {visible.length ? view === 'candidates' ? <CandidateSearch people={people} query={query} update={setQuery} withRace {...props} /> : <>
           <p className="directory-caption" role="status">{visible.length} published {visible.length === 1 ? 'contest' : 'contests'}</p><ContestList races={visible} />
         </> : <div className="directory-note" role="status">
-          <h2>No published records for this selection</h2><p>Try All offices or check INEC’s lists. You can still explore the nationwide presidential election.</p>
-          <div className="inline-actions"><button className="link-button" onClick={reset}>Reset filters</button><a className="text-link" href={contestPath(presidential)}>Open presidential roster <ArrowRight size={16} /></a></div>
+          <h2>No published records for this selection</h2><p>{year === 2023 ? 'The archive covers the national presidential contest. Try clearing the filters.' : 'MataLens covers selected contests. Try clearing the filters or check INEC’s official lists.'}</p>
+          <div className="inline-actions"><button className="link-button" onClick={reset}>Reset filters</button><a className="text-link" href={year === 2023 ? '/archive' : contestPath(presidential)}>{year === 2023 ? 'Open the archive' : 'Open presidential roster'} <ArrowRight size={16} /></a></div>
         </div>}
       </div>
-      <aside className="source-rail"><h2>About this coverage</h2><p>National presidential records and selected contests in Edo, Lagos and Oyo. District and constituency boundaries determine which ballot applies.</p><External href={links.allHouse}>INEC National Assembly lists</External><External href={links.assembly}>INEC State Assembly lists</External><External href={links.polling}>Find your polling unit</External></aside>
+      <aside className="source-rail"><h2>About this coverage</h2><p>{year === 2023 ? 'The archive contains the 2023 national presidential records.' : 'National presidential records and selected contests in Edo, Lagos and Oyo. Check INEC for other constituencies.'}</p><External href={links.allHouse}>INEC National Assembly lists</External><External href={links.assembly}>INEC State Assembly lists</External><External href={links.polling}>Find your polling unit</External></aside>
     </div>
   </section>
 }
@@ -83,7 +84,7 @@ export function RacePage({ race, ...props }: { race: Contest } & PlanProps) {
   const entries = rosterFor(race)
   const source = sources[race.listingSourceId]
   return <section className="wrap standard-page">
-    <a className="text-link back-link" href="/elections"><ArrowLeft size={16} /> All elections</a>
+    <a className="text-link back-link" href={race.year === 2023 ? '/archive' : '/elections'}><ArrowLeft size={16} /> {race.year === 2023 ? '2023 Election Archive' : '2027 Elections'}</a>
     <div className="race-masthead">
       <div className="catalogue-title"><p className="kicker">{race.year} / {scopeLabel(race)}{race.state && ` · ${race.state}`}</p><h1>{race.label}</h1><p>{offices[race.office].label} · <time dateTime={race.date}>{nigeriaDate(race.date, { dateStyle: 'long' })}</time> · {raceStatus(race)}</p></div>
       <div className="race-count"><strong>{entries.length}</strong><span>{race.office === 'president' && race.year === 2027 ? 'Named tickets' : 'Named candidates'}</span></div>
@@ -139,7 +140,7 @@ export function CandidatePage({ person, plan, updatePlan, follows, feed }: { per
 
   return <article className="wrap standard-page profile-page editorial-page">
     <a className="text-link back-link" href={contestPath(race)}><ArrowLeft size={16} /> {race.label}</a>
-    <div className="profile-masthead editorial-profile-head"><Portrait person={person} large /><div className="catalogue-title editorial-title"><p className="editorial-kicker">Politician profile · {race.year} · {offices[race.office].label}</p><h1>{person.name}</h1><a className="text-link" href={partyPath(person.party)}>{partyNames[person.party]} ({person.party}) <ArrowRight size={15} /></a></div><FollowButton id={person.personId} {...follows} /></div>
+    <div className="profile-masthead editorial-profile-head"><Portrait person={person} large /><div className="catalogue-title editorial-title"><p className="editorial-kicker">Politician profile · {race.year} · {offices[race.office].label}</p><h1>{person.name}</h1><a className="text-link" href={partyPath(person.party) + (race.year === 2023 ? '?year=2023' : '')}>{partyNames[person.party]} ({person.party}) <ArrowRight size={15} /></a></div><FollowButton id={person.personId} {...follows} /></div>
     <div className="record-grid profile-grid">
       <div>
         <div className="button-row candidate-actions">
@@ -151,7 +152,7 @@ export function CandidatePage({ person, plan, updatePlan, follows, feed }: { per
         <section className="record-section profile-section"><h2>Biography</h2>
           {records.length ? <PublicRecordList records={records.slice(0, 1)} /> : <p>The verified candidacy below is the biographical record currently available for this profile.</p>}
         </section>
-        {person.mate && <section className="ticket-summary"><div><p className="kicker">On the ticket</p><h2>Running mate</h2><strong><a className="text-link" href={personPath(person.mate.id)}>{person.mate.name} <ArrowRight size={15} aria-hidden="true" /></a></strong></div><details><summary>Ticket details</summary>{person.mateQualification && <p>Qualifications listed by INEC: {person.mateQualification}</p>}{mateRecord && <p>{mateRecord.fact} <External href={mateRecord.source}>{mateRecord.label}</External></p>}{mateHistory.map(item => <p key={item.id}><a className="text-link" href={candidatePath(item.id)}>{item.race.label} · {item.party} <ArrowRight size={15} /></a></p>)}<External href={source.url}>{source.label} · row {person.mateNumber}</External></details></section>}
+        {person.mate && <section className="ticket-summary"><div><p className="kicker">On the ticket</p><h2>Running mate</h2><strong><a className="text-link" href={personPath(person.mate.id, race.year)}>{person.mate.name} <ArrowRight size={15} aria-hidden="true" /></a></strong></div><details><summary>Ticket details</summary>{person.mateQualification && <p>Qualifications listed by INEC: {person.mateQualification}</p>}{mateRecord && <p>{mateRecord.fact} <External href={mateRecord.source}>{mateRecord.label}</External></p>}{mateHistory.map(item => <p key={item.id}><a className="text-link" href={candidatePath(item.id)}>{item.race.label} · {item.party} <ArrowRight size={15} /></a></p>)}<External href={source.url}>{source.label} · row {person.mateNumber}</External></details></section>}
         <section className="record-section profile-section"><p className="editorial-kicker">Verified election record</p><h2>{race.status === 'declared' ? 'Archived candidacy' : 'Official candidacy'}</h2>
           <dl><div><dt>Name on INEC record</dt><dd>{person.listedName}</dd></div><div><dt>Office</dt><dd>{offices[race.office].label}</dd></div><div><dt>Electoral area</dt><dd>{constituency(race)}</dd></div><div><dt>Listing status</dt><dd>{candidateStatus(race)}</dd></div>
           {person.age && <div><dt>Age on the list</dt><dd>{person.age}</dd></div>}

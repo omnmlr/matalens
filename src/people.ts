@@ -11,11 +11,14 @@ for (const candidate of roster) {
   }
 }
 
-export const personPath = (id: string) => {
-  const candidate = candidaciesByPerson.get(id)?.[0]
-  return candidate ? candidatePath(candidate.id) : '/people/' + id
+export const personPath = (id: string, year?: number) => {
+  const candidacies = candidaciesByPerson.get(id) ?? []
+  const tickets = ticketsByMate.get(id) ?? []
+  const cycle = year ?? Math.max(candidacies[0]?.race.year ?? 0, tickets[0]?.race.year ?? 0)
+  const candidate = candidacies.find(record => record.race.year === cycle)
+  return candidate ? candidatePath(candidate.id) : '/people/' + id + (cycle === 2023 ? '?year=2023' : '')
 }
 
-export const mateRoutes = new Map([...ticketsByMate.keys()].filter(id => !candidaciesByPerson.has(id)).map(id => [personPath(id), identities[id]]))
+export const mateRoutes = new Map([...ticketsByMate.keys()].map(id => ['/people/' + id, identities[id]]))
 
 export type Follows = { followed: string[]; toggleFollow: (id: string) => void }

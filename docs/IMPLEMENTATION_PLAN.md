@@ -11,3 +11,9 @@ Base implementation branch `codex/matalens-first-release` at `035c5c8`. Keep the
 ## Political learning pivot
 
 Build on the sourced first-release catalogue. Land the typed story contract and local editorial sample first, then connect the briefing, Discover, profile reading, Learn and My Desk. Keep personalization in browser storage and reuse the existing election, preparation and receipt routes. Verify the reading loop, both reporting flows, and the responsive light and dark themes against the production build.
+
+## 2027 election guide release
+
+1. Start with the 2027 contests, separate 2026 developments from the 2023 archive, and put the sourced recruitment deadline comparison on the homepage and in the reader.
+2. Verify the catalogue, original evidence links, responsive layout and the existing private workflows. Stage the release on the existing read-only Vercel project before production.
+3. Use saved people as research bookmarks and distinguish a learning attempt from a correct answer. Reverify any follow-on release before publication.
