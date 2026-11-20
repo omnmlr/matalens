@@ -34,6 +34,9 @@ test('the frontend handoff reads the real story API and personalizes on-device',
   const page = await desktop.newPage()
   const storyRequests = []
   const pageErrors = []
+  page.on('console', message => {
+    if (message.type() === 'error' && message.text().includes('Content Security Policy')) pageErrors.push(message.text())
+  })
   page.on('request', request => { if (request.url().includes('/api/stories')) storyRequests.push([request.method(), request.url()]) })
   page.on('pageerror', error => pageErrors.push(error.message))
   const lead = 'INEC extends the election staff application deadline'
