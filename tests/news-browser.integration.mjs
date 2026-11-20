@@ -68,6 +68,7 @@ test('the frontend handoff reads the real story API and personalizes on-device',
   await page.getByRole('radio', { name: '18', exact: true }).check()
   await page.getByRole('button', { name: 'Check answer' }).click()
   await expect(page.getByRole('status')).toContainText('That’s right.')
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
   await page.screenshot({ path: join(screenshots, 'story-desktop-light.png'), fullPage: true, animations: 'disabled' })
 
   await page.getByRole('navigation', { name: 'Main navigation' }).getByRole('link', { name: 'Learn' }).click()
